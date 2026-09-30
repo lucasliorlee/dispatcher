@@ -3,6 +3,8 @@ import math
 import os
 import random
 import re
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -12,7 +14,11 @@ from discord.ui import ActionRow, Container, LayoutView, MediaGallery, Section, 
 
 from config import Emoji
 
-with open("towers.json", encoding="utf-8") as f:
+PROJECT_DIR = Path(__file__).resolve().parent
+TOWER_DATA_FILE = PROJECT_DIR / "towers.json"
+SKILLS_DATA_FILE = PROJECT_DIR / "skills" / "skills.json"
+
+with TOWER_DATA_FILE.open(encoding="utf-8") as f:
     DATA = json.load(f)
 
 NAMES = {slug: tower["name"] for slug, tower in DATA.items()}
@@ -44,6 +50,245 @@ IMMUNITY_EMOJIS = {
     "Freeze": Emoji.noFreeze,
     "Debuff": Emoji.Defense,
 }
+PRECISION_EXCLUDED_TOWERS = {
+    "accelerator", "demoman", "dj_booth", "mortar", "paintballer",
+    "rocketeer", "snowballer", "trapper", "brawler", "warden",
+}
+FIGHT_DIRTY_HEADERS = {
+    "Burn Duration", "Burn Time", "Confusion Time", "Debuff Duration",
+    "Flashbang Stun Time", "Freeze Time", "Neuralyze Duration", "Poison Time",
+    "Shock Time", "Slowdown Time", "Slowness Time", "Sting Time", "Stun Time",
+    "Vulnerability Time",
+}
+SKILL_LABELS = (
+    ("enhanced_optics", Emoji.EnhancedOpticsSkill),
+    ("improved_gunpowder", Emoji.ImprovedGunpowderSkill),
+    ("fight_dirty", Emoji.FightDirtySkill),
+    ("precision", Emoji.PrecisionSkill),
+    ("accelerator", Emoji.AcceleratorSkill),
+    ("expanded_barracks", Emoji.ExpandedBarracksSkill),
+    ("beefed_up_minions", Emoji.BeefedUpMinionsSkill),
+)
+
+with SKILLS_DATA_FILE.open(encoding="utf-8") as f:
+    SKILL_DATA = json.load(f)
+
+
+def skill_key(name):
+    return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
+
+
+SKILL_LOOKUP = {skill_key(skill["name"]): skill for skill in SKILL_DATA.get("skills", [])}
+SKILL_NAMES = [skill["name"] for skill in SKILL_DATA.get("skills", [])]
+SKILL_PLAN_TARGETS = (
+    ("Stonks", 10),
+    ("Scavenger", 10),
+    ("Bigger Budget", 25),
+    ("Stonks", 20),
+    ("Enhanced Optics", 20),
+    ("Re-enforcements", 5),
+    ("Accelerator", 25),
+    ("Fight Dirty", 15),
+    ("Improved Gunpowder", 15),
+    ("Extreme Conditioning", 25),
+    ("Beefed Up Minions", 25),
+    ("Expanded Barracks", 10),
+    ("Fight Dirty", 25),
+    ("Improved Gunpowder", 25),
+    ("Expanded Barracks", 20),
+    ("Re-enforcements", 8),
+    ("Precision", 15),
+    ("Re-enforcements", 10),
+    ("Scavenger", 20),
+    ("Resourcefulness", 25),
+    ("Fortify", 40),
+    ("Bandages", 25),
+    ("Over-Heal", 25),
+    ("Scholar", 20),
+)
+
+
+def get_skill(name):
+    key = skill_key(name)
+    if key in SKILL_LOOKUP:
+        return SKILL_LOOKUP[key]
+    match = next((skill for skill in SKILL_DATA.get("skills", []) if name.lower() in skill["name"].lower()), None)
+    if match:
+        SKILL_LOOKUP[skill_key(match["name"])] = match
+    return match
+
+
+def calculate_skill_cost(name, current_level=0, target_level=None, version="Current"):
+    skill = get_skill(name)
+    if skill is None:
+        raise ValueError(f"Couldn't find a skill called `{name}`.")
+
+    versions = skill.get("versions", {})
+    if version not in versions:
+        raise ValueError(f"{version} cost data is unavailable for {skill['name']}.")
+    levels = versions[version]
+    max_level = len(levels)
+    current_level = max(0, int(current_level))
+    if target_level is None:
+        target_level = max_level
+    target_level = max(0, int(target_level))
+
+    if current_level > max_level or target_level > max_level:
+        raise ValueError(f"{skill['name']} only goes to level {max_level}.")
+    if target_level < current_level:
+        raise ValueError("Target level must be greater than or equal to the current level.")
+
+    return sum(level["cost"] for level in levels[current_level:target_level])
+
+
+def build_skill_plan(current_levels):
+    levels = {}
+    for skill in SKILL_DATA.get("skills", []):
+        name = skill["name"]
+        skill_levels = skill.get("versions", {}).get("Current", [])
+        current = int(current_levels.get(name, 0))
+        if current < 0 or current > len(skill_levels):
+            raise ValueError(f"{name} level must be between 0 and {len(skill_levels)}.")
+        levels[skill_key(name)] = current
+
+    actions = []
+
+    def reach_level(name, target, visiting=()):
+        key = skill_key(name)
+        current = levels.get(key, 0)
+        if current >= target:
+            return
+        if key in visiting:
+            raise ValueError(f"Circular unlock requirement found for {name}.")
+
+        skill = get_skill(name)
+        if skill is None or not skill.get("versions", {}).get("Current"):
+            raise ValueError(f"Current cost data is unavailable for {name}.")
+        max_level = len(skill["versions"]["Current"])
+        if target > max_level:
+            raise ValueError(f"{name} only goes to level {max_level}.")
+
+        requirement = skill.get("unlock_requirement")
+        if requirement and levels.get(skill_key(requirement["skill"]), 0) < requirement["level"]:
+            reach_level(requirement["skill"], requirement["level"], (*visiting, key))
+
+        current = levels[key]
+        if current < target:
+            cost = calculate_skill_cost(name, current, target)
+            actions.append({
+                "skill": name,
+                "current_level": current,
+                "target_level": target,
+                "cost": cost,
+            })
+            levels[key] = target
+
+    for name, target in SKILL_PLAN_TARGETS:
+        reach_level(name, target)
+
+    return {"actions": actions, "levels": levels, "total_cost": sum(action["cost"] for action in actions)}
+
+
+def plan_coin_spending(plan, coin_balance):
+    coin_balance = int(coin_balance)
+    if coin_balance < 0:
+        raise ValueError("Coin balance cannot be negative.")
+
+    remaining = coin_balance
+    purchases = []
+    next_purchase = None
+    for action in plan["actions"]:
+        skill = get_skill(action["skill"])
+        levels = skill["versions"]["Current"]
+        current_level = action["current_level"]
+        funded_level = current_level
+        action_cost = 0
+        for level_index in range(current_level, action["target_level"]):
+            cost = levels[level_index]["cost"]
+            if cost > remaining:
+                next_purchase = {
+                    "skill": action["skill"],
+                    "current_level": funded_level,
+                    "target_level": funded_level + 1,
+                    "cost": cost,
+                }
+                break
+            remaining -= cost
+            action_cost += cost
+            funded_level = level_index + 1
+
+        if funded_level > current_level:
+            purchases.append({
+                "skill": action["skill"],
+                "current_level": current_level,
+                "target_level": funded_level,
+                "cost": action_cost,
+            })
+        if next_purchase:
+            break
+
+    return {
+        "purchases": purchases,
+        "next_purchase": next_purchase,
+        "spent": coin_balance - remaining,
+        "unspent": remaining,
+    }
+
+
+def format_skill_plan_response(plan, step_limit=5):
+    actions = plan["actions"]
+    lines = ["**Next upgrades (Current):**"] if actions else ["**All route goals reached.**"]
+    for index, action in enumerate(actions[:step_limit], 1):
+        lines.append(
+            f"{index}. {action['skill']}: {action['current_level']} → {action['target_level']} "
+            f"({action['cost']:,} Coins)"
+        )
+    if len(actions) > step_limit:
+        lines.append(f"…and {len(actions) - step_limit} more steps.")
+    lines.append(f"**Coins to finish the route:** {plan['total_cost']:,}")
+    return "\n".join(lines)
+
+
+def format_skill_budget_response(plan, coin_balance):
+    spending = plan_coin_spending(plan, coin_balance)
+    lines = [f"**Recommended spending for {coin_balance:,} Coins:**"]
+    if spending["purchases"]:
+        lines.extend(
+            f"{index}. {purchase['skill']}: {purchase['current_level']} → {purchase['target_level']} "
+            f"({purchase['cost']:,} Coins)"
+            for index, purchase in enumerate(spending["purchases"], 1)
+        )
+    elif spending["next_purchase"]:
+        lines.append("Save your coins for the next planned upgrade.")
+
+    next_purchase = spending["next_purchase"]
+    if next_purchase:
+        lines.append(
+            f"Save {spending['unspent']:,} toward {next_purchase['skill']} level "
+            f"{next_purchase['target_level']} ({next_purchase['cost']:,} Coins needed)."
+        )
+    elif spending["unspent"]:
+        lines.append(f"Route complete; {spending['unspent']:,} Coins remain unspent.")
+
+    lines.append(f"**Spent:** {spending['spent']:,} Coins")
+    lines.append(f"**Coins to finish the route:** {plan['total_cost']:,}")
+    return "\n".join(lines)
+
+
+def format_skill_response(skill, current_level, target_label, total, version, level_costs):
+    description = skill.get("description", "").strip()
+    description = re.sub(r'^"\s*.*?"\s*', "", description)
+    description = re.sub(r"\s*Has a base cost of\b.*$", "", description)
+    details = f"\n{description}" if description else ""
+    costs = "\n".join(
+        f"Level {current_level + index}: {cost:,} Coins"
+        for index, cost in enumerate(level_costs, 1)
+    )
+    cost_details = f"\n\n**Next level costs:**\n{costs}" if costs else ""
+    return (
+        f"**{skill['name']}** ({version}){details}\n\n"
+        f"{current_level} → {target_label} costs **{total:,} Coins**.{cost_details}"
+    )
 
 
 def clean(text, limit=CELL_MAX):
@@ -51,6 +296,8 @@ def clean(text, limit=CELL_MAX):
 
 
 def format_overview_value(key, value):
+    if key == "Level Requirement":
+        return re.sub(r"\bLevel\b", Emoji.Level.get(), value)
     if key == "Placement Limit":
         return re.sub(
             r"(?<![\w])(?:\d+|∞)(?![\w])",
@@ -155,11 +402,107 @@ def level_traits(tower, table, level):
 
 def row_heading(headers, row, upgrade=None):
     first = row[0] if row else "?"
-    label = headers[0] if headers else ""
+    if "Unit" in headers:
+        unit = row[headers.index("Unit")] if headers.index("Unit") < len(row) else ""
+        if unit:
+            first = unit
+            label = ""
+        else:
+            label = headers[0] if headers else ""
+    else:
+        label = headers[0] if headers else ""
     heading = f"{label} {first}" if first.isdigit() and label else first
     if upgrade and upgrade["name"]:
         heading += f" ({upgrade['name']})"
     return heading
+
+
+def dps_multiplier(header, skill_tree, tower_slug, unit_row=False, row_stats=None):
+    multiplier = Decimal(1) + Decimal(skill_tree.get("damage_buff", 0)) / 100
+    multiplier *= Decimal(1) + Decimal(skill_tree.get("firerate_buff", 0)) / 100
+    precision = skill_tree.get("precision", 0)
+    if not precision or unit_row or tower_slug in PRECISION_EXCLUDED_TOWERS:
+        return multiplier
+
+    precision_increase = Decimal("0.25") / (29 - precision)
+    header_lower = header.lower()
+    if tower_slug == "pursuit" and "missile" in header_lower:
+        precision_increase = Decimal(0)
+    elif tower_slug == "pursuit" and "total dps" in header_lower:
+        components = row_stats or {}
+        eligible_dps = sum(
+            (Decimal(raw.replace(",", "").strip()) for name, raw in components.items()
+             if "dps" in name.lower() and "total dps" not in name.lower() and "missile" not in name.lower()
+             and raw.replace(",", "").strip().replace(".", "", 1).isdigit()),
+            Decimal(0),
+        )
+        base_dps = Decimal(row_stats.get(header, "0").replace(",", "").strip()) if row_stats else Decimal(0)
+        if base_dps:
+            precision_increase *= eligible_dps / base_dps
+    return multiplier * (Decimal(1) + precision_increase)
+
+
+def adjusted_stat(header, value, skill_tree, tower_slug, unit_row=False, row_stats=None):
+    is_cost_efficiency = "cost efficiency" in header.lower()
+    numeric_value = value.replace("$", "") if is_cost_efficiency else value
+
+    try:
+        number = Decimal(numeric_value.replace(",", "").strip())
+    except (InvalidOperation, AttributeError):
+        return value
+
+    enhanced_optics = skill_tree.get("enhanced_optics", 0)
+    improved_gunpowder = skill_tree.get("improved_gunpowder", 0)
+    fight_dirty = skill_tree.get("fight_dirty", 0)
+    precision = skill_tree.get("precision", 0)
+    accelerator = skill_tree.get("accelerator", 0)
+    expanded_barracks = skill_tree.get("expanded_barracks", 0)
+    beefed_up_minions = skill_tree.get("beefed_up_minions", 0)
+    damage_buff = skill_tree.get("damage_buff", 0)
+    range_buff = skill_tree.get("range_buff", 0)
+    firerate_buff = skill_tree.get("firerate_buff", 0)
+
+    skill_factor = Decimal(1)
+    buff_factor = Decimal(1)
+    header_lower = header.lower()
+
+    if header == "Range" and not unit_row:
+        skill_factor *= Decimal(1) + Decimal("0.005") * enhanced_optics
+        buff_factor *= Decimal(1) + Decimal(range_buff) / 100
+    elif (
+        not unit_row
+        and ("explosion" in header_lower or header in {"Flashbang Radius", "Neuralyze Grenade Radius", "Smite Radius"})
+        and ("range" in header_lower or "radius" in header_lower)
+    ):
+        skill_factor *= Decimal(1) + Decimal("0.005") * improved_gunpowder
+
+    if header in FIGHT_DIRTY_HEADERS:
+        skill_factor *= Decimal(1) + Decimal("0.01") * fight_dirty
+    if header == "Ability Cooldown":
+        skill_factor *= Decimal(1) - Decimal("0.005") * accelerator
+    if header == "Spawnrate":
+        skill_factor *= Decimal(1) - Decimal("0.0075") * expanded_barracks
+    if (header == "Health" and unit_row) or header == "Combined Total Health":
+        skill_factor *= Decimal(1) + Decimal("0.006") * beefed_up_minions
+
+    excluded_damage = ("damage buff", "damage taken bonus", "damage vulnerability", "damage threshold")
+    if "damage" in header_lower and "buff" not in header_lower and not any(term in header_lower for term in excluded_damage):
+        buff_factor *= Decimal(1) + Decimal(damage_buff) / 100
+
+    if "firerate" in header_lower and "buff" not in header_lower:
+        buff_factor *= Decimal(1) + Decimal(firerate_buff) / 100
+        result = number / (skill_factor * buff_factor)
+    elif is_cost_efficiency:
+        result = number / dps_multiplier(header, skill_tree, tower_slug, unit_row, row_stats)
+    elif "dps" in header_lower:
+        result = number * skill_factor * dps_multiplier(header, skill_tree, tower_slug, unit_row, row_stats)
+    else:
+        result = number * skill_factor * buff_factor
+
+    if result == number:
+        return value
+    formatted = f"{result:,.4f}".rstrip("0").rstrip(".")
+    return f"${formatted}" if is_cost_efficiency and value.strip().startswith("$") else formatted
 
 
 def with_thumbnail(text, image):
@@ -167,10 +510,26 @@ def with_thumbnail(text, image):
     return Section(text, accessory=Thumbnail(image)) if image else text
 
 
-def render_row(headers, row, upgrade=None, include_changes=False, traits=None):
+class SkillView(LayoutView):
+    def __init__(self, skill, current_level, target_label, total, version, level_costs):
+        super().__init__(timeout=300)
+        container = Container(accent_colour=discord.Colour.blurple())
+        container.add_item(with_thumbnail(
+            format_skill_response(skill, current_level, target_label, total, version, level_costs),
+            skill.get("image", ""),
+        ))
+        self.add_item(container)
+
+
+def render_row(headers, row, upgrade=None, include_changes=False, traits=None, skill_tree=None, tower_slug=""):
     """One table row as a card: heading (with level name), what the upgrade does, stats, picture."""
     lines = [f"### {clean(row_heading(headers, row, upgrade))}"]
-    cells = list(zip(headers[1:], row[1:]))
+    is_unit_table = "Unit" in headers
+    raw_stats = dict(zip(headers[1:], row[1:]))
+    cells = [
+        (header, adjusted_stat(header, cell, skill_tree or {}, tower_slug, is_unit_table, raw_stats))
+        for header, cell in zip(headers[1:], row[1:])
+    ]
     stat_cells = [(header, cell) for header, cell in cells if header in STAT_EMOJIS and cell]
     stat_cells.sort(key=lambda item: list(STAT_EMOJIS).index(item[0]))
     if stat_cells:
@@ -207,7 +566,59 @@ def render_ability(upgrade):
     return with_thumbnail("\n".join(lines), upgrade["image"])
 
 
-def render_overview(tower):
+def render_stat_changes(skill_tree, tower_slug=""):
+    active_skills = [
+        f"{emoji.get()} {skill_tree[key]}"
+        for key, emoji in SKILL_LABELS
+        if skill_tree.get(key, 0)
+    ]
+    active_buffs = [
+        f"+{skill_tree[key]}% {emoji.get()}"
+        for key, emoji in (
+            ("firerate_buff", Emoji.FirerateBuff),
+            ("range_buff", Emoji.RangeBuff),
+            ("damage_buff", Emoji.DamageBuff),
+        )
+        if skill_tree.get(key, 0)
+    ]
+    level_bonuses = (
+        ("enhanced_optics", Decimal("0.5"), Emoji.EnhancedOpticsSkill),
+        ("improved_gunpowder", Decimal("0.5"), Emoji.ImprovedGunpowderSkill),
+        ("fight_dirty", Decimal(1), Emoji.FightDirtySkill),
+        ("accelerator", Decimal("-0.5"), Emoji.AcceleratorSkill),
+        ("expanded_barracks", Decimal("-0.75"), Emoji.ExpandedBarracksSkill),
+        ("beefed_up_minions", Decimal("0.6"), Emoji.BeefedUpMinionsSkill),
+    )
+    skill_bonuses = []
+    for key, per_level, emoji in level_bonuses:
+        level = skill_tree.get(key, 0)
+        if level:
+            amount = per_level * level
+            formatted = format(amount, "f")
+            if "." in formatted:
+                formatted = formatted.rstrip("0").rstrip(".")
+            sign = "+" if amount > 0 else ""
+            skill_bonuses.append(f"{sign}{formatted}% {emoji.get()}")
+    precision = skill_tree.get("precision", 0)
+    if precision and tower_slug not in PRECISION_EXCLUDED_TOWERS:
+        skill_bonuses.append(
+            f"1 in {29 - precision} attacks: 1.25× damage {Emoji.PrecisionSkill.get()}"
+        )
+
+    if not active_skills and not active_buffs:
+        return ""
+
+    lines = ["### Stat changes"]
+    if active_skills:
+        lines.append("**Skills:** " + " · ".join(active_skills))
+    if active_buffs:
+        lines.append("**Buffs:** " + " · ".join(active_buffs))
+    if skill_bonuses:
+        lines.append("**Skill bonuses:** " + " · ".join(skill_bonuses))
+    return "\n".join(lines)
+
+
+def render_overview(tower, skill_tree=None, tower_slug=""):
     """Placement limit, footprint, role, base stats for Regular and PvP..."""
     info = tower["info"]
     general, regular, pvp = info["general"], info["regular"], info["pvp"]
@@ -236,6 +647,10 @@ def render_overview(tower):
     if details:
         items += [Separator(), TextDisplay("### Details\n" + "\n".join(details))]
 
+    changes = render_stat_changes(skill_tree or {}, tower_slug)
+    if changes:
+        items += [Separator(), TextDisplay(changes)]
+
     for label, block in (("Regular", regular), ("PvP", pvp)):
         block_lines = [f"**{k}:** {clean(v)}" for k, v in block.items()]
         # if block_lines:
@@ -244,10 +659,11 @@ def render_overview(tower):
 
 
 class TowerView(LayoutView):
-    def __init__(self, slug, include_changes=False):
+    def __init__(self, slug, include_changes=False, skill_tree=None):
         super().__init__(timeout=300)
         self.slug = slug
         self.include_changes = include_changes
+        self.skill_tree = skill_tree or {}
         self.tower = DATA[slug]
         self.pages = self.make_pages()
         self.page = 0  # selected page
@@ -279,7 +695,7 @@ class TowerView(LayoutView):
 
         groups, headers = [], []
         if kind == "overview":
-            for item in render_overview(self.tower):
+            for item in render_overview(self.tower, self.skill_tree, self.slug):
                 container.add_item(item)
         elif kind == "abilities":
             abilities = [u for u in self.tower["upgrades"] if u["ability"]]
@@ -289,6 +705,10 @@ class TowerView(LayoutView):
                     container.add_item(Separator())
         else:
             headers, rows = payload["headers"], payload["rows"]
+            changes = render_stat_changes(self.skill_tree, self.slug)
+            if changes:
+                container.add_item(TextDisplay(changes))
+                container.add_item(Separator())
             # One row per option; if there are more than 25 rows, each option covers a range
             size = max(1, math.ceil(len(rows) / MAX_OPTIONS))
             groups = [rows[i : i + size] for i in range(0, len(rows), size)]
@@ -306,6 +726,8 @@ class TowerView(LayoutView):
                         find_upgrade(self.tower, payload, row),
                         include_changes=self.include_changes,
                         traits=traits,
+                        skill_tree=self.skill_tree,
+                        tower_slug=self.slug,
                     ))
                     if i < len(shown) - 1:
                         container.add_item(Separator())
@@ -336,8 +758,21 @@ class TowerView(LayoutView):
             page_select = discord.ui.Select(
                 placeholder="Choose a page",
                 options=[
-                    discord.SelectOption(label=name[:100], value=str(i), default=(i == self.page))
-                    for i, (name, _, _) in enumerate(self.pages)
+                    discord.SelectOption(
+                        label=name[:100],
+                        value=str(i),
+                        default=(i == self.page),
+                        emoji=(
+                            discord.PartialEmoji.from_str(Emoji.Ability.get())
+                            if kind == "abilities"
+                            else discord.PartialEmoji.from_str(Emoji.DamageBuff.get())
+                            if kind == "table" and payload["mode"] == "Regular"
+                            else discord.PartialEmoji.from_str(Emoji.Sword.get())
+                            if kind == "table" and payload["mode"] == "PvP"
+                            else None
+                        ),
+                    )
+                    for i, (name, kind, payload) in enumerate(self.pages)
                 ],
             )
             page_select.callback = self.on_page
@@ -554,19 +989,211 @@ async def remove_autocomplete(interaction: discord.Interaction, current: str):
     ]
 
 @client.tree.command(name="tower", description="Look up a tower's stats")
-@app_commands.allowed_contexts(guilds=True, dms=False, private_channels=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 @app_commands.allowed_installs(guilds=True, users=True)
-@app_commands.describe(name="Tower name", include_changes="Show stat changes at each level")
+@app_commands.describe(
+    name="Tower name",
+    include_changes="Show stat changes at each level",
+    enhanced_optics="Enhanced Optics level (0-20)",
+    improved_gunpowder="Improved Gunpowder level (0-25)",
+    fight_dirty="Fight Dirty level (0-25)",
+    precision="Precision level (0-15)",
+    accelerator="Accelerator level (0-25)",
+    expanded_barracks="Expanded Barracks level (0-20)",
+    beefed_up_minions="Beefed Up Minions level (0-25)",
+    firerate_buff="Percent bonus (15 means +15%)",
+    range_buff="Percent bonus (15 means +15%)",
+    damage_buff="Percent bonus (15 means +15%)",
+)
 @app_commands.autocomplete(name=tower_autocomplete)
-async def tower(interaction: discord.Interaction, name: str, include_changes: bool = False):
+async def tower(
+    interaction: discord.Interaction,
+    name: str,
+    include_changes: bool = False,
+    enhanced_optics: app_commands.Range[int, 0, 20] = 0,
+    improved_gunpowder: app_commands.Range[int, 0, 25] = 0,
+    fight_dirty: app_commands.Range[int, 0, 25] = 0,
+    precision: app_commands.Range[int, 0, 15] = 0,
+    accelerator: app_commands.Range[int, 0, 25] = 0,
+    expanded_barracks: app_commands.Range[int, 0, 20] = 0,
+    beefed_up_minions: app_commands.Range[int, 0, 25] = 0,
+    firerate_buff: app_commands.Range[int, 0, 1000] = 0,
+    range_buff: app_commands.Range[int, 0, 1000] = 0,
+    damage_buff: app_commands.Range[int, 0, 1000] = 0,
+):
     slug = name.lower().replace(" ", "_")
     if slug not in DATA:
         await interaction.response.send_message(f"Couldn't find a tower called `{name}`.", ephemeral=True)
         return
-    await interaction.response.send_message(view=TowerView(slug, include_changes))
+    skill_tree = {
+        "enhanced_optics": enhanced_optics,
+        "improved_gunpowder": improved_gunpowder,
+        "fight_dirty": fight_dirty,
+        "precision": precision,
+        "accelerator": accelerator,
+        "expanded_barracks": expanded_barracks,
+        "beefed_up_minions": beefed_up_minions,
+        "firerate_buff": firerate_buff,
+        "range_buff": range_buff,
+        "damage_buff": damage_buff,
+    }
+    await interaction.response.send_message(view=TowerView(slug, include_changes, skill_tree))
+
+
+async def skill_autocomplete(interaction: discord.Interaction, current: str):
+    current = current.lower()
+    matches = [name for name in SKILL_NAMES if current in name.lower()]
+    return [app_commands.Choice(name=name, value=name) for name in matches[:25]]
+
+
+@client.tree.command(name="skill", description="Calculate how many coins it costs to level a skill")
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.describe(
+    name="Skill name",
+    current_level="Your current skill level",
+    target_level="Target skill level; defaults to the skill's max level",
+    levels="Optional number of levels to add on top of your current level",
+    version="Skill cost version",
+)
+@app_commands.choices(version=[
+    app_commands.Choice(name="Current", value="Current"),
+    app_commands.Choice(name="Version 1", value="Version 1"),
+])
+@app_commands.autocomplete(name=skill_autocomplete)
+async def skill(
+    interaction: discord.Interaction,
+    name: str,
+    current_level: int = 0,
+    target_level: int | None = None,
+    levels: int = 0,
+    version: str = "Current",
+):
+    skill_data = get_skill(name)
+    if skill_data is None:
+        await interaction.response.send_message(f"Couldn't find a skill called `{name}`.", ephemeral=True)
+        return
+
+    versions = skill_data.get("versions", {})
+    if version not in versions:
+        await interaction.response.send_message(
+            f"{version} cost data is unavailable for {skill_data['name']}.",
+            ephemeral=True,
+        )
+        return
+    skill_levels = versions[version]
+    max_level = len(skill_levels)
+    current_level = max(0, int(current_level))
+
+    if levels > 0 and target_level is None:
+        target_level = current_level + levels
+    if target_level is None:
+        target_level = max_level
+
+    if current_level > max_level or target_level > max_level:
+        await interaction.response.send_message(
+            f"{skill_data['name']} only goes to level {max_level}.",
+            ephemeral=True,
+        )
+        return
+    if target_level < current_level:
+        await interaction.response.send_message(
+            "Target level must be greater than o/skill name: Extreme Conditioning version: Version 1r equal to the current level.",
+            ephemeral=True,
+        )
+        return
+
+    total = calculate_skill_cost(skill_data["name"], current_level, target_level, version)
+    level_costs = [level["cost"] for level in skill_levels[current_level:target_level]]
+    target_label = "max" if target_level == max_level else str(target_level)
+    if current_level == target_level:
+        total = 0
+        target_label = str(target_level)
+
+    await interaction.response.send_message(
+        view=SkillView(skill_data, current_level, target_label, total, version, level_costs)
+    )
+
+
+@client.tree.command(name="plan", description="Suggest upcoming skill upgrades and route cost")
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.describe(
+    coins="Your current coins",
+    stonks="Current Stonks level",
+    scavenger="Current Scavenger level",
+    bigger_budget="Current Bigger Budget level",
+    enhanced_optics="Current Enhanced Optics level",
+    reenforcements="Current Re-enforcements level",
+    accelerator="Current Accelerator level",
+    fight_dirty="Current Fight Dirty level",
+    improved_gunpowder="Current Improved Gunpowder level",
+    extreme_conditioning="Current Extreme Conditioning level",
+    beefed_up_minions="Current Beefed Up Minions level",
+    expanded_barracks="Current Expanded Barracks level",
+    precision="Current Precision level",
+    resourcefulness="Current Resourcefulness level",
+    fortify="Current Fortify level",
+    bandages="Current Bandages level",
+    over_heal="Current Over-Heal level",
+    scholar="Current Scholar level",
+)
+async def skillplan(
+    interaction: discord.Interaction,
+    coins: app_commands.Range[int, 0, 100_000_000] | None = None,
+    stonks: app_commands.Range[int, 0, 20] = 0,
+    scavenger: app_commands.Range[int, 0, 20] = 0,
+    bigger_budget: app_commands.Range[int, 0, 25] = 0,
+    enhanced_optics: app_commands.Range[int, 0, 20] = 0,
+    reenforcements: app_commands.Range[int, 0, 10] = 0,
+    accelerator: app_commands.Range[int, 0, 25] = 0,
+    fight_dirty: app_commands.Range[int, 0, 25] = 0,
+    improved_gunpowder: app_commands.Range[int, 0, 25] = 0,
+    extreme_conditioning: app_commands.Range[int, 0, 25] = 0,
+    beefed_up_minions: app_commands.Range[int, 0, 25] = 0,
+    expanded_barracks: app_commands.Range[int, 0, 20] = 0,
+    precision: app_commands.Range[int, 0, 15] = 0,
+    resourcefulness: app_commands.Range[int, 0, 25] = 0,
+    fortify: app_commands.Range[int, 0, 40] = 0,
+    bandages: app_commands.Range[int, 0, 25] = 0,
+    over_heal: app_commands.Range[int, 0, 25] = 0,
+    scholar: app_commands.Range[int, 0, 20] = 0,
+):
+    current_levels = {
+        "Stonks": stonks,
+        "Scavenger": scavenger,
+        "Bigger Budget": bigger_budget,
+        "Enhanced Optics": enhanced_optics,
+        "Re-enforcements": reenforcements,
+        "Accelerator": accelerator,
+        "Fight Dirty": fight_dirty,
+        "Improved Gunpowder": improved_gunpowder,
+        "Extreme Conditioning": extreme_conditioning,
+        "Beefed Up Minions": beefed_up_minions,
+        "Expanded Barracks": expanded_barracks,
+        "Precision": precision,
+        "Resourcefulness": resourcefulness,
+        "Fortify": fortify,
+        "Bandages": bandages,
+        "Over-Heal": over_heal,
+        "Scholar": scholar,
+    }
+    try:
+        plan = build_skill_plan(current_levels)
+    except ValueError as error:
+        await interaction.response.send_message(str(error), ephemeral=True)
+        return
+
+    response = (
+        format_skill_budget_response(plan, coins)
+        if coins is not None
+        else format_skill_plan_response(plan)
+    )
+    await interaction.response.send_message(response)
+
 
 @client.tree.command(name="gallery", description="Browse a tower's skins, weapons and other art")
-@app_commands.allowed_contexts(guilds=True, dms=False, private_channels=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.describe(name="Tower name")
 @app_commands.autocomplete(name=tower_autocomplete)
@@ -582,7 +1209,7 @@ async def gallery(interaction: discord.Interaction, name: str):
     await interaction.response.send_message(view=view)
 
 @client.tree.command(name="loadout", description="Generate a random loadout")
-@app_commands.allowed_contexts(guilds=True, dms=False, private_channels=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 @app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.describe(remove="Towers to remove from the loadout seperated by commas")
 @app_commands.autocomplete(remove=remove_autocomplete)

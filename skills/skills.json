@@ -1,0 +1,5447 @@
+{
+ "skills": [
+  {
+   "name": "Enhanced Optics",
+   "category": "Offensive",
+   "max_level": 20,
+   "description": "\" Tower range is increased by X% . \" Boosts tower range by 0.5% for each purchase. Has a base cost of 6 with an exponential value of 1.73.",
+   "image": "https://tds.wiki/w/Special:FilePath/EnhancedOpticsSkill.png",
+   "unlock_requirement": null,
+   "base_cost": 6,
+   "exponential_value": 1.73,
+   "levels": [
+    {
+     "cost": 20,
+     "total_cost": 20,
+     "total_increase_percent": 0.5
+    },
+    {
+     "cost": 75,
+     "total_cost": 95,
+     "total_increase_percent": 1.0
+    },
+    {
+     "cost": 150,
+     "total_cost": 245,
+     "total_increase_percent": 1.5
+    },
+    {
+     "cost": 245,
+     "total_cost": 490,
+     "total_increase_percent": 2.0
+    },
+    {
+     "cost": 360,
+     "total_cost": 850,
+     "total_increase_percent": 2.5
+    },
+    {
+     "cost": 490,
+     "total_cost": 1340,
+     "total_increase_percent": 3.0
+    },
+    {
+     "cost": 645,
+     "total_cost": 1985,
+     "total_increase_percent": 3.5
+    },
+    {
+     "cost": 810,
+     "total_cost": 2795,
+     "total_increase_percent": 4.0
+    },
+    {
+     "cost": 995,
+     "total_cost": 3790,
+     "total_increase_percent": 4.5
+    },
+    {
+     "cost": 1190,
+     "total_cost": 4980,
+     "total_increase_percent": 5.0
+    },
+    {
+     "cost": 1405,
+     "total_cost": 6385,
+     "total_increase_percent": 5.5
+    },
+    {
+     "cost": 1635,
+     "total_cost": 8020,
+     "total_increase_percent": 6.0
+    },
+    {
+     "cost": 1875,
+     "total_cost": 9895,
+     "total_increase_percent": 6.5
+    },
+    {
+     "cost": 2135,
+     "total_cost": 12030,
+     "total_increase_percent": 7.0
+    },
+    {
+     "cost": 2405,
+     "total_cost": 14435,
+     "total_increase_percent": 7.5
+    },
+    {
+     "cost": 2685,
+     "total_cost": 17120,
+     "total_increase_percent": 8.0
+    },
+    {
+     "cost": 2985,
+     "total_cost": 20105,
+     "total_increase_percent": 8.5
+    },
+    {
+     "cost": 3295,
+     "total_cost": 23400,
+     "total_increase_percent": 9.0
+    },
+    {
+     "cost": 3615,
+     "total_cost": 27015,
+     "total_increase_percent": 9.5
+    },
+    {
+     "cost": 3955,
+     "total_cost": 30970,
+     "total_increase_percent": 10.0
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 20,
+      "total_cost": 20,
+      "total_increase_percent": 0.5
+     },
+     {
+      "cost": 75,
+      "total_cost": 95,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 150,
+      "total_cost": 245,
+      "total_increase_percent": 1.5
+     },
+     {
+      "cost": 245,
+      "total_cost": 490,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 360,
+      "total_cost": 850,
+      "total_increase_percent": 2.5
+     },
+     {
+      "cost": 490,
+      "total_cost": 1340,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 645,
+      "total_cost": 1985,
+      "total_increase_percent": 3.5
+     },
+     {
+      "cost": 810,
+      "total_cost": 2795,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 995,
+      "total_cost": 3790,
+      "total_increase_percent": 4.5
+     },
+     {
+      "cost": 1190,
+      "total_cost": 4980,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 1405,
+      "total_cost": 6385,
+      "total_increase_percent": 5.5
+     },
+     {
+      "cost": 1635,
+      "total_cost": 8020,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 1875,
+      "total_cost": 9895,
+      "total_increase_percent": 6.5
+     },
+     {
+      "cost": 2135,
+      "total_cost": 12030,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 2405,
+      "total_cost": 14435,
+      "total_increase_percent": 7.5
+     },
+     {
+      "cost": 2685,
+      "total_cost": 17120,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 2985,
+      "total_cost": 20105,
+      "total_increase_percent": 8.5
+     },
+     {
+      "cost": 3295,
+      "total_cost": 23400,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 3615,
+      "total_cost": 27015,
+      "total_increase_percent": 9.5
+     },
+     {
+      "cost": 3955,
+      "total_cost": 30970,
+      "total_increase_percent": 10.0
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 50,
+      "total_cost": 50,
+      "total_increase_percent": 0.5
+     },
+     {
+      "cost": 170,
+      "total_cost": 220,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 355,
+      "total_cost": 575,
+      "total_increase_percent": 1.5
+     },
+     {
+      "cost": 590,
+      "total_cost": 1165,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 875,
+      "total_cost": 2040,
+      "total_increase_percent": 2.5
+     },
+     {
+      "cost": 1210,
+      "total_cost": 3250,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 1595,
+      "total_cost": 4845,
+      "total_increase_percent": 3.5
+     },
+     {
+      "cost": 2025,
+      "total_cost": 6870,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 2495,
+      "total_cost": 9365,
+      "total_increase_percent": 4.5
+     },
+     {
+      "cost": 3010,
+      "total_cost": 12375,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 3565,
+      "total_cost": 15940,
+      "total_increase_percent": 5.5
+     },
+     {
+      "cost": 4165,
+      "total_cost": 20105,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 4800,
+      "total_cost": 24905,
+      "total_increase_percent": 6.5
+     },
+     {
+      "cost": 5480,
+      "total_cost": 30385,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 6195,
+      "total_cost": 36580,
+      "total_increase_percent": 7.5
+     },
+     {
+      "cost": 6950,
+      "total_cost": 43530,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 7740,
+      "total_cost": 51270,
+      "total_increase_percent": 8.5
+     },
+     {
+      "cost": 8570,
+      "total_cost": 59840,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 9435,
+      "total_cost": 69275,
+      "total_increase_percent": 9.5
+     },
+     {
+      "cost": 10335,
+      "total_cost": 79610,
+      "total_increase_percent": 10.0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Improved Gunpowder",
+   "category": "Offensive",
+   "max_level": 25,
+   "description": "\" AOE explosion radius is increased by X% . \" AOE explosion radius of towers is increased by 0.5% for each purchase. There is a requirement of reaching Level 10 in Enhanced Optics before it is unlocked. Has a base cost of 5 with an exponential value of 1.725.",
+   "image": "https://tds.wiki/w/Special:FilePath/ImprovedGunpowderSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Enhanced Optics"
+   },
+   "base_cost": 5,
+   "exponential_value": 1.725,
+   "levels": [
+    {
+     "cost": 15,
+     "total_cost": 15,
+     "total_increase_percent": 0.5
+    },
+    {
+     "cost": 55,
+     "total_cost": 70,
+     "total_increase_percent": 1.0
+    },
+    {
+     "cost": 105,
+     "total_cost": 175,
+     "total_increase_percent": 1.5
+    },
+    {
+     "cost": 175,
+     "total_cost": 350,
+     "total_increase_percent": 2.0
+    },
+    {
+     "cost": 255,
+     "total_cost": 605,
+     "total_increase_percent": 2.5
+    },
+    {
+     "cost": 355,
+     "total_cost": 960,
+     "total_increase_percent": 3.0
+    },
+    {
+     "cost": 460,
+     "total_cost": 1420,
+     "total_increase_percent": 3.5
+    },
+    {
+     "cost": 580,
+     "total_cost": 2000,
+     "total_increase_percent": 4.0
+    },
+    {
+     "cost": 710,
+     "total_cost": 2710,
+     "total_increase_percent": 4.5
+    },
+    {
+     "cost": 850,
+     "total_cost": 3560,
+     "total_increase_percent": 5.0
+    },
+    {
+     "cost": 1005,
+     "total_cost": 4565,
+     "total_increase_percent": 5.5
+    },
+    {
+     "cost": 1165,
+     "total_cost": 5730,
+     "total_increase_percent": 6.0
+    },
+    {
+     "cost": 1340,
+     "total_cost": 7070,
+     "total_increase_percent": 6.5
+    },
+    {
+     "cost": 1525,
+     "total_cost": 8595,
+     "total_increase_percent": 7.0
+    },
+    {
+     "cost": 1715,
+     "total_cost": 10310,
+     "total_increase_percent": 7.5
+    },
+    {
+     "cost": 1915,
+     "total_cost": 12225,
+     "total_increase_percent": 8.0
+    },
+    {
+     "cost": 2130,
+     "total_cost": 14355,
+     "total_increase_percent": 8.5
+    },
+    {
+     "cost": 2350,
+     "total_cost": 16705,
+     "total_increase_percent": 9.0
+    },
+    {
+     "cost": 2580,
+     "total_cost": 19285,
+     "total_increase_percent": 9.5
+    },
+    {
+     "cost": 2820,
+     "total_cost": 22105,
+     "total_increase_percent": 10.0
+    },
+    {
+     "cost": 3065,
+     "total_cost": 25170,
+     "total_increase_percent": 10.5
+    },
+    {
+     "cost": 3320,
+     "total_cost": 28490,
+     "total_increase_percent": 11.0
+    },
+    {
+     "cost": 3585,
+     "total_cost": 32075,
+     "total_increase_percent": 11.5
+    },
+    {
+     "cost": 3860,
+     "total_cost": 35935,
+     "total_increase_percent": 12.0
+    },
+    {
+     "cost": 4140,
+     "total_cost": 40075,
+     "total_increase_percent": 12.5
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 15,
+      "total_cost": 15,
+      "total_increase_percent": 0.5
+     },
+     {
+      "cost": 55,
+      "total_cost": 70,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 105,
+      "total_cost": 175,
+      "total_increase_percent": 1.5
+     },
+     {
+      "cost": 175,
+      "total_cost": 350,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 255,
+      "total_cost": 605,
+      "total_increase_percent": 2.5
+     },
+     {
+      "cost": 355,
+      "total_cost": 960,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 460,
+      "total_cost": 1420,
+      "total_increase_percent": 3.5
+     },
+     {
+      "cost": 580,
+      "total_cost": 2000,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 710,
+      "total_cost": 2710,
+      "total_increase_percent": 4.5
+     },
+     {
+      "cost": 850,
+      "total_cost": 3560,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 1005,
+      "total_cost": 4565,
+      "total_increase_percent": 5.5
+     },
+     {
+      "cost": 1165,
+      "total_cost": 5730,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 1340,
+      "total_cost": 7070,
+      "total_increase_percent": 6.5
+     },
+     {
+      "cost": 1525,
+      "total_cost": 8595,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 1715,
+      "total_cost": 10310,
+      "total_increase_percent": 7.5
+     },
+     {
+      "cost": 1915,
+      "total_cost": 12225,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 2130,
+      "total_cost": 14355,
+      "total_increase_percent": 8.5
+     },
+     {
+      "cost": 2350,
+      "total_cost": 16705,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 2580,
+      "total_cost": 19285,
+      "total_increase_percent": 9.5
+     },
+     {
+      "cost": 2820,
+      "total_cost": 22105,
+      "total_increase_percent": 10.0
+     },
+     {
+      "cost": 3065,
+      "total_cost": 25170,
+      "total_increase_percent": 10.5
+     },
+     {
+      "cost": 3320,
+      "total_cost": 28490,
+      "total_increase_percent": 11.0
+     },
+     {
+      "cost": 3585,
+      "total_cost": 32075,
+      "total_increase_percent": 11.5
+     },
+     {
+      "cost": 3860,
+      "total_cost": 35935,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 4140,
+      "total_cost": 40075,
+      "total_increase_percent": 12.5
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 30,
+      "total_cost": 30,
+      "total_increase_percent": 0.8
+     },
+     {
+      "cost": 110,
+      "total_cost": 140,
+      "total_increase_percent": 1.6
+     },
+     {
+      "cost": 225,
+      "total_cost": 365,
+      "total_increase_percent": 2.4
+     },
+     {
+      "cost": 375,
+      "total_cost": 740,
+      "total_increase_percent": 3.2
+     },
+     {
+      "cost": 560,
+      "total_cost": 1300,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 775,
+      "total_cost": 2075,
+      "total_increase_percent": 4.8
+     },
+     {
+      "cost": 1020,
+      "total_cost": 3095,
+      "total_increase_percent": 5.6
+     },
+     {
+      "cost": 1295,
+      "total_cost": 4390,
+      "total_increase_percent": 6.4
+     },
+     {
+      "cost": 1595,
+      "total_cost": 5985,
+      "total_increase_percent": 7.2
+     },
+     {
+      "cost": 1925,
+      "total_cost": 7910,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 2280,
+      "total_cost": 10190,
+      "total_increase_percent": 8.8
+     },
+     {
+      "cost": 2660,
+      "total_cost": 12850,
+      "total_increase_percent": 9.6
+     },
+     {
+      "cost": 3070,
+      "total_cost": 15920,
+      "total_increase_percent": 10.4
+     },
+     {
+      "cost": 3500,
+      "total_cost": 19420,
+      "total_increase_percent": 11.2
+     },
+     {
+      "cost": 3960,
+      "total_cost": 23380,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 4440,
+      "total_cost": 27820,
+      "total_increase_percent": 12.8
+     },
+     {
+      "cost": 4950,
+      "total_cost": 32770,
+      "total_increase_percent": 13.6
+     },
+     {
+      "cost": 5480,
+      "total_cost": 38250,
+      "total_increase_percent": 14.4
+     },
+     {
+      "cost": 6030,
+      "total_cost": 44280,
+      "total_increase_percent": 15.2
+     },
+     {
+      "cost": 6610,
+      "total_cost": 50890,
+      "total_increase_percent": 16.0
+     },
+     {
+      "cost": 7210,
+      "total_cost": 58100,
+      "total_increase_percent": 16.8
+     },
+     {
+      "cost": 7830,
+      "total_cost": 65930,
+      "total_increase_percent": 17.6
+     },
+     {
+      "cost": 8475,
+      "total_cost": 74405,
+      "total_increase_percent": 18.4
+     },
+     {
+      "cost": 9140,
+      "total_cost": 83545,
+      "total_increase_percent": 19.2
+     },
+     {
+      "cost": 9830,
+      "total_cost": 93375,
+      "total_increase_percent": 20.0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Fight Dirty",
+   "category": "Offensive",
+   "max_level": 25,
+   "description": "\" Debuff durations applied to enemies are increased by X% . \" Tower debuffs, such as stun, shock, freeze, burn, poison, confusion or chill are longer by 1% for each purchase. There is a requirement of reaching Level 10 in Improved Gunpowder before it is unlocked. Has a base cost of 5 with an exponential value of 1.77.",
+   "image": "https://tds.wiki/w/Special:FilePath/FightDirtySkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Improved Gunpowder"
+   },
+   "base_cost": 5,
+   "exponential_value": 1.77,
+   "levels": [
+    {
+     "cost": 15,
+     "total_cost": 15,
+     "total_increase_percent": 1.0
+    },
+    {
+     "cost": 60,
+     "total_cost": 75,
+     "total_increase_percent": 2.0
+    },
+    {
+     "cost": 120,
+     "total_cost": 195,
+     "total_increase_percent": 3.0
+    },
+    {
+     "cost": 200,
+     "total_cost": 395,
+     "total_increase_percent": 4.0
+    },
+    {
+     "cost": 300,
+     "total_cost": 695,
+     "total_increase_percent": 5.0
+    },
+    {
+     "cost": 410,
+     "total_cost": 1105,
+     "total_increase_percent": 6.0
+    },
+    {
+     "cost": 540,
+     "total_cost": 1645,
+     "total_increase_percent": 7.0
+    },
+    {
+     "cost": 685,
+     "total_cost": 2330,
+     "total_increase_percent": 8.0
+    },
+    {
+     "cost": 845,
+     "total_cost": 3175,
+     "total_increase_percent": 9.0
+    },
+    {
+     "cost": 1015,
+     "total_cost": 4190,
+     "total_increase_percent": 10.0
+    },
+    {
+     "cost": 1205,
+     "total_cost": 5395,
+     "total_increase_percent": 11.0
+    },
+    {
+     "cost": 1405,
+     "total_cost": 6800,
+     "total_increase_percent": 12.0
+    },
+    {
+     "cost": 1615,
+     "total_cost": 8415,
+     "total_increase_percent": 13.0
+    },
+    {
+     "cost": 1845,
+     "total_cost": 10260,
+     "total_increase_percent": 14.0
+    },
+    {
+     "cost": 2085,
+     "total_cost": 12345,
+     "total_increase_percent": 15.0
+    },
+    {
+     "cost": 2335,
+     "total_cost": 14680,
+     "total_increase_percent": 16.0
+    },
+    {
+     "cost": 2600,
+     "total_cost": 17280,
+     "total_increase_percent": 17.0
+    },
+    {
+     "cost": 2875,
+     "total_cost": 20155,
+     "total_increase_percent": 18.0
+    },
+    {
+     "cost": 3165,
+     "total_cost": 23320,
+     "total_increase_percent": 19.0
+    },
+    {
+     "cost": 3465,
+     "total_cost": 26785,
+     "total_increase_percent": 20.0
+    },
+    {
+     "cost": 3780,
+     "total_cost": 30565,
+     "total_increase_percent": 21.0
+    },
+    {
+     "cost": 4105,
+     "total_cost": 34670,
+     "total_increase_percent": 22.0
+    },
+    {
+     "cost": 4440,
+     "total_cost": 39110,
+     "total_increase_percent": 23.0
+    },
+    {
+     "cost": 4785,
+     "total_cost": 43895,
+     "total_increase_percent": 24.0
+    },
+    {
+     "cost": 5145,
+     "total_cost": 49040,
+     "total_increase_percent": 25.0
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 15,
+      "total_cost": 15,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 60,
+      "total_cost": 75,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 120,
+      "total_cost": 195,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 200,
+      "total_cost": 395,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 300,
+      "total_cost": 695,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 410,
+      "total_cost": 1105,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 540,
+      "total_cost": 1645,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 685,
+      "total_cost": 2330,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 845,
+      "total_cost": 3175,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 1015,
+      "total_cost": 4190,
+      "total_increase_percent": 10.0
+     },
+     {
+      "cost": 1205,
+      "total_cost": 5395,
+      "total_increase_percent": 11.0
+     },
+     {
+      "cost": 1405,
+      "total_cost": 6800,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 1615,
+      "total_cost": 8415,
+      "total_increase_percent": 13.0
+     },
+     {
+      "cost": 1845,
+      "total_cost": 10260,
+      "total_increase_percent": 14.0
+     },
+     {
+      "cost": 2085,
+      "total_cost": 12345,
+      "total_increase_percent": 15.0
+     },
+     {
+      "cost": 2335,
+      "total_cost": 14680,
+      "total_increase_percent": 16.0
+     },
+     {
+      "cost": 2600,
+      "total_cost": 17280,
+      "total_increase_percent": 17.0
+     },
+     {
+      "cost": 2875,
+      "total_cost": 20155,
+      "total_increase_percent": 18.0
+     },
+     {
+      "cost": 3165,
+      "total_cost": 23320,
+      "total_increase_percent": 19.0
+     },
+     {
+      "cost": 3465,
+      "total_cost": 26785,
+      "total_increase_percent": 20.0
+     },
+     {
+      "cost": 3780,
+      "total_cost": 30565,
+      "total_increase_percent": 21.0
+     },
+     {
+      "cost": 4105,
+      "total_cost": 34670,
+      "total_increase_percent": 22.0
+     },
+     {
+      "cost": 4440,
+      "total_cost": 39110,
+      "total_increase_percent": 23.0
+     },
+     {
+      "cost": 4785,
+      "total_cost": 43895,
+      "total_increase_percent": 24.0
+     },
+     {
+      "cost": 5145,
+      "total_cost": 49040,
+      "total_increase_percent": 25.0
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 40,
+      "total_cost": 40,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 140,
+      "total_cost": 180,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 285,
+      "total_cost": 465,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 475,
+      "total_cost": 940,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 710,
+      "total_cost": 1650,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 985,
+      "total_cost": 2635,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 1295,
+      "total_cost": 3930,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 1640,
+      "total_cost": 5570,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 2025,
+      "total_cost": 7595,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 2440,
+      "total_cost": 10035,
+      "total_increase_percent": 10.0
+     },
+     {
+      "cost": 2890,
+      "total_cost": 12925,
+      "total_increase_percent": 11.0
+     },
+     {
+      "cost": 3375,
+      "total_cost": 16300,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 3895,
+      "total_cost": 20195,
+      "total_increase_percent": 13.0
+     },
+     {
+      "cost": 4440,
+      "total_cost": 24635,
+      "total_increase_percent": 14.0
+     },
+     {
+      "cost": 5020,
+      "total_cost": 29655,
+      "total_increase_percent": 15.0
+     },
+     {
+      "cost": 5635,
+      "total_cost": 35290,
+      "total_increase_percent": 16.0
+     },
+     {
+      "cost": 6275,
+      "total_cost": 41565,
+      "total_increase_percent": 17.0
+     },
+     {
+      "cost": 6950,
+      "total_cost": 48515,
+      "total_increase_percent": 18.0
+     },
+     {
+      "cost": 7650,
+      "total_cost": 56165,
+      "total_increase_percent": 19.0
+     },
+     {
+      "cost": 8380,
+      "total_cost": 64545,
+      "total_increase_percent": 20.0
+     },
+     {
+      "cost": 9140,
+      "total_cost": 73685,
+      "total_increase_percent": 21.0
+     },
+     {
+      "cost": 9930,
+      "total_cost": 83615,
+      "total_increase_percent": 22.0
+     },
+     {
+      "cost": 10750,
+      "total_cost": 94365,
+      "total_increase_percent": 23.0
+     },
+     {
+      "cost": 11595,
+      "total_cost": 105960,
+      "total_increase_percent": 24.0
+     },
+     {
+      "cost": 12470,
+      "total_cost": 118430,
+      "total_increase_percent": 25.0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Precision",
+   "category": "Offensive",
+   "max_level": 15,
+   "description": "\" Every X Enemies shots, a tower deals a critical hit (1.25x damage). Cannot stack with other critical hit towers. \" Every 29th tower shot will be a critical hit that deals 1.25x damage, with the number of shots decreasing by 1 with each upgrade. There is a requirement of reaching Level 10 in Fight Dirty before it is unlocked. Has a base cost of 7 with an exponential value of 2.035.",
+   "image": "https://tds.wiki/w/Special:FilePath/PrecisionSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Fight Dirty"
+   },
+   "base_cost": 7,
+   "exponential_value": 2.035,
+   "levels": [
+    {
+     "cost": 50,
+     "total_cost": 50
+    },
+    {
+     "cost": 215,
+     "total_cost": 265
+    },
+    {
+     "cost": 490,
+     "total_cost": 755
+    },
+    {
+     "cost": 880,
+     "total_cost": 1635
+    },
+    {
+     "cost": 1385,
+     "total_cost": 3020
+    },
+    {
+     "cost": 2010,
+     "total_cost": 5030
+    },
+    {
+     "cost": 2750,
+     "total_cost": 7780
+    },
+    {
+     "cost": 3610,
+     "total_cost": 11390
+    },
+    {
+     "cost": 4590,
+     "total_cost": 15980
+    },
+    {
+     "cost": 5685,
+     "total_cost": 21665
+    },
+    {
+     "cost": 6900,
+     "total_cost": 28565
+    },
+    {
+     "cost": 8240,
+     "total_cost": 36805
+    },
+    {
+     "cost": 9695,
+     "total_cost": 46500
+    },
+    {
+     "cost": 11275,
+     "total_cost": 57775
+    },
+    {
+     "cost": 12975,
+     "total_cost": 70750
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 50,
+      "total_cost": 50
+     },
+     {
+      "cost": 215,
+      "total_cost": 265
+     },
+     {
+      "cost": 490,
+      "total_cost": 755
+     },
+     {
+      "cost": 880,
+      "total_cost": 1635
+     },
+     {
+      "cost": 1385,
+      "total_cost": 3020
+     },
+     {
+      "cost": 2010,
+      "total_cost": 5030
+     },
+     {
+      "cost": 2750,
+      "total_cost": 7780
+     },
+     {
+      "cost": 3610,
+      "total_cost": 11390
+     },
+     {
+      "cost": 4590,
+      "total_cost": 15980
+     },
+     {
+      "cost": 5685,
+      "total_cost": 21665
+     },
+     {
+      "cost": 6900,
+      "total_cost": 28565
+     },
+     {
+      "cost": 8240,
+      "total_cost": 36805
+     },
+     {
+      "cost": 9695,
+      "total_cost": 46500
+     },
+     {
+      "cost": 11275,
+      "total_cost": 57775
+     },
+     {
+      "cost": 12975,
+      "total_cost": 70750
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 115,
+      "total_cost": 115
+     },
+     {
+      "cost": 455,
+      "total_cost": 570
+     },
+     {
+      "cost": 1015,
+      "total_cost": 1585
+     },
+     {
+      "cost": 1795,
+      "total_cost": 3380
+     },
+     {
+      "cost": 2790,
+      "total_cost": 6170
+     },
+     {
+      "cost": 4005,
+      "total_cost": 10175
+     },
+     {
+      "cost": 5435,
+      "total_cost": 15610
+     },
+     {
+      "cost": 7080,
+      "total_cost": 22690
+     },
+     {
+      "cost": 8940,
+      "total_cost": 31630
+     },
+     {
+      "cost": 11015,
+      "total_cost": 42645
+     },
+     {
+      "cost": 13300,
+      "total_cost": 55945
+     },
+     {
+      "cost": 15800,
+      "total_cost": 71745
+     },
+     {
+      "cost": 18515,
+      "total_cost": 90260
+     },
+     {
+      "cost": 21445,
+      "total_cost": 111705
+     },
+     {
+      "cost": 24580,
+      "total_cost": 136285
+     }
+    ]
+   }
+  },
+  {
+   "name": "Resourcefulness",
+   "category": "Economy",
+   "max_level": 25,
+   "description": "\" Selling towers returns x% more money. \" Tower sell cost returns 1.2% more money every purchase. With the base sell cost, it is ~34.53% sell cost at Level 1. Has a base cost of 4 with an exponential value of 1.75.",
+   "image": "https://tds.wiki/w/Special:FilePath/ResourcefulnessSkill.png",
+   "unlock_requirement": null,
+   "base_cost": 4,
+   "exponential_value": 1.75,
+   "levels": [
+    {
+     "cost": 10,
+     "total_cost": 10
+    },
+    {
+     "cost": 40,
+     "total_cost": 50
+    },
+    {
+     "cost": 75,
+     "total_cost": 125
+    },
+    {
+     "cost": 130,
+     "total_cost": 255
+    },
+    {
+     "cost": 190,
+     "total_cost": 445
+    },
+    {
+     "cost": 260,
+     "total_cost": 705
+    },
+    {
+     "cost": 340,
+     "total_cost": 1045
+    },
+    {
+     "cost": 430,
+     "total_cost": 1475
+    },
+    {
+     "cost": 530,
+     "total_cost": 2005
+    },
+    {
+     "cost": 635,
+     "total_cost": 2640
+    },
+    {
+     "cost": 750,
+     "total_cost": 3390
+    },
+    {
+     "cost": 875,
+     "total_cost": 4265
+    },
+    {
+     "cost": 1005,
+     "total_cost": 5270
+    },
+    {
+     "cost": 1145,
+     "total_cost": 6415
+    },
+    {
+     "cost": 1295,
+     "total_cost": 7710
+    },
+    {
+     "cost": 1450,
+     "total_cost": 9160
+    },
+    {
+     "cost": 1610,
+     "total_cost": 10770
+    },
+    {
+     "cost": 1780,
+     "total_cost": 12550
+    },
+    {
+     "cost": 1955,
+     "total_cost": 14505
+    },
+    {
+     "cost": 2140,
+     "total_cost": 16645
+    },
+    {
+     "cost": 2330,
+     "total_cost": 18975
+    },
+    {
+     "cost": 2530,
+     "total_cost": 21505
+    },
+    {
+     "cost": 2730,
+     "total_cost": 24235
+    },
+    {
+     "cost": 2945,
+     "total_cost": 27180
+    },
+    {
+     "cost": 3160,
+     "total_cost": 30340
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 10,
+      "total_cost": 10
+     },
+     {
+      "cost": 40,
+      "total_cost": 50
+     },
+     {
+      "cost": 75,
+      "total_cost": 125
+     },
+     {
+      "cost": 130,
+      "total_cost": 255
+     },
+     {
+      "cost": 190,
+      "total_cost": 445
+     },
+     {
+      "cost": 260,
+      "total_cost": 705
+     },
+     {
+      "cost": 340,
+      "total_cost": 1045
+     },
+     {
+      "cost": 430,
+      "total_cost": 1475
+     },
+     {
+      "cost": 530,
+      "total_cost": 2005
+     },
+     {
+      "cost": 635,
+      "total_cost": 2640
+     },
+     {
+      "cost": 750,
+      "total_cost": 3390
+     },
+     {
+      "cost": 875,
+      "total_cost": 4265
+     },
+     {
+      "cost": 1005,
+      "total_cost": 5270
+     },
+     {
+      "cost": 1145,
+      "total_cost": 6415
+     },
+     {
+      "cost": 1295,
+      "total_cost": 7710
+     },
+     {
+      "cost": 1450,
+      "total_cost": 9160
+     },
+     {
+      "cost": 1610,
+      "total_cost": 10770
+     },
+     {
+      "cost": 1780,
+      "total_cost": 12550
+     },
+     {
+      "cost": 1955,
+      "total_cost": 14505
+     },
+     {
+      "cost": 2140,
+      "total_cost": 16645
+     },
+     {
+      "cost": 2330,
+      "total_cost": 18975
+     },
+     {
+      "cost": 2530,
+      "total_cost": 21505
+     },
+     {
+      "cost": 2730,
+      "total_cost": 24235
+     },
+     {
+      "cost": 2945,
+      "total_cost": 27180
+     },
+     {
+      "cost": 3160,
+      "total_cost": 30340
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 30,
+      "total_cost": 30
+     },
+     {
+      "cost": 100,
+      "total_cost": 125
+     },
+     {
+      "cost": 200,
+      "total_cost": 325
+     },
+     {
+      "cost": 330,
+      "total_cost": 655
+     },
+     {
+      "cost": 485,
+      "total_cost": 1140
+     },
+     {
+      "cost": 665,
+      "total_cost": 1810
+     },
+     {
+      "cost": 870,
+      "total_cost": 2680
+     },
+     {
+      "cost": 1100,
+      "total_cost": 3780
+     },
+     {
+      "cost": 1350,
+      "total_cost": 5130
+     },
+     {
+      "cost": 1625,
+      "total_cost": 6755
+     },
+     {
+      "cost": 1915,
+      "total_cost": 8670
+     },
+     {
+      "cost": 2230,
+      "total_cost": 10900
+     },
+     {
+      "cost": 2560,
+      "total_cost": 13460
+     },
+     {
+      "cost": 2915,
+      "total_cost": 16375
+     },
+     {
+      "cost": 3285,
+      "total_cost": 19665
+     },
+     {
+      "cost": 3680,
+      "total_cost": 23340
+     },
+     {
+      "cost": 4085,
+      "total_cost": 27430
+     },
+     {
+      "cost": 4515,
+      "total_cost": 31945
+     },
+     {
+      "cost": 4960,
+      "total_cost": 36905
+     },
+     {
+      "cost": 5425,
+      "total_cost": 42325
+     },
+     {
+      "cost": 5905,
+      "total_cost": 48230
+     },
+     {
+      "cost": 6400,
+      "total_cost": 54630
+     },
+     {
+      "cost": 6915,
+      "total_cost": 61545
+     },
+     {
+      "cost": 7445,
+      "total_cost": 68990
+     },
+     {
+      "cost": 7995,
+      "total_cost": 76985
+     }
+    ]
+   }
+  },
+  {
+   "name": "Bigger Budget",
+   "category": "Economy",
+   "max_level": 25,
+   "description": "\" Starting cash is increased by X% . \" Starting cash is increased by 1% for each purchase. There is a requirement of reaching Level 10 in Resourcefulness before it is unlocked. Has a base cost of 4 with an exponential value of 1.82.",
+   "image": "https://tds.wiki/w/Special:FilePath/BiggerBudgetSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Resourcefulness"
+   },
+   "base_cost": 4,
+   "exponential_value": 1.82,
+   "levels": [
+    {
+     "cost": 10,
+     "total_cost": 10,
+     "total_increase_percent": 1.0
+    },
+    {
+     "cost": 45,
+     "total_cost": 55,
+     "total_increase_percent": 2.0
+    },
+    {
+     "cost": 90,
+     "total_cost": 145,
+     "total_increase_percent": 3.0
+    },
+    {
+     "cost": 155,
+     "total_cost": 300,
+     "total_increase_percent": 4.0
+    },
+    {
+     "cost": 235,
+     "total_cost": 535,
+     "total_increase_percent": 5.0
+    },
+    {
+     "cost": 325,
+     "total_cost": 860,
+     "total_increase_percent": 6.0
+    },
+    {
+     "cost": 430,
+     "total_cost": 1290,
+     "total_increase_percent": 7.0
+    },
+    {
+     "cost": 550,
+     "total_cost": 1840,
+     "total_increase_percent": 8.0
+    },
+    {
+     "cost": 680,
+     "total_cost": 2520,
+     "total_increase_percent": 9.0
+    },
+    {
+     "cost": 825,
+     "total_cost": 3345,
+     "total_increase_percent": 10.0
+    },
+    {
+     "cost": 980,
+     "total_cost": 4325,
+     "total_increase_percent": 11.0
+    },
+    {
+     "cost": 1145,
+     "total_cost": 5470,
+     "total_increase_percent": 12.0
+    },
+    {
+     "cost": 1325,
+     "total_cost": 6795,
+     "total_increase_percent": 13.0
+    },
+    {
+     "cost": 1520,
+     "total_cost": 8315,
+     "total_increase_percent": 14.0
+    },
+    {
+     "cost": 1720,
+     "total_cost": 10035,
+     "total_increase_percent": 15.0
+    },
+    {
+     "cost": 1935,
+     "total_cost": 11970,
+     "total_increase_percent": 16.0
+    },
+    {
+     "cost": 2165,
+     "total_cost": 14135,
+     "total_increase_percent": 17.0
+    },
+    {
+     "cost": 2400,
+     "total_cost": 16535,
+     "total_increase_percent": 18.0
+    },
+    {
+     "cost": 2650,
+     "total_cost": 19185,
+     "total_increase_percent": 19.0
+    },
+    {
+     "cost": 2910,
+     "total_cost": 22095,
+     "total_increase_percent": 20.0
+    },
+    {
+     "cost": 3180,
+     "total_cost": 25275,
+     "total_increase_percent": 21.0
+    },
+    {
+     "cost": 3460,
+     "total_cost": 28735,
+     "total_increase_percent": 22.0
+    },
+    {
+     "cost": 3750,
+     "total_cost": 32485,
+     "total_increase_percent": 23.0
+    },
+    {
+     "cost": 4050,
+     "total_cost": 36535,
+     "total_increase_percent": 24.0
+    },
+    {
+     "cost": 4365,
+     "total_cost": 40900,
+     "total_increase_percent": 25.0
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 10,
+      "total_cost": 10,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 45,
+      "total_cost": 55,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 90,
+      "total_cost": 145,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 155,
+      "total_cost": 300,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 235,
+      "total_cost": 535,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 325,
+      "total_cost": 860,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 430,
+      "total_cost": 1290,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 550,
+      "total_cost": 1840,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 680,
+      "total_cost": 2520,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 825,
+      "total_cost": 3345,
+      "total_increase_percent": 10.0
+     },
+     {
+      "cost": 980,
+      "total_cost": 4325,
+      "total_increase_percent": 11.0
+     },
+     {
+      "cost": 1145,
+      "total_cost": 5470,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 1325,
+      "total_cost": 6795,
+      "total_increase_percent": 13.0
+     },
+     {
+      "cost": 1520,
+      "total_cost": 8315,
+      "total_increase_percent": 14.0
+     },
+     {
+      "cost": 1720,
+      "total_cost": 10035,
+      "total_increase_percent": 15.0
+     },
+     {
+      "cost": 1935,
+      "total_cost": 11970,
+      "total_increase_percent": 16.0
+     },
+     {
+      "cost": 2165,
+      "total_cost": 14135,
+      "total_increase_percent": 17.0
+     },
+     {
+      "cost": 2400,
+      "total_cost": 16535,
+      "total_increase_percent": 18.0
+     },
+     {
+      "cost": 2650,
+      "total_cost": 19185,
+      "total_increase_percent": 19.0
+     },
+     {
+      "cost": 2910,
+      "total_cost": 22095,
+      "total_increase_percent": 20.0
+     },
+     {
+      "cost": 3180,
+      "total_cost": 25275,
+      "total_increase_percent": 21.0
+     },
+     {
+      "cost": 3460,
+      "total_cost": 28735,
+      "total_increase_percent": 22.0
+     },
+     {
+      "cost": 3750,
+      "total_cost": 32485,
+      "total_increase_percent": 23.0
+     },
+     {
+      "cost": 4050,
+      "total_cost": 36535,
+      "total_increase_percent": 24.0
+     },
+     {
+      "cost": 4365,
+      "total_cost": 40900,
+      "total_increase_percent": 25.0
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 30,
+      "total_cost": 30,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 110,
+      "total_cost": 140,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 220,
+      "total_cost": 360,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 370,
+      "total_cost": 730,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 550,
+      "total_cost": 1280,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 760,
+      "total_cost": 2040,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 1000,
+      "total_cost": 3040,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 1265,
+      "total_cost": 4305,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 1560,
+      "total_cost": 5865,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 1885,
+      "total_cost": 7750,
+      "total_increase_percent": 10.0
+     },
+     {
+      "cost": 2230,
+      "total_cost": 9980,
+      "total_increase_percent": 11.0
+     },
+     {
+      "cost": 2605,
+      "total_cost": 12585,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 3000,
+      "total_cost": 15585,
+      "total_increase_percent": 13.0
+     },
+     {
+      "cost": 3425,
+      "total_cost": 19010,
+      "total_increase_percent": 14.0
+     },
+     {
+      "cost": 3870,
+      "total_cost": 22880,
+      "total_increase_percent": 15.0
+     },
+     {
+      "cost": 4340,
+      "total_cost": 27220,
+      "total_increase_percent": 16.0
+     },
+     {
+      "cost": 4830,
+      "total_cost": 32050,
+      "total_increase_percent": 17.0
+     },
+     {
+      "cost": 5345,
+      "total_cost": 37395,
+      "total_increase_percent": 18.0
+     },
+     {
+      "cost": 5885,
+      "total_cost": 43280,
+      "total_increase_percent": 19.0
+     },
+     {
+      "cost": 6445,
+      "total_cost": 49725,
+      "total_increase_percent": 20.0
+     },
+     {
+      "cost": 7030,
+      "total_cost": 56755,
+      "total_increase_percent": 21.0
+     },
+     {
+      "cost": 7635,
+      "total_cost": 64390,
+      "total_increase_percent": 22.0
+     },
+     {
+      "cost": 8260,
+      "total_cost": 72650,
+      "total_increase_percent": 23.0
+     },
+     {
+      "cost": 8910,
+      "total_cost": 81560,
+      "total_increase_percent": 24.0
+     },
+     {
+      "cost": 9580,
+      "total_cost": 91140,
+      "total_increase_percent": 25.0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Stonks",
+   "category": "Economy",
+   "max_level": 20,
+   "description": "\" Wave rewards are increased by X% . \" Wave bonus is higher by 0.5% for each purchase by adding it to the match wave bonus multiplier. Wave clear bonus is also affected, as it is a percentage of the wave bonus. There is a requirement of reaching Level 10 in Bigger Budget before it is unlocked. Has a base cost of 7 with an exponential value of 1.78.",
+   "image": "https://tds.wiki/w/Special:FilePath/StonksSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Bigger Budget"
+   },
+   "base_cost": 7,
+   "exponential_value": 1.78,
+   "levels": [
+    {
+     "cost": 30,
+     "total_cost": 30,
+     "total_increase_percent": 0.5
+    },
+    {
+     "cost": 110,
+     "total_cost": 140,
+     "total_increase_percent": 1.0
+    },
+    {
+     "cost": 225,
+     "total_cost": 365,
+     "total_increase_percent": 1.5
+    },
+    {
+     "cost": 375,
+     "total_cost": 740,
+     "total_increase_percent": 2.0
+    },
+    {
+     "cost": 560,
+     "total_cost": 1300,
+     "total_increase_percent": 2.5
+    },
+    {
+     "cost": 775,
+     "total_cost": 2075,
+     "total_increase_percent": 3.0
+    },
+    {
+     "cost": 1020,
+     "total_cost": 3095,
+     "total_increase_percent": 3.5
+    },
+    {
+     "cost": 1295,
+     "total_cost": 4390,
+     "total_increase_percent": 4.0
+    },
+    {
+     "cost": 1595,
+     "total_cost": 5985,
+     "total_increase_percent": 4.5
+    },
+    {
+     "cost": 1925,
+     "total_cost": 7910,
+     "total_increase_percent": 5.0
+    },
+    {
+     "cost": 2280,
+     "total_cost": 10190,
+     "total_increase_percent": 5.5
+    },
+    {
+     "cost": 2660,
+     "total_cost": 12850,
+     "total_increase_percent": 6.0
+    },
+    {
+     "cost": 3070,
+     "total_cost": 15920,
+     "total_increase_percent": 6.5
+    },
+    {
+     "cost": 3500,
+     "total_cost": 19420,
+     "total_increase_percent": 7.0
+    },
+    {
+     "cost": 3960,
+     "total_cost": 23380,
+     "total_increase_percent": 7.5
+    },
+    {
+     "cost": 4440,
+     "total_cost": 27820,
+     "total_increase_percent": 8.0
+    },
+    {
+     "cost": 4950,
+     "total_cost": 32770,
+     "total_increase_percent": 8.5
+    },
+    {
+     "cost": 5480,
+     "total_cost": 38250,
+     "total_increase_percent": 9.0
+    },
+    {
+     "cost": 6030,
+     "total_cost": 44280,
+     "total_increase_percent": 9.5
+    },
+    {
+     "cost": 6610,
+     "total_cost": 50890,
+     "total_increase_percent": 10.0
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 30,
+      "total_cost": 30,
+      "total_increase_percent": 0.5
+     },
+     {
+      "cost": 110,
+      "total_cost": 140,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 225,
+      "total_cost": 365,
+      "total_increase_percent": 1.5
+     },
+     {
+      "cost": 375,
+      "total_cost": 740,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 560,
+      "total_cost": 1300,
+      "total_increase_percent": 2.5
+     },
+     {
+      "cost": 775,
+      "total_cost": 2075,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 1020,
+      "total_cost": 3095,
+      "total_increase_percent": 3.5
+     },
+     {
+      "cost": 1295,
+      "total_cost": 4390,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 1595,
+      "total_cost": 5985,
+      "total_increase_percent": 4.5
+     },
+     {
+      "cost": 1925,
+      "total_cost": 7910,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 2280,
+      "total_cost": 10190,
+      "total_increase_percent": 5.5
+     },
+     {
+      "cost": 2660,
+      "total_cost": 12850,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 3070,
+      "total_cost": 15920,
+      "total_increase_percent": 6.5
+     },
+     {
+      "cost": 3500,
+      "total_cost": 19420,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 3960,
+      "total_cost": 23380,
+      "total_increase_percent": 7.5
+     },
+     {
+      "cost": 4440,
+      "total_cost": 27820,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 4950,
+      "total_cost": 32770,
+      "total_increase_percent": 8.5
+     },
+     {
+      "cost": 5480,
+      "total_cost": 38250,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 6030,
+      "total_cost": 44280,
+      "total_increase_percent": 9.5
+     },
+     {
+      "cost": 6610,
+      "total_cost": 50890,
+      "total_increase_percent": 10.0
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 65,
+      "total_cost": 65,
+      "total_increase_percent": 0.5
+     },
+     {
+      "cost": 220,
+      "total_cost": 285,
+      "total_increase_percent": 1.0
+     },
+     {
+      "cost": 455,
+      "total_cost": 740,
+      "total_increase_percent": 1.5
+     },
+     {
+      "cost": 765,
+      "total_cost": 1505,
+      "total_increase_percent": 2.0
+     },
+     {
+      "cost": 1145,
+      "total_cost": 2650,
+      "total_increase_percent": 2.5
+     },
+     {
+      "cost": 1585,
+      "total_cost": 4235,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 2095,
+      "total_cost": 6330,
+      "total_increase_percent": 3.5
+     },
+     {
+      "cost": 2665,
+      "total_cost": 8995,
+      "total_increase_percent": 4.0
+     },
+     {
+      "cost": 3295,
+      "total_cost": 12290,
+      "total_increase_percent": 4.5
+     },
+     {
+      "cost": 3980,
+      "total_cost": 16270,
+      "total_increase_percent": 5.0
+     },
+     {
+      "cost": 4725,
+      "total_cost": 20995,
+      "total_increase_percent": 5.5
+     },
+     {
+      "cost": 5525,
+      "total_cost": 26520,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 6385,
+      "total_cost": 32905,
+      "total_increase_percent": 6.5
+     },
+     {
+      "cost": 7295,
+      "total_cost": 40200,
+      "total_increase_percent": 7.0
+     },
+     {
+      "cost": 8260,
+      "total_cost": 48460,
+      "total_increase_percent": 7.5
+     },
+     {
+      "cost": 9275,
+      "total_cost": 57735,
+      "total_increase_percent": 8.0
+     },
+     {
+      "cost": 10345,
+      "total_cost": 68080,
+      "total_increase_percent": 8.5
+     },
+     {
+      "cost": 11470,
+      "total_cost": 79550,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 12640,
+      "total_cost": 92190,
+      "total_increase_percent": 9.5
+     },
+     {
+      "cost": 13860,
+      "total_cost": 106050,
+      "total_increase_percent": 10.0
+     }
+    ]
+   }
+  },
+  {
+   "name": "Scavenger",
+   "category": "Economy",
+   "max_level": 20,
+   "description": "\" Every X Enemies kills grant 1.5x rewards from enemies. \" Reward from killing enemies is boosted by 1.5x every 29th kill. Decreases by 1 with each upgrade. There is a requirement of reaching Level 10 in Stonks before it is unlocked. Has a base cost of 7 with an exponential value of 1.865.",
+   "image": "https://tds.wiki/w/Special:FilePath/ScavengerSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Stonks"
+   },
+   "base_cost": 7,
+   "exponential_value": 1.865,
+   "levels": [
+    {
+     "cost": 35,
+     "total_cost": 35
+    },
+    {
+     "cost": 135,
+     "total_cost": 170
+    },
+    {
+     "cost": 290,
+     "total_cost": 460
+    },
+    {
+     "cost": 500,
+     "total_cost": 960
+    },
+    {
+     "cost": 760,
+     "total_cost": 1720
+    },
+    {
+     "cost": 1065,
+     "total_cost": 2785
+    },
+    {
+     "cost": 1420,
+     "total_cost": 4205
+    },
+    {
+     "cost": 1820,
+     "total_cost": 6025
+    },
+    {
+     "cost": 2270,
+     "total_cost": 8295
+    },
+    {
+     "cost": 2760,
+     "total_cost": 11055
+    },
+    {
+     "cost": 3300,
+     "total_cost": 14355
+    },
+    {
+     "cost": 3880,
+     "total_cost": 18235
+    },
+    {
+     "cost": 4505,
+     "total_cost": 22740
+    },
+    {
+     "cost": 5170,
+     "total_cost": 27910
+    },
+    {
+     "cost": 5880,
+     "total_cost": 33790
+    },
+    {
+     "cost": 6635,
+     "total_cost": 40425
+    },
+    {
+     "cost": 7430,
+     "total_cost": 47855
+    },
+    {
+     "cost": 8265,
+     "total_cost": 56120
+    },
+    {
+     "cost": 9140,
+     "total_cost": 65260
+    },
+    {
+     "cost": 10060,
+     "total_cost": 75320
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 35,
+      "total_cost": 35
+     },
+     {
+      "cost": 135,
+      "total_cost": 170
+     },
+     {
+      "cost": 290,
+      "total_cost": 460
+     },
+     {
+      "cost": 500,
+      "total_cost": 960
+     },
+     {
+      "cost": 760,
+      "total_cost": 1720
+     },
+     {
+      "cost": 1065,
+      "total_cost": 2785
+     },
+     {
+      "cost": 1420,
+      "total_cost": 4205
+     },
+     {
+      "cost": 1820,
+      "total_cost": 6025
+     },
+     {
+      "cost": 2270,
+      "total_cost": 8295
+     },
+     {
+      "cost": 2760,
+      "total_cost": 11055
+     },
+     {
+      "cost": 3300,
+      "total_cost": 14355
+     },
+     {
+      "cost": 3880,
+      "total_cost": 18235
+     },
+     {
+      "cost": 4505,
+      "total_cost": 22740
+     },
+     {
+      "cost": 5170,
+      "total_cost": 27910
+     },
+     {
+      "cost": 5880,
+      "total_cost": 33790
+     },
+     {
+      "cost": 6635,
+      "total_cost": 40425
+     },
+     {
+      "cost": 7430,
+      "total_cost": 47855
+     },
+     {
+      "cost": 8265,
+      "total_cost": 56120
+     },
+     {
+      "cost": 9140,
+      "total_cost": 65260
+     },
+     {
+      "cost": 10060,
+      "total_cost": 75320
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 70,
+      "total_cost": 70
+     },
+     {
+      "cost": 255,
+      "total_cost": 325
+     },
+     {
+      "cost": 540,
+      "total_cost": 865
+     },
+     {
+      "cost": 920,
+      "total_cost": 1785
+     },
+     {
+      "cost": 1390,
+      "total_cost": 3175
+     },
+     {
+      "cost": 1945,
+      "total_cost": 5120
+     },
+     {
+      "cost": 2590,
+      "total_cost": 7710
+     },
+     {
+      "cost": 3315,
+      "total_cost": 11025
+     },
+     {
+      "cost": 4125,
+      "total_cost": 15150
+     },
+     {
+      "cost": 5010,
+      "total_cost": 20160
+     },
+     {
+      "cost": 5980,
+      "total_cost": 26140
+     },
+     {
+      "cost": 7020,
+      "total_cost": 33160
+     },
+     {
+      "cost": 8145,
+      "total_cost": 41305
+     },
+     {
+      "cost": 9340,
+      "total_cost": 50645
+     },
+     {
+      "cost": 10610,
+      "total_cost": 61255
+     },
+     {
+      "cost": 11955,
+      "total_cost": 73210
+     },
+     {
+      "cost": 13375,
+      "total_cost": 86585
+     },
+     {
+      "cost": 14870,
+      "total_cost": 101455
+     },
+     {
+      "cost": 16430,
+      "total_cost": 117885
+     },
+     {
+      "cost": 18065,
+      "total_cost": 135950
+     }
+    ]
+   }
+  },
+  {
+   "name": "Accelerator",
+   "category": "Strategy",
+   "max_level": 25,
+   "description": "\" Reduces cooldowns of active abilities by X% . \" Reduces tower ability cooldowns by 0.5% for each purchase. Does not affect initial cooldowns of towers. Has a base cost of 4 with an exponential value of 1.77.",
+   "image": "https://tds.wiki/w/Special:FilePath/AcceleratorSkill.png",
+   "unlock_requirement": null,
+   "base_cost": 4,
+   "exponential_value": 1.77,
+   "levels": [
+    {
+     "cost": 10,
+     "total_cost": 10
+    },
+    {
+     "cost": 40,
+     "total_cost": 50
+    },
+    {
+     "cost": 80,
+     "total_cost": 130
+    },
+    {
+     "cost": 135,
+     "total_cost": 265
+    },
+    {
+     "cost": 200,
+     "total_cost": 465
+    },
+    {
+     "cost": 275,
+     "total_cost": 740
+    },
+    {
+     "cost": 365,
+     "total_cost": 1105
+    },
+    {
+     "cost": 460,
+     "total_cost": 1565
+    },
+    {
+     "cost": 570,
+     "total_cost": 2135
+    },
+    {
+     "cost": 685,
+     "total_cost": 2820
+    },
+    {
+     "cost": 810,
+     "total_cost": 3630
+    },
+    {
+     "cost": 945,
+     "total_cost": 4575
+    },
+    {
+     "cost": 1090,
+     "total_cost": 5665
+    },
+    {
+     "cost": 1240,
+     "total_cost": 6905
+    },
+    {
+     "cost": 1405,
+     "total_cost": 8310
+    },
+    {
+     "cost": 1575,
+     "total_cost": 9885
+    },
+    {
+     "cost": 1750,
+     "total_cost": 11635
+    },
+    {
+     "cost": 1940,
+     "total_cost": 13575
+    },
+    {
+     "cost": 2135,
+     "total_cost": 15710
+    },
+    {
+     "cost": 2335,
+     "total_cost": 18045
+    },
+    {
+     "cost": 2545,
+     "total_cost": 20590
+    },
+    {
+     "cost": 2765,
+     "total_cost": 23355
+    },
+    {
+     "cost": 2990,
+     "total_cost": 26345
+    },
+    {
+     "cost": 3225,
+     "total_cost": 29570
+    },
+    {
+     "cost": 3465,
+     "total_cost": 33035
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 10,
+      "total_cost": 10
+     },
+     {
+      "cost": 40,
+      "total_cost": 50
+     },
+     {
+      "cost": 80,
+      "total_cost": 130
+     },
+     {
+      "cost": 135,
+      "total_cost": 265
+     },
+     {
+      "cost": 200,
+      "total_cost": 465
+     },
+     {
+      "cost": 275,
+      "total_cost": 740
+     },
+     {
+      "cost": 365,
+      "total_cost": 1105
+     },
+     {
+      "cost": 460,
+      "total_cost": 1565
+     },
+     {
+      "cost": 570,
+      "total_cost": 2135
+     },
+     {
+      "cost": 685,
+      "total_cost": 2820
+     },
+     {
+      "cost": 810,
+      "total_cost": 3630
+     },
+     {
+      "cost": 945,
+      "total_cost": 4575
+     },
+     {
+      "cost": 1090,
+      "total_cost": 5665
+     },
+     {
+      "cost": 1240,
+      "total_cost": 6905
+     },
+     {
+      "cost": 1405,
+      "total_cost": 8310
+     },
+     {
+      "cost": 1575,
+      "total_cost": 9885
+     },
+     {
+      "cost": 1750,
+      "total_cost": 11635
+     },
+     {
+      "cost": 1940,
+      "total_cost": 13575
+     },
+     {
+      "cost": 2135,
+      "total_cost": 15710
+     },
+     {
+      "cost": 2335,
+      "total_cost": 18045
+     },
+     {
+      "cost": 2545,
+      "total_cost": 20590
+     },
+     {
+      "cost": 2765,
+      "total_cost": 23355
+     },
+     {
+      "cost": 2990,
+      "total_cost": 26345
+     },
+     {
+      "cost": 3225,
+      "total_cost": 29570
+     },
+     {
+      "cost": 3465,
+      "total_cost": 33035
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 25,
+      "total_cost": 25
+     },
+     {
+      "cost": 85,
+      "total_cost": 110
+     },
+     {
+      "cost": 180,
+      "total_cost": 290
+     },
+     {
+      "cost": 305,
+      "total_cost": 595
+     },
+     {
+      "cost": 455,
+      "total_cost": 1050
+     },
+     {
+      "cost": 630,
+      "total_cost": 1680
+     },
+     {
+      "cost": 835,
+      "total_cost": 2515
+     },
+     {
+      "cost": 1060,
+      "total_cost": 3575
+     },
+     {
+      "cost": 1315,
+      "total_cost": 4890
+     },
+     {
+      "cost": 1585,
+      "total_cost": 6475
+     },
+     {
+      "cost": 1885,
+      "total_cost": 8360
+     },
+     {
+      "cost": 2205,
+      "total_cost": 10565
+     },
+     {
+      "cost": 2545,
+      "total_cost": 13110
+     },
+     {
+      "cost": 2910,
+      "total_cost": 16020
+     },
+     {
+      "cost": 3295,
+      "total_cost": 19315
+     },
+     {
+      "cost": 3700,
+      "total_cost": 23015
+     },
+     {
+      "cost": 4125,
+      "total_cost": 27140
+     },
+     {
+      "cost": 4570,
+      "total_cost": 31710
+     },
+     {
+      "cost": 5040,
+      "total_cost": 36750
+     },
+     {
+      "cost": 5525,
+      "total_cost": 42275
+     },
+     {
+      "cost": 6035,
+      "total_cost": 48310
+     },
+     {
+      "cost": 6560,
+      "total_cost": 54870
+     },
+     {
+      "cost": 7110,
+      "total_cost": 61980
+     },
+     {
+      "cost": 7675,
+      "total_cost": 69655
+     },
+     {
+      "cost": 8260,
+      "total_cost": 77915
+     }
+    ]
+   }
+  },
+  {
+   "name": "Scholar",
+   "category": "Strategy",
+   "max_level": 20,
+   "description": "\" Logbook drop rate increases by X . \" Multiplies the chance to drop Logbooks by 1.01, increasing by 0.01 for each purchase. There is a requirement of reaching Level 10 in Accelerator before it is unlocked. Has a base cost of 5 with an exponential value of 1.83.",
+   "image": "https://tds.wiki/w/Special:FilePath/ScholarSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Accelerator"
+   },
+   "base_cost": 5,
+   "exponential_value": 1.83,
+   "levels": [
+    {
+     "cost": 20,
+     "total_cost": 20
+    },
+    {
+     "cost": 65,
+     "total_cost": 85
+    },
+    {
+     "cost": 140,
+     "total_cost": 225
+    },
+    {
+     "cost": 240,
+     "total_cost": 465
+    },
+    {
+     "cost": 360,
+     "total_cost": 825
+    },
+    {
+     "cost": 505,
+     "total_cost": 1330
+    },
+    {
+     "cost": 670,
+     "total_cost": 2000
+    },
+    {
+     "cost": 855,
+     "total_cost": 2855
+    },
+    {
+     "cost": 1060,
+     "total_cost": 3915
+    },
+    {
+     "cost": 1285,
+     "total_cost": 5200
+    },
+    {
+     "cost": 1530,
+     "total_cost": 6730
+    },
+    {
+     "cost": 1795,
+     "total_cost": 8525
+    },
+    {
+     "cost": 2075,
+     "total_cost": 10600
+    },
+    {
+     "cost": 2380,
+     "total_cost": 12980
+    },
+    {
+     "cost": 2700,
+     "total_cost": 15680
+    },
+    {
+     "cost": 3040,
+     "total_cost": 18720
+    },
+    {
+     "cost": 3395,
+     "total_cost": 22115
+    },
+    {
+     "cost": 3770,
+     "total_cost": 25885
+    },
+    {
+     "cost": 4160,
+     "total_cost": 30045
+    },
+    {
+     "cost": 4570,
+     "total_cost": 34615
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 20,
+      "total_cost": 20
+     },
+     {
+      "cost": 65,
+      "total_cost": 85
+     },
+     {
+      "cost": 140,
+      "total_cost": 225
+     },
+     {
+      "cost": 240,
+      "total_cost": 465
+     },
+     {
+      "cost": 360,
+      "total_cost": 825
+     },
+     {
+      "cost": 505,
+      "total_cost": 1330
+     },
+     {
+      "cost": 670,
+      "total_cost": 2000
+     },
+     {
+      "cost": 855,
+      "total_cost": 2855
+     },
+     {
+      "cost": 1060,
+      "total_cost": 3915
+     },
+     {
+      "cost": 1285,
+      "total_cost": 5200
+     },
+     {
+      "cost": 1530,
+      "total_cost": 6730
+     },
+     {
+      "cost": 1795,
+      "total_cost": 8525
+     },
+     {
+      "cost": 2075,
+      "total_cost": 10600
+     },
+     {
+      "cost": 2380,
+      "total_cost": 12980
+     },
+     {
+      "cost": 2700,
+      "total_cost": 15680
+     },
+     {
+      "cost": 3040,
+      "total_cost": 18720
+     },
+     {
+      "cost": 3395,
+      "total_cost": 22115
+     },
+     {
+      "cost": 3770,
+      "total_cost": 25885
+     },
+     {
+      "cost": 4160,
+      "total_cost": 30045
+     },
+     {
+      "cost": 4570,
+      "total_cost": 34615
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 60,
+      "total_cost": 60
+     },
+     {
+      "cost": 210,
+      "total_cost": 270
+     },
+     {
+      "cost": 445,
+      "total_cost": 715
+     },
+     {
+      "cost": 755,
+      "total_cost": 1470
+     },
+     {
+      "cost": 1145,
+      "total_cost": 2615
+     },
+     {
+      "cost": 1600,
+      "total_cost": 4215
+     },
+     {
+      "cost": 2130,
+      "total_cost": 6345
+     },
+     {
+      "cost": 2730,
+      "total_cost": 9075
+     },
+     {
+      "cost": 3395,
+      "total_cost": 12470
+     },
+     {
+      "cost": 4125,
+      "total_cost": 16595
+     },
+     {
+      "cost": 4920,
+      "total_cost": 21515
+     },
+     {
+      "cost": 5780,
+      "total_cost": 27295
+     },
+     {
+      "cost": 6700,
+      "total_cost": 33995
+     },
+     {
+      "cost": 7685,
+      "total_cost": 41680
+     },
+     {
+      "cost": 8730,
+      "total_cost": 50410
+     },
+     {
+      "cost": 9840,
+      "total_cost": 60250
+     },
+     {
+      "cost": 11005,
+      "total_cost": 71255
+     },
+     {
+      "cost": 12235,
+      "total_cost": 83490
+     },
+     {
+      "cost": 13520,
+      "total_cost": 97010
+     },
+     {
+      "cost": 14870,
+      "total_cost": 111880
+     }
+    ]
+   }
+  },
+  {
+   "name": "Expanded Barracks",
+   "category": "Strategy",
+   "max_level": 20,
+   "description": "\" Cooldown for spawning units is reduced by X% . \" Reduces tower's spawnrate by 0.75% for each purchase. There is a requirement of reaching Level 10 in Accelerator before it is unlocked. Has a base cost of 6 with an exponential value of 1.86.",
+   "image": "https://tds.wiki/w/Special:FilePath/ExpandedBarracksSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Accelerator"
+   },
+   "base_cost": 6,
+   "exponential_value": 1.86,
+   "levels": [
+    {
+     "cost": 30,
+     "total_cost": 30
+    },
+    {
+     "cost": 100,
+     "total_cost": 130
+    },
+    {
+     "cost": 215,
+     "total_cost": 345
+    },
+    {
+     "cost": 370,
+     "total_cost": 715
+    },
+    {
+     "cost": 560,
+     "total_cost": 1275
+    },
+    {
+     "cost": 785,
+     "total_cost": 2060
+    },
+    {
+     "cost": 1045,
+     "total_cost": 3105
+    },
+    {
+     "cost": 1340,
+     "total_cost": 4445
+    },
+    {
+     "cost": 1670,
+     "total_cost": 6115
+    },
+    {
+     "cost": 2030,
+     "total_cost": 8145
+    },
+    {
+     "cost": 2420,
+     "total_cost": 10565
+    },
+    {
+     "cost": 2850,
+     "total_cost": 13415
+    },
+    {
+     "cost": 3305,
+     "total_cost": 16720
+    },
+    {
+     "cost": 3795,
+     "total_cost": 20515
+    },
+    {
+     "cost": 4315,
+     "total_cost": 24830
+    },
+    {
+     "cost": 4865,
+     "total_cost": 29695
+    },
+    {
+     "cost": 5445,
+     "total_cost": 35140
+    },
+    {
+     "cost": 6055,
+     "total_cost": 41195
+    },
+    {
+     "cost": 6695,
+     "total_cost": 47890
+    },
+    {
+     "cost": 7365,
+     "total_cost": 55255
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 30,
+      "total_cost": 30
+     },
+     {
+      "cost": 100,
+      "total_cost": 130
+     },
+     {
+      "cost": 215,
+      "total_cost": 345
+     },
+     {
+      "cost": 370,
+      "total_cost": 715
+     },
+     {
+      "cost": 560,
+      "total_cost": 1275
+     },
+     {
+      "cost": 785,
+      "total_cost": 2060
+     },
+     {
+      "cost": 1045,
+      "total_cost": 3105
+     },
+     {
+      "cost": 1340,
+      "total_cost": 4445
+     },
+     {
+      "cost": 1670,
+      "total_cost": 6115
+     },
+     {
+      "cost": 2030,
+      "total_cost": 8145
+     },
+     {
+      "cost": 2420,
+      "total_cost": 10565
+     },
+     {
+      "cost": 2850,
+      "total_cost": 13415
+     },
+     {
+      "cost": 3305,
+      "total_cost": 16720
+     },
+     {
+      "cost": 3795,
+      "total_cost": 20515
+     },
+     {
+      "cost": 4315,
+      "total_cost": 24830
+     },
+     {
+      "cost": 4865,
+      "total_cost": 29695
+     },
+     {
+      "cost": 5445,
+      "total_cost": 35140
+     },
+     {
+      "cost": 6055,
+      "total_cost": 41195
+     },
+     {
+      "cost": 6695,
+      "total_cost": 47890
+     },
+     {
+      "cost": 7365,
+      "total_cost": 55255
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 60,
+      "total_cost": 60
+     },
+     {
+      "cost": 210,
+      "total_cost": 270
+     },
+     {
+      "cost": 445,
+      "total_cost": 715
+     },
+     {
+      "cost": 755,
+      "total_cost": 1470
+     },
+     {
+      "cost": 1145,
+      "total_cost": 2615
+     },
+     {
+      "cost": 1600,
+      "total_cost": 4215
+     },
+     {
+      "cost": 2130,
+      "total_cost": 6345
+     },
+     {
+      "cost": 2730,
+      "total_cost": 9075
+     },
+     {
+      "cost": 3395,
+      "total_cost": 12470
+     },
+     {
+      "cost": 4125,
+      "total_cost": 16595
+     },
+     {
+      "cost": 4920,
+      "total_cost": 21515
+     },
+     {
+      "cost": 5780,
+      "total_cost": 27295
+     },
+     {
+      "cost": 6700,
+      "total_cost": 33995
+     },
+     {
+      "cost": 7685,
+      "total_cost": 41680
+     },
+     {
+      "cost": 8730,
+      "total_cost": 50410
+     },
+     {
+      "cost": 9840,
+      "total_cost": 60250
+     },
+     {
+      "cost": 11005,
+      "total_cost": 71255
+     },
+     {
+      "cost": 12235,
+      "total_cost": 83490
+     },
+     {
+      "cost": 13520,
+      "total_cost": 97010
+     },
+     {
+      "cost": 14870,
+      "total_cost": 111880
+     }
+    ]
+   }
+  },
+  {
+   "name": "Re-enforcements",
+   "category": "Strategy",
+   "max_level": 10,
+   "description": "\" Increases the tower placement limit by X . (Scales with number of players). \" Increases placement limit for the player by 1 for each purchase. In matches with more players, the limit will scale. In duo, it is 0.8 rather than 1 per purchase, while in trio and higher it is 0.5 per purchase. There is a requirement of reaching Level 10 in Expanded Barracks before it is unlocked. Has a base cost of 100 with an exponential value of 1.5.",
+   "image": "https://tds.wiki/w/Special:FilePath/Re-enforcementsSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Expanded Barracks"
+   },
+   "base_cost": 100,
+   "exponential_value": 1.5,
+   "levels": [
+    {
+     "cost": 1000,
+     "total_cost": 1000
+    },
+    {
+     "cost": 2830,
+     "total_cost": 3830
+    },
+    {
+     "cost": 5195,
+     "total_cost": 9025
+    },
+    {
+     "cost": 8000,
+     "total_cost": 17025
+    },
+    {
+     "cost": 11180,
+     "total_cost": 28205
+    },
+    {
+     "cost": 14695,
+     "total_cost": 42900
+    },
+    {
+     "cost": 18520,
+     "total_cost": 61420
+    },
+    {
+     "cost": 22625,
+     "total_cost": 84045
+    },
+    {
+     "cost": 27000,
+     "total_cost": 111045
+    },
+    {
+     "cost": 31620,
+     "total_cost": 142665
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 1000,
+      "total_cost": 1000
+     },
+     {
+      "cost": 2830,
+      "total_cost": 3830
+     },
+     {
+      "cost": 5195,
+      "total_cost": 9025
+     },
+     {
+      "cost": 8000,
+      "total_cost": 17025
+     },
+     {
+      "cost": 11180,
+      "total_cost": 28205
+     },
+     {
+      "cost": 14695,
+      "total_cost": 42900
+     },
+     {
+      "cost": 18520,
+      "total_cost": 61420
+     },
+     {
+      "cost": 22625,
+      "total_cost": 84045
+     },
+     {
+      "cost": 27000,
+      "total_cost": 111045
+     },
+     {
+      "cost": 31620,
+      "total_cost": 142665
+     }
+    ]
+   }
+  },
+  {
+   "name": "Fortify",
+   "category": "Defense",
+   "max_level": 40,
+   "description": "\" Increases the player's health pool by X . (In groups, the highest HP is used.) \" Increases the maximum base health by 5 for each purchase. In duo+, the highest base health is chosen. Has a base cost of 3 with an exponential value of 1.4.",
+   "image": "https://tds.wiki/w/Special:FilePath/FortifySkill.png",
+   "unlock_requirement": null,
+   "base_cost": 3,
+   "exponential_value": 1.4,
+   "levels": [
+    {
+     "cost": 5,
+     "total_cost": 5
+    },
+    {
+     "cost": 10,
+     "total_cost": 15
+    },
+    {
+     "cost": 20,
+     "total_cost": 35
+    },
+    {
+     "cost": 30,
+     "total_cost": 65
+    },
+    {
+     "cost": 45,
+     "total_cost": 110
+    },
+    {
+     "cost": 55,
+     "total_cost": 165
+    },
+    {
+     "cost": 70,
+     "total_cost": 235
+    },
+    {
+     "cost": 85,
+     "total_cost": 320
+    },
+    {
+     "cost": 100,
+     "total_cost": 420
+    },
+    {
+     "cost": 115,
+     "total_cost": 535
+    },
+    {
+     "cost": 135,
+     "total_cost": 670
+    },
+    {
+     "cost": 150,
+     "total_cost": 820
+    },
+    {
+     "cost": 170,
+     "total_cost": 990
+    },
+    {
+     "cost": 185,
+     "total_cost": 1175
+    },
+    {
+     "cost": 205,
+     "total_cost": 1380
+    },
+    {
+     "cost": 225,
+     "total_cost": 1605
+    },
+    {
+     "cost": 245,
+     "total_cost": 1850
+    },
+    {
+     "cost": 265,
+     "total_cost": 2115
+    },
+    {
+     "cost": 285,
+     "total_cost": 2400
+    },
+    {
+     "cost": 310,
+     "total_cost": 2710
+    },
+    {
+     "cost": 330,
+     "total_cost": 3040
+    },
+    {
+     "cost": 350,
+     "total_cost": 3390
+    },
+    {
+     "cost": 375,
+     "total_cost": 3765
+    },
+    {
+     "cost": 400,
+     "total_cost": 4165
+    },
+    {
+     "cost": 420,
+     "total_cost": 4585
+    },
+    {
+     "cost": 445,
+     "total_cost": 5030
+    },
+    {
+     "cost": 470,
+     "total_cost": 5500
+    },
+    {
+     "cost": 495,
+     "total_cost": 5995
+    },
+    {
+     "cost": 520,
+     "total_cost": 6515
+    },
+    {
+     "cost": 545,
+     "total_cost": 7060
+    },
+    {
+     "cost": 570,
+     "total_cost": 7630
+    },
+    {
+     "cost": 595,
+     "total_cost": 8225
+    },
+    {
+     "cost": 620,
+     "total_cost": 8845
+    },
+    {
+     "cost": 650,
+     "total_cost": 9495
+    },
+    {
+     "cost": 675,
+     "total_cost": 10170
+    },
+    {
+     "cost": 700,
+     "total_cost": 10870
+    },
+    {
+     "cost": 730,
+     "total_cost": 11600
+    },
+    {
+     "cost": 755,
+     "total_cost": 12355
+    },
+    {
+     "cost": 785,
+     "total_cost": 13140
+    },
+    {
+     "cost": 815,
+     "total_cost": 13955
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 5,
+      "total_cost": 5
+     },
+     {
+      "cost": 10,
+      "total_cost": 15
+     },
+     {
+      "cost": 20,
+      "total_cost": 35
+     },
+     {
+      "cost": 30,
+      "total_cost": 65
+     },
+     {
+      "cost": 45,
+      "total_cost": 110
+     },
+     {
+      "cost": 55,
+      "total_cost": 165
+     },
+     {
+      "cost": 70,
+      "total_cost": 235
+     },
+     {
+      "cost": 85,
+      "total_cost": 320
+     },
+     {
+      "cost": 100,
+      "total_cost": 420
+     },
+     {
+      "cost": 115,
+      "total_cost": 535
+     },
+     {
+      "cost": 135,
+      "total_cost": 670
+     },
+     {
+      "cost": 150,
+      "total_cost": 820
+     },
+     {
+      "cost": 170,
+      "total_cost": 990
+     },
+     {
+      "cost": 185,
+      "total_cost": 1175
+     },
+     {
+      "cost": 205,
+      "total_cost": 1380
+     },
+     {
+      "cost": 225,
+      "total_cost": 1605
+     },
+     {
+      "cost": 245,
+      "total_cost": 1850
+     },
+     {
+      "cost": 265,
+      "total_cost": 2115
+     },
+     {
+      "cost": 285,
+      "total_cost": 2400
+     },
+     {
+      "cost": 310,
+      "total_cost": 2710
+     },
+     {
+      "cost": 330,
+      "total_cost": 3040
+     },
+     {
+      "cost": 350,
+      "total_cost": 3390
+     },
+     {
+      "cost": 375,
+      "total_cost": 3765
+     },
+     {
+      "cost": 400,
+      "total_cost": 4165
+     },
+     {
+      "cost": 420,
+      "total_cost": 4585
+     },
+     {
+      "cost": 445,
+      "total_cost": 5030
+     },
+     {
+      "cost": 470,
+      "total_cost": 5500
+     },
+     {
+      "cost": 495,
+      "total_cost": 5995
+     },
+     {
+      "cost": 520,
+      "total_cost": 6515
+     },
+     {
+      "cost": 545,
+      "total_cost": 7060
+     },
+     {
+      "cost": 570,
+      "total_cost": 7630
+     },
+     {
+      "cost": 595,
+      "total_cost": 8225
+     },
+     {
+      "cost": 620,
+      "total_cost": 8845
+     },
+     {
+      "cost": 650,
+      "total_cost": 9495
+     },
+     {
+      "cost": 675,
+      "total_cost": 10170
+     },
+     {
+      "cost": 700,
+      "total_cost": 10870
+     },
+     {
+      "cost": 730,
+      "total_cost": 11600
+     },
+     {
+      "cost": 755,
+      "total_cost": 12355
+     },
+     {
+      "cost": 785,
+      "total_cost": 13140
+     },
+     {
+      "cost": 815,
+      "total_cost": 13955
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 10,
+      "total_cost": 10
+     },
+     {
+      "cost": 25,
+      "total_cost": 35
+     },
+     {
+      "cost": 45,
+      "total_cost": 80
+     },
+     {
+      "cost": 70,
+      "total_cost": 150
+     },
+     {
+      "cost": 100,
+      "total_cost": 250
+     },
+     {
+      "cost": 125,
+      "total_cost": 375
+     },
+     {
+      "cost": 160,
+      "total_cost": 535
+     },
+     {
+      "cost": 190,
+      "total_cost": 725
+     },
+     {
+      "cost": 225,
+      "total_cost": 950
+     },
+     {
+      "cost": 265,
+      "total_cost": 1215
+     },
+     {
+      "cost": 300,
+      "total_cost": 1515
+     },
+     {
+      "cost": 340,
+      "total_cost": 1855
+     },
+     {
+      "cost": 385,
+      "total_cost": 2240
+     },
+     {
+      "cost": 425,
+      "total_cost": 2665
+     },
+     {
+      "cost": 470,
+      "total_cost": 3135
+     },
+     {
+      "cost": 515,
+      "total_cost": 3650
+     },
+     {
+      "cost": 560,
+      "total_cost": 4210
+     },
+     {
+      "cost": 610,
+      "total_cost": 4820
+     },
+     {
+      "cost": 660,
+      "total_cost": 5480
+     },
+     {
+      "cost": 705,
+      "total_cost": 6185
+     },
+     {
+      "cost": 760,
+      "total_cost": 6945
+     },
+     {
+      "cost": 810,
+      "total_cost": 7755
+     },
+     {
+      "cost": 865,
+      "total_cost": 8620
+     },
+     {
+      "cost": 915,
+      "total_cost": 9535
+     },
+     {
+      "cost": 970,
+      "total_cost": 10505
+     },
+     {
+      "cost": 1030,
+      "total_cost": 11535
+     },
+     {
+      "cost": 1085,
+      "total_cost": 12620
+     },
+     {
+      "cost": 1145,
+      "total_cost": 13765
+     },
+     {
+      "cost": 1200,
+      "total_cost": 14965
+     },
+     {
+      "cost": 1260,
+      "total_cost": 16225
+     },
+     {
+      "cost": 1320,
+      "total_cost": 17545
+     },
+     {
+      "cost": 1385,
+      "total_cost": 18930
+     },
+     {
+      "cost": 1445,
+      "total_cost": 20375
+     },
+     {
+      "cost": 1505,
+      "total_cost": 21880
+     },
+     {
+      "cost": 1570,
+      "total_cost": 23450
+     },
+     {
+      "cost": 1635,
+      "total_cost": 25085
+     },
+     {
+      "cost": 1700,
+      "total_cost": 26785
+     },
+     {
+      "cost": 1765,
+      "total_cost": 28550
+     },
+     {
+      "cost": 1835,
+      "total_cost": 30385
+     },
+     {
+      "cost": 1900,
+      "total_cost": 32285
+     },
+     {
+      "cost": 1970,
+      "total_cost": 34255
+     },
+     {
+      "cost": 2035,
+      "total_cost": 36290
+     },
+     {
+      "cost": 2105,
+      "total_cost": 38395
+     },
+     {
+      "cost": 2175,
+      "total_cost": 40570
+     },
+     {
+      "cost": 2250,
+      "total_cost": 42820
+     },
+     {
+      "cost": 2320,
+      "total_cost": 45140
+     },
+     {
+      "cost": 2390,
+      "total_cost": 47530
+     },
+     {
+      "cost": 2465,
+      "total_cost": 49995
+     },
+     {
+      "cost": 2540,
+      "total_cost": 52535
+     },
+     {
+      "cost": 2610,
+      "total_cost": 55145
+     }
+    ]
+   }
+  },
+  {
+   "name": "Over-Heal",
+   "category": "Defense",
+   "max_level": 25,
+   "description": "\" Increases how much extra HP can be kept from over-healing by X . \" Increases amount of health kept per player from over-healing by 8 for every purchase. There is a requirement of reaching Level 10 in Fortify before it is unlocked. Has a base cost of 5 with an exponential value of 1.7.",
+   "image": "https://tds.wiki/w/Special:FilePath/Over-HealSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Fortify"
+   },
+   "base_cost": 5,
+   "exponential_value": 1.7,
+   "levels": [
+    {
+     "cost": 15,
+     "total_cost": 15
+    },
+    {
+     "cost": 50,
+     "total_cost": 65
+    },
+    {
+     "cost": 100,
+     "total_cost": 165
+    },
+    {
+     "cost": 160,
+     "total_cost": 325
+    },
+    {
+     "cost": 235,
+     "total_cost": 560
+    },
+    {
+     "cost": 325,
+     "total_cost": 885
+    },
+    {
+     "cost": 420,
+     "total_cost": 1305
+    },
+    {
+     "cost": 530,
+     "total_cost": 1835
+    },
+    {
+     "cost": 645,
+     "total_cost": 2480
+    },
+    {
+     "cost": 775,
+     "total_cost": 3255
+    },
+    {
+     "cost": 910,
+     "total_cost": 4165
+    },
+    {
+     "cost": 1055,
+     "total_cost": 5220
+    },
+    {
+     "cost": 1205,
+     "total_cost": 6425
+    },
+    {
+     "cost": 1370,
+     "total_cost": 7795
+    },
+    {
+     "cost": 1540,
+     "total_cost": 9335
+    },
+    {
+     "cost": 1720,
+     "total_cost": 11055
+    },
+    {
+     "cost": 1905,
+     "total_cost": 12960
+    },
+    {
+     "cost": 2100,
+     "total_cost": 15060
+    },
+    {
+     "cost": 2300,
+     "total_cost": 17360
+    },
+    {
+     "cost": 2510,
+     "total_cost": 19870
+    },
+    {
+     "cost": 2730,
+     "total_cost": 22600
+    },
+    {
+     "cost": 2955,
+     "total_cost": 25555
+    },
+    {
+     "cost": 3185,
+     "total_cost": 28740
+    },
+    {
+     "cost": 3425,
+     "total_cost": 32165
+    },
+    {
+     "cost": 3670,
+     "total_cost": 35835
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 15,
+      "total_cost": 15
+     },
+     {
+      "cost": 50,
+      "total_cost": 65
+     },
+     {
+      "cost": 100,
+      "total_cost": 165
+     },
+     {
+      "cost": 160,
+      "total_cost": 325
+     },
+     {
+      "cost": 235,
+      "total_cost": 560
+     },
+     {
+      "cost": 325,
+      "total_cost": 885
+     },
+     {
+      "cost": 420,
+      "total_cost": 1305
+     },
+     {
+      "cost": 530,
+      "total_cost": 1835
+     },
+     {
+      "cost": 645,
+      "total_cost": 2480
+     },
+     {
+      "cost": 775,
+      "total_cost": 3255
+     },
+     {
+      "cost": 910,
+      "total_cost": 4165
+     },
+     {
+      "cost": 1055,
+      "total_cost": 5220
+     },
+     {
+      "cost": 1205,
+      "total_cost": 6425
+     },
+     {
+      "cost": 1370,
+      "total_cost": 7795
+     },
+     {
+      "cost": 1540,
+      "total_cost": 9335
+     },
+     {
+      "cost": 1720,
+      "total_cost": 11055
+     },
+     {
+      "cost": 1905,
+      "total_cost": 12960
+     },
+     {
+      "cost": 2100,
+      "total_cost": 15060
+     },
+     {
+      "cost": 2300,
+      "total_cost": 17360
+     },
+     {
+      "cost": 2510,
+      "total_cost": 19870
+     },
+     {
+      "cost": 2730,
+      "total_cost": 22600
+     },
+     {
+      "cost": 2955,
+      "total_cost": 25555
+     },
+     {
+      "cost": 3185,
+      "total_cost": 28740
+     },
+     {
+      "cost": 3425,
+      "total_cost": 32165
+     },
+     {
+      "cost": 3670,
+      "total_cost": 35835
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 30,
+      "total_cost": 30
+     },
+     {
+      "cost": 95,
+      "total_cost": 125
+     },
+     {
+      "cost": 190,
+      "total_cost": 315
+     },
+     {
+      "cost": 305,
+      "total_cost": 620
+     },
+     {
+      "cost": 440,
+      "total_cost": 1060
+     },
+     {
+      "cost": 595,
+      "total_cost": 1655
+     },
+     {
+      "cost": 765,
+      "total_cost": 2420
+     },
+     {
+      "cost": 955,
+      "total_cost": 3375
+     },
+     {
+      "cost": 1160,
+      "total_cost": 4535
+     },
+     {
+      "cost": 1380,
+      "total_cost": 5915
+     },
+     {
+      "cost": 1615,
+      "total_cost": 7530
+     },
+     {
+      "cost": 1865,
+      "total_cost": 9395
+     },
+     {
+      "cost": 2130,
+      "total_cost": 11525
+     },
+     {
+      "cost": 2405,
+      "total_cost": 13930
+     },
+     {
+      "cost": 2695,
+      "total_cost": 16625
+     },
+     {
+      "cost": 3000,
+      "total_cost": 19625
+     },
+     {
+      "cost": 3315,
+      "total_cost": 22940
+     },
+     {
+      "cost": 3640,
+      "total_cost": 26580
+     },
+     {
+      "cost": 3980,
+      "total_cost": 30560
+     },
+     {
+      "cost": 4335,
+      "total_cost": 34895
+     },
+     {
+      "cost": 4695,
+      "total_cost": 39590
+     },
+     {
+      "cost": 5070,
+      "total_cost": 44660
+     },
+     {
+      "cost": 5455,
+      "total_cost": 50115
+     },
+     {
+      "cost": 5855,
+      "total_cost": 55970
+     },
+     {
+      "cost": 6260,
+      "total_cost": 62230
+     }
+    ]
+   }
+  },
+  {
+   "name": "Bandages",
+   "category": "Defense",
+   "max_level": 25,
+   "description": "\" Regenerates X health at the start of every wave. \" Heals the base health per player by 1 for each purchase. There is a requirement of reaching Level 10 in Over-Heal before it is unlocked. Has a base cost of 5 with an exponential value of 1.7.",
+   "image": "https://tds.wiki/w/Special:FilePath/BandagesSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Over-Heal"
+   },
+   "base_cost": 5,
+   "exponential_value": 1.7,
+   "levels": [
+    {
+     "cost": 15,
+     "total_cost": 15
+    },
+    {
+     "cost": 50,
+     "total_cost": 65
+    },
+    {
+     "cost": 100,
+     "total_cost": 165
+    },
+    {
+     "cost": 160,
+     "total_cost": 325
+    },
+    {
+     "cost": 235,
+     "total_cost": 560
+    },
+    {
+     "cost": 325,
+     "total_cost": 885
+    },
+    {
+     "cost": 420,
+     "total_cost": 1305
+    },
+    {
+     "cost": 530,
+     "total_cost": 1835
+    },
+    {
+     "cost": 645,
+     "total_cost": 2480
+    },
+    {
+     "cost": 775,
+     "total_cost": 3255
+    },
+    {
+     "cost": 910,
+     "total_cost": 4165
+    },
+    {
+     "cost": 1055,
+     "total_cost": 5220
+    },
+    {
+     "cost": 1205,
+     "total_cost": 6425
+    },
+    {
+     "cost": 1370,
+     "total_cost": 7795
+    },
+    {
+     "cost": 1540,
+     "total_cost": 9335
+    },
+    {
+     "cost": 1720,
+     "total_cost": 11055
+    },
+    {
+     "cost": 1905,
+     "total_cost": 12960
+    },
+    {
+     "cost": 2100,
+     "total_cost": 15060
+    },
+    {
+     "cost": 2300,
+     "total_cost": 17360
+    },
+    {
+     "cost": 2510,
+     "total_cost": 19870
+    },
+    {
+     "cost": 2730,
+     "total_cost": 22600
+    },
+    {
+     "cost": 2955,
+     "total_cost": 25555
+    },
+    {
+     "cost": 3185,
+     "total_cost": 28740
+    },
+    {
+     "cost": 3425,
+     "total_cost": 32165
+    },
+    {
+     "cost": 3670,
+     "total_cost": 35835
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 15,
+      "total_cost": 15
+     },
+     {
+      "cost": 50,
+      "total_cost": 65
+     },
+     {
+      "cost": 100,
+      "total_cost": 165
+     },
+     {
+      "cost": 160,
+      "total_cost": 325
+     },
+     {
+      "cost": 235,
+      "total_cost": 560
+     },
+     {
+      "cost": 325,
+      "total_cost": 885
+     },
+     {
+      "cost": 420,
+      "total_cost": 1305
+     },
+     {
+      "cost": 530,
+      "total_cost": 1835
+     },
+     {
+      "cost": 645,
+      "total_cost": 2480
+     },
+     {
+      "cost": 775,
+      "total_cost": 3255
+     },
+     {
+      "cost": 910,
+      "total_cost": 4165
+     },
+     {
+      "cost": 1055,
+      "total_cost": 5220
+     },
+     {
+      "cost": 1205,
+      "total_cost": 6425
+     },
+     {
+      "cost": 1370,
+      "total_cost": 7795
+     },
+     {
+      "cost": 1540,
+      "total_cost": 9335
+     },
+     {
+      "cost": 1720,
+      "total_cost": 11055
+     },
+     {
+      "cost": 1905,
+      "total_cost": 12960
+     },
+     {
+      "cost": 2100,
+      "total_cost": 15060
+     },
+     {
+      "cost": 2300,
+      "total_cost": 17360
+     },
+     {
+      "cost": 2510,
+      "total_cost": 19870
+     },
+     {
+      "cost": 2730,
+      "total_cost": 22600
+     },
+     {
+      "cost": 2955,
+      "total_cost": 25555
+     },
+     {
+      "cost": 3185,
+      "total_cost": 28740
+     },
+     {
+      "cost": 3425,
+      "total_cost": 32165
+     },
+     {
+      "cost": 3670,
+      "total_cost": 35835
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 35,
+      "total_cost": 35
+     },
+     {
+      "cost": 105,
+      "total_cost": 140
+     },
+     {
+      "cost": 210,
+      "total_cost": 350
+     },
+     {
+      "cost": 345,
+      "total_cost": 695
+     },
+     {
+      "cost": 500,
+      "total_cost": 1195
+     },
+     {
+      "cost": 680,
+      "total_cost": 1875
+     },
+     {
+      "cost": 880,
+      "total_cost": 2755
+     },
+     {
+      "cost": 1105,
+      "total_cost": 3860
+     },
+     {
+      "cost": 1345,
+      "total_cost": 5205
+     },
+     {
+      "cost": 1610,
+      "total_cost": 6815
+     },
+     {
+      "cost": 1890,
+      "total_cost": 8705
+     },
+     {
+      "cost": 2190,
+      "total_cost": 10895
+     },
+     {
+      "cost": 2505,
+      "total_cost": 13400
+     },
+     {
+      "cost": 2835,
+      "total_cost": 16235
+     },
+     {
+      "cost": 3185,
+      "total_cost": 19420
+     },
+     {
+      "cost": 3555,
+      "total_cost": 22975
+     },
+     {
+      "cost": 3935,
+      "total_cost": 26910
+     },
+     {
+      "cost": 4335,
+      "total_cost": 31245
+     },
+     {
+      "cost": 4745,
+      "total_cost": 35990
+     },
+     {
+      "cost": 5175,
+      "total_cost": 41165
+     },
+     {
+      "cost": 5620,
+      "total_cost": 46785
+     },
+     {
+      "cost": 6075,
+      "total_cost": 52860
+     },
+     {
+      "cost": 6550,
+      "total_cost": 59410
+     },
+     {
+      "cost": 7035,
+      "total_cost": 66445
+     },
+     {
+      "cost": 7535,
+      "total_cost": 73980
+     }
+    ]
+   }
+  },
+  {
+   "name": "Extreme Conditioning",
+   "category": "Defense",
+   "max_level": 25,
+   "description": "\" Reduces stun and debuff durations from enemies by X% . \" Reduces tower stun and debuff durations from enemies by 0.8% for each purchase. There is a requirement of reaching Level 10 in Bandages before it is unlocked. Has a base cost of 5 with an exponential value of 1.725.",
+   "image": "https://tds.wiki/w/Special:FilePath/ExtremeConditioningSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Bandages"
+   },
+   "base_cost": 5,
+   "exponential_value": 1.725,
+   "levels": [
+    {
+     "cost": 15,
+     "total_cost": 15
+    },
+    {
+     "cost": 55,
+     "total_cost": 70
+    },
+    {
+     "cost": 105,
+     "total_cost": 175
+    },
+    {
+     "cost": 175,
+     "total_cost": 350
+    },
+    {
+     "cost": 255,
+     "total_cost": 605
+    },
+    {
+     "cost": 355,
+     "total_cost": 960
+    },
+    {
+     "cost": 460,
+     "total_cost": 1420
+    },
+    {
+     "cost": 580,
+     "total_cost": 2000
+    },
+    {
+     "cost": 710,
+     "total_cost": 2710
+    },
+    {
+     "cost": 850,
+     "total_cost": 3560
+    },
+    {
+     "cost": 1005,
+     "total_cost": 4565
+    },
+    {
+     "cost": 1165,
+     "total_cost": 5730
+    },
+    {
+     "cost": 1340,
+     "total_cost": 7070
+    },
+    {
+     "cost": 1525,
+     "total_cost": 8595
+    },
+    {
+     "cost": 1715,
+     "total_cost": 10310
+    },
+    {
+     "cost": 1915,
+     "total_cost": 12225
+    },
+    {
+     "cost": 2130,
+     "total_cost": 14355
+    },
+    {
+     "cost": 2350,
+     "total_cost": 16705
+    },
+    {
+     "cost": 2580,
+     "total_cost": 19285
+    },
+    {
+     "cost": 2820,
+     "total_cost": 22105
+    },
+    {
+     "cost": 3065,
+     "total_cost": 25170
+    },
+    {
+     "cost": 3320,
+     "total_cost": 28490
+    },
+    {
+     "cost": 3585,
+     "total_cost": 32075
+    },
+    {
+     "cost": 3860,
+     "total_cost": 35935
+    },
+    {
+     "cost": 4140,
+     "total_cost": 40075
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 15,
+      "total_cost": 15
+     },
+     {
+      "cost": 55,
+      "total_cost": 70
+     },
+     {
+      "cost": 105,
+      "total_cost": 175
+     },
+     {
+      "cost": 175,
+      "total_cost": 350
+     },
+     {
+      "cost": 255,
+      "total_cost": 605
+     },
+     {
+      "cost": 355,
+      "total_cost": 960
+     },
+     {
+      "cost": 460,
+      "total_cost": 1420
+     },
+     {
+      "cost": 580,
+      "total_cost": 2000
+     },
+     {
+      "cost": 710,
+      "total_cost": 2710
+     },
+     {
+      "cost": 850,
+      "total_cost": 3560
+     },
+     {
+      "cost": 1005,
+      "total_cost": 4565
+     },
+     {
+      "cost": 1165,
+      "total_cost": 5730
+     },
+     {
+      "cost": 1340,
+      "total_cost": 7070
+     },
+     {
+      "cost": 1525,
+      "total_cost": 8595
+     },
+     {
+      "cost": 1715,
+      "total_cost": 10310
+     },
+     {
+      "cost": 1915,
+      "total_cost": 12225
+     },
+     {
+      "cost": 2130,
+      "total_cost": 14355
+     },
+     {
+      "cost": 2350,
+      "total_cost": 16705
+     },
+     {
+      "cost": 2580,
+      "total_cost": 19285
+     },
+     {
+      "cost": 2820,
+      "total_cost": 22105
+     },
+     {
+      "cost": 3065,
+      "total_cost": 25170
+     },
+     {
+      "cost": 3320,
+      "total_cost": 28490
+     },
+     {
+      "cost": 3585,
+      "total_cost": 32075
+     },
+     {
+      "cost": 3860,
+      "total_cost": 35935
+     },
+     {
+      "cost": 4140,
+      "total_cost": 40075
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 35,
+      "total_cost": 35
+     },
+     {
+      "cost": 110,
+      "total_cost": 145
+     },
+     {
+      "cost": 220,
+      "total_cost": 365
+     },
+     {
+      "cost": 360,
+      "total_cost": 725
+     },
+     {
+      "cost": 530,
+      "total_cost": 1255
+     },
+     {
+      "cost": 720,
+      "total_cost": 1975
+     },
+     {
+      "cost": 935,
+      "total_cost": 2910
+     },
+     {
+      "cost": 1175,
+      "total_cost": 4085
+     },
+     {
+      "cost": 1435,
+      "total_cost": 5520
+     },
+     {
+      "cost": 1720,
+      "total_cost": 7240
+     },
+     {
+      "cost": 2020,
+      "total_cost": 9260
+     },
+     {
+      "cost": 2345,
+      "total_cost": 11605
+     },
+     {
+      "cost": 2685,
+      "total_cost": 14290
+     },
+     {
+      "cost": 3045,
+      "total_cost": 17335
+     },
+     {
+      "cost": 3425,
+      "total_cost": 20760
+     },
+     {
+      "cost": 3820,
+      "total_cost": 24580
+     },
+     {
+      "cost": 4235,
+      "total_cost": 28815
+     },
+     {
+      "cost": 4670,
+      "total_cost": 33485
+     },
+     {
+      "cost": 5120,
+      "total_cost": 38605
+     },
+     {
+      "cost": 5585,
+      "total_cost": 44190
+     },
+     {
+      "cost": 6065,
+      "total_cost": 50255
+     },
+     {
+      "cost": 6565,
+      "total_cost": 56820
+     },
+     {
+      "cost": 7080,
+      "total_cost": 63900
+     },
+     {
+      "cost": 7615,
+      "total_cost": 71515
+     },
+     {
+      "cost": 8160,
+      "total_cost": 79675
+     }
+    ]
+   }
+  },
+  {
+   "name": "Beefed Up Minions",
+   "category": "Defense",
+   "max_level": 25,
+   "description": "\" Health of summoned units is increased by X% . \" Increases unit's health by 0.6% for each purchase. Only applies to units summoned by towers, units summoned through other sources, like consumables, are not affected. There is a requirement of reaching Level 10 in Extreme Conditioning before it is unlocked. Has a base cost of 6 with an exponential value of 1.68.",
+   "image": "https://tds.wiki/w/Special:FilePath/BeefedUpMinionsSkill.png",
+   "unlock_requirement": {
+    "level": 10,
+    "skill": "Extreme Conditioning"
+   },
+   "base_cost": 6,
+   "exponential_value": 1.68,
+   "levels": [
+    {
+     "cost": 20,
+     "total_cost": 20,
+     "total_increase_percent": 0.6
+    },
+    {
+     "cost": 65,
+     "total_cost": 85,
+     "total_increase_percent": 1.2
+    },
+    {
+     "cost": 130,
+     "total_cost": 215,
+     "total_increase_percent": 1.8
+    },
+    {
+     "cost": 210,
+     "total_cost": 425,
+     "total_increase_percent": 2.4
+    },
+    {
+     "cost": 305,
+     "total_cost": 730,
+     "total_increase_percent": 3.0
+    },
+    {
+     "cost": 410,
+     "total_cost": 1140,
+     "total_increase_percent": 3.6
+    },
+    {
+     "cost": 535,
+     "total_cost": 1675,
+     "total_increase_percent": 4.2
+    },
+    {
+     "cost": 665,
+     "total_cost": 2340,
+     "total_increase_percent": 4.8
+    },
+    {
+     "cost": 815,
+     "total_cost": 3155,
+     "total_increase_percent": 5.4
+    },
+    {
+     "cost": 970,
+     "total_cost": 4125,
+     "total_increase_percent": 6.0
+    },
+    {
+     "cost": 1140,
+     "total_cost": 5265,
+     "total_increase_percent": 6.6
+    },
+    {
+     "cost": 1320,
+     "total_cost": 6585,
+     "total_increase_percent": 7.2
+    },
+    {
+     "cost": 1510,
+     "total_cost": 8095,
+     "total_increase_percent": 7.8
+    },
+    {
+     "cost": 1710,
+     "total_cost": 9805,
+     "total_increase_percent": 8.4
+    },
+    {
+     "cost": 1920,
+     "total_cost": 11725,
+     "total_increase_percent": 9.0
+    },
+    {
+     "cost": 2140,
+     "total_cost": 13865,
+     "total_increase_percent": 9.6
+    },
+    {
+     "cost": 2370,
+     "total_cost": 16235,
+     "total_increase_percent": 10.2
+    },
+    {
+     "cost": 2605,
+     "total_cost": 18840,
+     "total_increase_percent": 10.8
+    },
+    {
+     "cost": 2855,
+     "total_cost": 21695,
+     "total_increase_percent": 11.4
+    },
+    {
+     "cost": 3110,
+     "total_cost": 24805,
+     "total_increase_percent": 12.0
+    },
+    {
+     "cost": 3375,
+     "total_cost": 28180,
+     "total_increase_percent": 12.6
+    },
+    {
+     "cost": 3650,
+     "total_cost": 31830,
+     "total_increase_percent": 13.2
+    },
+    {
+     "cost": 3935,
+     "total_cost": 35765,
+     "total_increase_percent": 13.8
+    },
+    {
+     "cost": 4225,
+     "total_cost": 39990,
+     "total_increase_percent": 14.4
+    },
+    {
+     "cost": 4525,
+     "total_cost": 44515,
+     "total_increase_percent": 15.0
+    }
+   ],
+   "versions": {
+    "Current": [
+     {
+      "cost": 20,
+      "total_cost": 20,
+      "total_increase_percent": 0.6
+     },
+     {
+      "cost": 65,
+      "total_cost": 85,
+      "total_increase_percent": 1.2
+     },
+     {
+      "cost": 130,
+      "total_cost": 215,
+      "total_increase_percent": 1.8
+     },
+     {
+      "cost": 210,
+      "total_cost": 425,
+      "total_increase_percent": 2.4
+     },
+     {
+      "cost": 305,
+      "total_cost": 730,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 410,
+      "total_cost": 1140,
+      "total_increase_percent": 3.6
+     },
+     {
+      "cost": 535,
+      "total_cost": 1675,
+      "total_increase_percent": 4.2
+     },
+     {
+      "cost": 665,
+      "total_cost": 2340,
+      "total_increase_percent": 4.8
+     },
+     {
+      "cost": 815,
+      "total_cost": 3155,
+      "total_increase_percent": 5.4
+     },
+     {
+      "cost": 970,
+      "total_cost": 4125,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 1140,
+      "total_cost": 5265,
+      "total_increase_percent": 6.6
+     },
+     {
+      "cost": 1320,
+      "total_cost": 6585,
+      "total_increase_percent": 7.2
+     },
+     {
+      "cost": 1510,
+      "total_cost": 8095,
+      "total_increase_percent": 7.8
+     },
+     {
+      "cost": 1710,
+      "total_cost": 9805,
+      "total_increase_percent": 8.4
+     },
+     {
+      "cost": 1920,
+      "total_cost": 11725,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 2140,
+      "total_cost": 13865,
+      "total_increase_percent": 9.6
+     },
+     {
+      "cost": 2370,
+      "total_cost": 16235,
+      "total_increase_percent": 10.2
+     },
+     {
+      "cost": 2605,
+      "total_cost": 18840,
+      "total_increase_percent": 10.8
+     },
+     {
+      "cost": 2855,
+      "total_cost": 21695,
+      "total_increase_percent": 11.4
+     },
+     {
+      "cost": 3110,
+      "total_cost": 24805,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 3375,
+      "total_cost": 28180,
+      "total_increase_percent": 12.6
+     },
+     {
+      "cost": 3650,
+      "total_cost": 31830,
+      "total_increase_percent": 13.2
+     },
+     {
+      "cost": 3935,
+      "total_cost": 35765,
+      "total_increase_percent": 13.8
+     },
+     {
+      "cost": 4225,
+      "total_cost": 39990,
+      "total_increase_percent": 14.4
+     },
+     {
+      "cost": 4525,
+      "total_cost": 44515,
+      "total_increase_percent": 15.0
+     }
+    ],
+    "Version 1": [
+     {
+      "cost": 40,
+      "total_cost": 40,
+      "total_increase_percent": 0.75
+     },
+     {
+      "cost": 135,
+      "total_cost": 175,
+      "total_increase_percent": 1.5
+     },
+     {
+      "cost": 270,
+      "total_cost": 445,
+      "total_increase_percent": 2.25
+     },
+     {
+      "cost": 440,
+      "total_cost": 885,
+      "total_increase_percent": 3.0
+     },
+     {
+      "cost": 645,
+      "total_cost": 1530,
+      "total_increase_percent": 3.75
+     },
+     {
+      "cost": 880,
+      "total_cost": 2410,
+      "total_increase_percent": 4.5
+     },
+     {
+      "cost": 1145,
+      "total_cost": 3555,
+      "total_increase_percent": 5.25
+     },
+     {
+      "cost": 1435,
+      "total_cost": 4990,
+      "total_increase_percent": 6.0
+     },
+     {
+      "cost": 1755,
+      "total_cost": 6745,
+      "total_increase_percent": 6.75
+     },
+     {
+      "cost": 2100,
+      "total_cost": 8845,
+      "total_increase_percent": 7.5
+     },
+     {
+      "cost": 2470,
+      "total_cost": 11315,
+      "total_increase_percent": 8.25
+     },
+     {
+      "cost": 2860,
+      "total_cost": 14175,
+      "total_increase_percent": 9.0
+     },
+     {
+      "cost": 3280,
+      "total_cost": 17455,
+      "total_increase_percent": 9.75
+     },
+     {
+      "cost": 3720,
+      "total_cost": 21175,
+      "total_increase_percent": 10.5
+     },
+     {
+      "cost": 4185,
+      "total_cost": 25360,
+      "total_increase_percent": 11.25
+     },
+     {
+      "cost": 4670,
+      "total_cost": 30030,
+      "total_increase_percent": 12.0
+     },
+     {
+      "cost": 5175,
+      "total_cost": 35205,
+      "total_increase_percent": 12.75
+     },
+     {
+      "cost": 5705,
+      "total_cost": 40910,
+      "total_increase_percent": 13.5
+     },
+     {
+      "cost": 6255,
+      "total_cost": 47165,
+      "total_increase_percent": 14.25
+     },
+     {
+      "cost": 6820,
+      "total_cost": 53985,
+      "total_increase_percent": 15.0
+     },
+     {
+      "cost": 7410,
+      "total_cost": 61395,
+      "total_increase_percent": 15.75
+     },
+     {
+      "cost": 8020,
+      "total_cost": 69415,
+      "total_increase_percent": 16.5
+     },
+     {
+      "cost": 8650,
+      "total_cost": 78065,
+      "total_increase_percent": 17.25
+     },
+     {
+      "cost": 9300,
+      "total_cost": 87365,
+      "total_increase_percent": 18.0
+     },
+     {
+      "cost": 9970,
+      "total_cost": 97335,
+      "total_increase_percent": 18.75
+     }
+    ]
+   }
+  }
+ ]
+}

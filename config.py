@@ -46,6 +46,23 @@ class Emoji(Enum):
     Slow = 1486382177964003438
     Freeze = 1486382140366000178
     Robux = 1554755808288575539
+    ImprovedGunpowderSkill = 1554981064697716797
+    FightDirtySkill = 1554981063393148928
+    PrecisionSkill = 1554981062105501716
+    ResourcefulnessSkill = 1554981061031633016
+    BiggerBudgetSkill = 1554981059509358592
+    StonksSkill = 1554981058154332203
+    ScavengerSkill = 1554981056963158227
+    AcceleratorSkill = 1554981055667118222
+    ScholarSkill = 1554981054534782976
+    ExpandedBarracksSkill = 1554981053268107264
+    ReenforcementsSkill = 1554981052018073690
+    FortifySkill = 1554981050495537212
+    OverHealSkill = 1554981048851369994
+    BandagesSkill = 1554981047391752202
+    ExtremeConditioningSkill = 1554981046112616448
+    BeefedUpMinionsSkill = 1554981043881377802
+    EnhancedOpticsSkill = 1554981007214641254
 
     def get(self):
         return f"<:{self.name}:{self.value}>"

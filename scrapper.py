@@ -10,9 +10,13 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 BASE_URL = "https://tds.wiki"
-CACHE_DIR = Path("towers")
-GALLERY_DIR = Path("galleries")
-OUTPUT = "towers.json"
+PROJECT_DIR = Path(__file__).resolve().parent
+TOWER_CACHE_DIR = PROJECT_DIR / "towers"
+GALLERY_CACHE_DIR = PROJECT_DIR / "galleries"
+SKILLS_CACHE_DIR = PROJECT_DIR / "skills"
+TOWER_DATA_FILE = PROJECT_DIR / "towers.json"
+SKILLS_DATA_FILE = SKILLS_CACHE_DIR / "skills.json"
+SKILLS_URL = f"{BASE_URL}/w/Skills"
 
 towers = [
     "Scout", "Sniper", "Paintballer", "Demoman", "Boomerang", "Slime Trooper", "Soldier",
@@ -251,8 +255,6 @@ def parse_tables(soup, name):
     return tables
 
 
-# ---------------------------------------------------------------- gallery pages (/w/<Tower>/Gallery)
-
 ICON_TITLES = {"Cash", "Coin", "Gem", "Robux", "Experience", "Corruption"}  # currency icons, not gallery art
 MIN_IMAGE_SIDE = 64  # skip tiny inline icons
 
@@ -348,6 +350,10 @@ def slug(tower):
 
 def download(url, path):
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+    if response.headers.get("cf-mitigated") == "challenge" or re.search(
+        r"<title>\s*Just a moment", response.text[:2048], re.IGNORECASE
+    ):
+        raise requests.HTTPError(f"Cloudflare challenge blocked {url}", response=response)
     response.raise_for_status()
     Path(path).write_text(response.text, encoding="utf-8")
 
@@ -373,12 +379,133 @@ def parse_tower(tower, path):
     }
 
 
+SKILL_CATEGORY_MAP = {
+    "skill-off": "Offensive",
+    "skill-eco": "Economy",
+    "skill-str": "Strategy",
+    "skill-def": "Defense",
+}
+
+
+def clean_skill_text(text):
+    text = text.replace("\xa0", " ")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+
+def parse_skill_levels(skill_box, soup):
+    versions = {}
+    panels = skill_box.select(".tabber__panel")
+    if panels:
+        version_panels = []
+        for panel in panels:
+            label = soup.find(id=panel.get("aria-labelledby", ""))
+            version = clean_skill_text(label.get_text(" ", strip=True)) if label else "Current"
+            version_panels.append((version, panel))
+    else:
+        cost_list = skill_box.select_one(".skill-collapsible")
+        version_panels = [("Current", cost_list)] if cost_list else []
+
+    for version, panel in version_panels:
+        levels = []
+        running_total = 0
+        for item in panel.select("ol > li"):
+            text = clean_skill_text(item.get_text(" ", strip=True))
+            costs = [
+                int(value.replace(",", ""))
+                for value in (node.get_text(strip=True) for node in item.select(".coin-text"))
+                if value.replace(",", "").isdigit()
+            ]
+            if not costs:
+                continue
+            running_total += costs[0]
+            entry = {"cost": costs[0], "total_cost": costs[1] if len(costs) > 1 else running_total}
+            percent_match = re.search(r"(\d+(?:\.\d+)?)%\s*total\s*increase", text, re.IGNORECASE)
+            if percent_match:
+                entry["total_increase_percent"] = float(percent_match.group(1))
+            if len(costs) > 1:
+                running_total = costs[1]
+            levels.append(entry)
+        if levels:
+            versions[version] = levels
+    return versions
+
+
+def clean_numeric(value):
+    if value is None:
+        return None
+    cleaned = re.sub(r"[^\d.\-]", "", value).strip()
+    cleaned = cleaned.rstrip(".")
+    if cleaned in {"", ".", "-", "-."}:
+        return None
+    return float(cleaned) if "." in cleaned else int(cleaned)
+
+
+def parse_skill_page(path):
+    soup = BeautifulSoup(Path(path).read_text(encoding="utf-8"), "lxml")
+    skills = []
+    for box in soup.select("div.BasicBackground"):
+        classes = set(box.get("class", []))
+        skill_type = next((SKILL_CATEGORY_MAP[c] for c in classes if c in SKILL_CATEGORY_MAP), "Unknown")
+        header = box.select_one("div.upgradeheader")
+        if not header:
+            continue
+        header_text = clean_skill_text(header.get_text(" ", strip=True))
+        name_match = re.match(r"(.+?)\s*-\s*(\d+)\s+Levels?\s*$", header_text)
+        if not name_match:
+            continue
+        name = name_match.group(1).strip()
+        max_level = int(name_match.group(2))
+
+        description_paragraph = box.select_one("p")
+        description = clean_skill_text(description_paragraph.get_text(" ", strip=True)) if description_paragraph else ""
+        unlock_match = re.search(r"requirement of reaching Level\s+(\d+)\s+in\s+(.+?)\s+before it is unlocked", description, re.IGNORECASE)
+        unlock_requirement = None
+        if unlock_match:
+            unlock_requirement = {
+                "level": int(unlock_match.group(1)),
+                "skill": unlock_match.group(2).strip(),
+            }
+
+        body_text = clean_skill_text(box.get_text(" ", strip=True))
+        base_cost_match = re.search(r"base cost of\s+(\d[\d,]*)", body_text, re.IGNORECASE)
+        exponential_match = re.search(r"exponential value of\s+([\d.]+)", body_text, re.IGNORECASE)
+        exponential_value = clean_numeric(exponential_match.group(1)) if exponential_match else None
+
+        skill = {
+            "name": name,
+            "category": skill_type,
+            "max_level": max_level,
+            "description": description,
+            "image": "",
+            "unlock_requirement": unlock_requirement,
+            "base_cost": int(base_cost_match.group(1).replace(",", "")) if base_cost_match else None,
+            "exponential_value": exponential_value,
+            "levels": [],
+            "versions": parse_skill_levels(box, soup),
+        }
+        skill["levels"] = skill["versions"].get("Current", next(iter(skill["versions"].values()), []))
+
+        image_anchor = box.select_one("figure a.mw-file-description")
+        if image_anchor and image_anchor.get("href"):
+            href = image_anchor["href"]
+            if href.startswith("/w/File:"):
+                filename = href.removeprefix("/w/File:")
+                skill["image"] = f"{BASE_URL}/w/Special:FilePath/{filename}"
+            elif href.startswith("/images/"):
+                skill["image"] = f"{BASE_URL}{href}"
+        skills.append(skill)
+
+    return {"skills": skills}
+
+
 if __name__ == "__main__":
-    CACHE_DIR.mkdir(exist_ok=True)
-    GALLERY_DIR.mkdir(exist_ok=True)
+    TOWER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    GALLERY_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    SKILLS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     data = {}
     for tower in towers:
-        html_path = CACHE_DIR / f"{slug(tower)}.html"
+        html_path = TOWER_CACHE_DIR / f"{slug(tower)}.html"
         if html_path.exists():
             print(f"Cached: {tower}")
         else:
@@ -386,7 +513,7 @@ if __name__ == "__main__":
             download(f"{BASE_URL}/w/{tower.replace(' ', '_')}", html_path)
         data[slug(tower)] = parse_tower(tower, html_path)
 
-        gallery_path = GALLERY_DIR / f"{slug(tower)}.html"
+        gallery_path = GALLERY_CACHE_DIR / f"{slug(tower)}.html"
         if not gallery_path.exists():
             print(f"Downloading gallery: {tower}")
             try:
@@ -395,6 +522,21 @@ if __name__ == "__main__":
                 print(f"  ! gallery failed for {tower}: {error}")
         data[slug(tower)]["gallery"] = parse_gallery(gallery_path) if gallery_path.exists() else []
 
-    with open(OUTPUT, "w", encoding="utf-8") as f:
+    skills_path = SKILLS_CACHE_DIR / "skills.html"
+    if skills_path.exists():
+        print("Cached: Skills")
+    else:
+        print("Downloading: Skills")
+        try:
+            download(SKILLS_URL, skills_path)
+        except requests.RequestException as error:
+            print(f"  ! skills page failed: {error}")
+
+    if skills_path.exists():
+        skills_data = parse_skill_page(skills_path)
+        SKILLS_DATA_FILE.write_text(json.dumps(skills_data, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"Wrote {SKILLS_DATA_FILE}")
+
+    with open(TOWER_DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
-    print(f"Wrote {OUTPUT}")
+    print(f"Wrote {TOWER_DATA_FILE}")
