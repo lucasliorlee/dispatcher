@@ -1,0 +1,3 @@
+discord.py==2.7.1 # auto gets requests from aiohttp and beautifulsoup4
+lxml==6.1.3
+python-dotenv==1.2.3
