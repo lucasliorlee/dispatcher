@@ -2,6 +2,7 @@ import json
 import math
 import os
 import random
+import re
 
 from dotenv import load_dotenv
 
@@ -45,6 +46,71 @@ def find_upgrade(tower, table, row):
     return None
 
 
+def level_traits(tower, table, level):
+    mode = table.get("mode", "Regular")
+    base_stats = tower.get("info", {}).get(mode.lower(), {})
+    detections = set()
+    immunities = set()
+
+    for key, label in (("Hidden Detection", "Hidden"), ("Lead Detection", "Lead"), ("Flying Detection", "Flying")):
+        value = base_stats.get(key, "").strip()
+        if value and value.lower() not in {"n/a", "unknown"}:
+            matches = list(re.finditer(r"\bLevel\s+(\d+)[A-Z]?\+?", value, re.IGNORECASE))
+            if matches:
+                tower_match = next(
+                    (match for index, match in enumerate(matches)
+                     if re.search(r"\bTower\b", value[match.end() : matches[index + 1].start() if index + 1 < len(matches) else len(value)], re.IGNORECASE)),
+                    None,
+                )
+                match = tower_match or (matches[0] if len(matches) == 1 else None)
+                if match:
+                    qualifier = value[match.end() : matches[matches.index(match) + 1].start() if matches.index(match) + 1 < len(matches) else len(value)]
+                    unit_only = "only" in qualifier.lower() and not re.search(
+                        r"\b(Tower|Collision|Splash|Burn|Poison|Bleed|Sting)\b", qualifier, re.IGNORECASE
+                    )
+                    if level >= int(match.group(1)) and not unit_only:
+                        detections.add(label)
+            elif value.lower() not in {"n/a", "unknown"}:
+                detections.add(label)
+
+    base_immunities = base_stats.get("Immunities", "")
+    immunity_matches = list(re.finditer(r"(Partial\s+)?(Stun|Freeze|Debuff)(?:\s+Immune)?", base_immunities, re.IGNORECASE))
+    for index, match in enumerate(immunity_matches):
+        tail = base_immunities[match.end() : immunity_matches[index + 1].start() if index + 1 < len(immunity_matches) else len(base_immunities)]
+        if "units only" in tail.lower():
+            continue
+        required_level = re.search(r"\(Level\s*(\d+)", tail, re.IGNORECASE)
+        if required_level and level < int(required_level.group(1)):
+            continue
+        label = f"Partial {match.group(2).title()}" if match.group(1) else match.group(2).title()
+        immunities.add(label)
+
+    detection_pattern = re.compile(r"\+\s*(Hidden|Lead|Flying)\s+Detection", re.IGNORECASE)
+    immunity_pattern = re.compile(r"\+\s*(Stun|Freeze|Debuff)\s+Immunity", re.IGNORECASE)
+    for upgrade in tower.get("upgrades", []):
+        if (
+            upgrade.get("mode") != mode
+            or upgrade.get("path") != table.get("path")
+            or upgrade.get("ability")
+            or upgrade.get("level", level + 1) > level
+        ):
+            continue
+        for change in upgrade.get("description", []):
+            detection = detection_pattern.fullmatch(change.strip())
+            if detection:
+                detections.add(detection.group(1).title())
+            immunity = immunity_pattern.fullmatch(change.strip())
+            if immunity:
+                immunities.add(immunity.group(1).title())
+
+    detection_order = ("Hidden", "Lead", "Flying")
+    immunity_order = ("Stun", "Freeze", "Debuff", "Partial Stun", "Partial Freeze", "Partial Debuff")
+    return (
+        [name for name in detection_order if name in detections],
+        [name for name in immunity_order if name in immunities],
+    )
+
+
 def row_heading(headers, row, upgrade=None):
     first = row[0] if row else "?"
     label = headers[0] if headers else ""
@@ -59,14 +125,18 @@ def with_thumbnail(text, image):
     return Section(text, accessory=Thumbnail(image)) if image else text
 
 
-def render_row(headers, row, upgrade=None):
+def render_row(headers, row, upgrade=None, include_changes=False, traits=None):
     """One table row as a card: heading (with level name), what the upgrade does, stats, picture."""
     lines = [f"### {clean(row_heading(headers, row, upgrade))}"]
-    if upgrade:
+    if upgrade and include_changes:
         lines += [f"> {clean(d, 200)}" for d in upgrade["description"]]
     for header, cell in zip(headers[1:], row[1:]):
         if cell:
             lines.append(f"**{clean(header)}:** {clean(cell)}")
+    if traits is not None:
+        detections, immunities = traits
+        lines.append(f"**Detection:** {', '.join(detections) or 'None'}")
+        lines.append(f"**Immunities:** {', '.join(immunities) or 'None'}")
     return with_thumbnail("\n".join(lines), upgrade["image"] if upgrade else "")
 
 
@@ -105,16 +175,17 @@ def render_overview(tower):
         items += [Separator(), TextDisplay("### Details\n" + "\n".join(details))]
 
     for label, block in (("Regular", regular), ("PvP", pvp)):
-        block_lines = [f"**{k}:** {clean(v)}" for k, v in block.items() if k != "Placement Footprint"]
+        block_lines = [f"**{k}:** {clean(v)}" for k, v in block.items()]
         # if block_lines:
-        #     items += [Separator(), TextDisplay(f"### Base stats – {label}\n" + "\n".join(block_lines))]
+        #    items += [Separator(), TextDisplay(f"### {label} Stats\n" + "\n".join(block_lines))]
     return items
 
 
 class TowerView(LayoutView):
-    def __init__(self, slug):
+    def __init__(self, slug, include_changes=False):
         super().__init__(timeout=300)
         self.slug = slug
+        self.include_changes = include_changes
         self.tower = DATA[slug]
         self.pages = self.make_pages()
         self.page = 0  # selected page
@@ -139,7 +210,7 @@ class TowerView(LayoutView):
         container = Container(accent_colour=discord.Colour.blurple())
         label, kind, payload = self.pages[self.page]
 
-        container.add_item(TextDisplay(f"# {NAMES[self.slug]}\n-# {label}"))
+        container.add_item(TextDisplay(label))
         container.add_item(Separator(spacing=discord.SeparatorSpacing.large))
 
         groups, headers = [], []
@@ -163,7 +234,14 @@ class TowerView(LayoutView):
             else:
                 shown = groups[self.group]
                 for i, row in enumerate(shown):
-                    container.add_item(render_row(headers, row, find_upgrade(self.tower, payload, row)))
+                    traits = level_traits(self.tower, payload, int(row[0])) if row and str(row[0]).isdigit() else None
+                    container.add_item(render_row(
+                        headers,
+                        row,
+                        find_upgrade(self.tower, payload, row),
+                        include_changes=self.include_changes,
+                        traits=traits,
+                    ))
                     if i < len(shown) - 1:
                         container.add_item(Separator())
 
@@ -411,16 +489,20 @@ async def remove_autocomplete(interaction: discord.Interaction, current: str):
     ]
 
 @client.tree.command(name="tower", description="Look up a tower's stats")
-@app_commands.describe(name="Tower name")
+@app_commands.allowed_contexts(guilds=True, dms=False, private_channels=True)
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.describe(name="Tower name", include_changes="Show stat changes at each level")
 @app_commands.autocomplete(name=tower_autocomplete)
-async def tower(interaction: discord.Interaction, name: str):
+async def tower(interaction: discord.Interaction, name: str, include_changes: bool = False):
     slug = name.lower().replace(" ", "_")
     if slug not in DATA:
         await interaction.response.send_message(f"Couldn't find a tower called `{name}`.", ephemeral=True)
         return
-    await interaction.response.send_message(view=TowerView(slug))
+    await interaction.response.send_message(view=TowerView(slug, include_changes))
 
 @client.tree.command(name="gallery", description="Browse a tower's skins, weapons and other art")
+@app_commands.allowed_contexts(guilds=True, dms=False, private_channels=True)
+@app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.describe(name="Tower name")
 @app_commands.autocomplete(name=tower_autocomplete)
 async def gallery(interaction: discord.Interaction, name: str):
@@ -435,6 +517,8 @@ async def gallery(interaction: discord.Interaction, name: str):
     await interaction.response.send_message(view=view)
 
 @client.tree.command(name="loadout", description="Generate a random loadout")
+@app_commands.allowed_contexts(guilds=True, dms=False, private_channels=True)
+@app_commands.allowed_installs(guilds=True, users=True)
 @app_commands.describe(remove="Towers to remove from the loadout seperated by commas")
 @app_commands.autocomplete(remove=remove_autocomplete)
 async def loadout(interaction: discord.Interaction, remove: str = ""):
