@@ -11,17 +11,26 @@ from bs4 import BeautifulSoup, Tag
 
 BASE_URL = "https://tds.wiki"
 CACHE_DIR = Path("towers")
+GALLERY_DIR = Path("galleries")
 OUTPUT = "towers.json"
 
 towers = [
     "Scout", "Sniper", "Paintballer", "Demoman", "Boomerang", "Slime Trooper", "Soldier",
+
     "Freezer", "Assassin", "Militant", "Shotgunner", "Hunter", "Pyromancer", "Ace Pilot", "Medic", "Farm", "Electroshocker", "Rocketeer", "Trapper", "Pulse Trooper", "Military Base", "Crook Boss",
+
     "Commander", "Warden", "Cowboy", "DJ Booth", "Tesla", "Saboteur", "Minigunner", "Ranger", "Pursuit", "Gatling Gun", "Turret", "Mortar", "Mercenary Base",
+
     "Brawler", "Necromancer", "Accelerator", "Engineer", "Hacker",
+
     "Operator", "Enforcer", "Kingpin", "Juggernaut",
+
     "Golden Minigunner", "Golden Pyromancer", "Golden Crook Boss", "Golden Scout", "Golden Cowboy", "Golden Soldier", "Golden Demoman", "Golden Snowballer",
+
     "Gladiator", "Commando", "Slasher", "Frost Blaster", "Archer", "Swarmer", "Toxic Gunner", "Sledger", "Executioner", "Elf Camp", "Jester", "Cryomancer", "Hallow Punk", "Harvester", "Snowballer", "Elementalist", "Firework Technician", "Biologist", "Warlock", "Spotlight Tech",
+
     "War Machine", "Mecha Base",
+
     "Mine", "Sentry", "Moderator", "Railgunner", "Twitgunner", "Void Miner", "Combatant", "Crystallizer", "Time Dilator"
 ]
 
@@ -68,8 +77,9 @@ def panel_names(el):
     """Names of the tab panels (outermost first) that contain `el`, e.g. ['Regular', 'Top Path']."""
     names = []
     for panel in reversed(el.find_parents(class_="tabber__panel")):
-        name = re.sub(r"^tabber-", "", panel.get("id", ""))
-        name = re.sub(r"_\d+$", "", name).replace("_", " ").strip()
+        label_id = panel.get("aria-labelledby")
+        label = panel.find_previous(id=label_id) if label_id else None
+        name = cell_text(label) if label else re.sub(r"^tabber-", "", panel.get("id", "")).replace("_", " ").strip()
         names.append("PvP" if name.upper() == "PVP" else name)
     return names
 
@@ -239,6 +249,97 @@ def parse_tables(soup, name):
     return tables
 
 
+# ---------------------------------------------------------------- gallery pages (/w/<Tower>/Gallery)
+
+ICON_TITLES = {"Cash", "Coin", "Gem", "Robux", "Experience", "Corruption"}  # currency icons, not gallery art
+MIN_IMAGE_SIDE = 64  # skip tiny inline icons
+
+
+def full_image_url(img):
+    """Un-thumbnail an <img> to the original file (handles lazy-loaded images too)."""
+    src = ""
+    for attr in ("data-src", "src"):
+        value = img.get(attr, "")
+        if value and not value.startswith("data:"):
+            src = value
+            break
+    if not src:
+        return ""
+    src = src.split("?")[0]
+    thumb = re.match(r"(/images)/thumb/(.+?\.\w+)/[^/]+$", src)
+    src = f"{thumb.group(1)}/{thumb.group(2)}" if thumb else src
+    return src if src.startswith("http") else BASE_URL + src
+
+
+def gallery_caption(img):
+    """Caption of a gallery image: gallery text / figcaption / thumb caption, else the alt text."""
+    for parent in img.parents:
+        classes = " ".join(parent.get("class") or [])
+        if parent.name in ("figure", "li") or "gallerybox" in classes or "thumb" in classes.split():
+            cap = parent.select_one(".gallerytext, figcaption, .thumbcaption, .lightbox-caption")
+            if cap:
+                return cell_text(cap)
+    return norm(img.get("alt", ""))
+
+
+def parse_gallery(path):
+    """All pictures on a tower's Gallery page as [{section, panel, caption, image}].
+
+    section = the nearest heading above the picture (e.g. "Skins", "Red"), panel = the tab it sits
+    in when the page uses tabs (e.g. a skin name). Pages that don't exist are cached as empty files.
+    """
+    html = Path(path).read_text(encoding="utf-8")
+    if not html.strip():
+        return []
+    try:
+        soup = BeautifulSoup(html, "lxml")
+    except Exception:
+        soup = BeautifulSoup(html, "html.parser")
+    for sup in soup.select("sup.reference"):
+        sup.decompose()
+    mark_currencies(soup)  # captions like "Red Scout - 500 Coins"
+
+    root = soup.select_one("#mw-content-text .mw-parser-output") or soup.select_one(".mw-parser-output") or soup
+    items, seen, section = [], set(), ""
+    for el in root.find_all(["h2", "h3", "h4", "img"]):
+        if el.name != "img":
+            section = norm(el.get_text(" ", strip=True)).replace("[edit]", "").strip() or section
+            continue
+        if el.find_parent("span", title=lambda t: t in ICON_TITLES):
+            continue
+        # Skip small inline icons (the wiki provides the real size as data-file-width/height)
+        try:
+            side = min(int(el.get("data-file-width") or 9999), int(el.get("data-file-height") or 9999))
+        except ValueError:
+            side = 9999
+        if side < MIN_IMAGE_SIDE:
+            continue
+        url = full_image_url(el)
+        panels = panel_names(el)
+        key = (section, url)
+        if not url or key in seen:
+            continue
+        seen.add(key)
+        items.append({
+            "section": section,
+            "panel": " / ".join(panels),
+            "caption": gallery_caption(el),
+            "image": url,
+        })
+    return items
+
+
+def download_gallery(tower, path):
+    """Save /w/<Tower>/Gallery. A 404 means the tower has no gallery: cache an empty file so we don't retry."""
+    url = f"{BASE_URL}/w/{tower.replace(' ', '_')}/Gallery"
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+    if response.status_code == 404:
+        Path(path).write_text("", encoding="utf-8")
+        return
+    response.raise_for_status()
+    Path(path).write_text(response.text, encoding="utf-8")
+
+
 def slug(tower):
     return tower.lower().replace(" ", "_")
 
@@ -272,6 +373,7 @@ def parse_tower(tower, path):
 
 if __name__ == "__main__":
     CACHE_DIR.mkdir(exist_ok=True)
+    GALLERY_DIR.mkdir(exist_ok=True)
     data = {}
     for tower in towers:
         html_path = CACHE_DIR / f"{slug(tower)}.html"
@@ -281,6 +383,15 @@ if __name__ == "__main__":
             print(f"Downloading: {tower}")
             download(f"{BASE_URL}/w/{tower.replace(' ', '_')}", html_path)
         data[slug(tower)] = parse_tower(tower, html_path)
+
+        gallery_path = GALLERY_DIR / f"{slug(tower)}.html"
+        if not gallery_path.exists():
+            print(f"Downloading gallery: {tower}")
+            try:
+                download_gallery(tower, gallery_path)
+            except requests.RequestException as error:
+                print(f"  ! gallery failed for {tower}: {error}")
+        data[slug(tower)]["gallery"] = parse_gallery(gallery_path) if gallery_path.exists() else []
 
     with open(OUTPUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)

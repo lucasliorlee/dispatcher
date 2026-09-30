@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
-from discord.ui import ActionRow, Container, LayoutView, Section, Separator, TextDisplay, Thumbnail
+from discord.ui import ActionRow, Container, LayoutView, MediaGallery, Section, Separator, TextDisplay, Thumbnail
+
+# Requires discord.py 2.6+ (Components V2: LayoutView, Container, TextDisplay)
 
 with open("towers.json", encoding="utf-8") as f:
     DATA = json.load(f)
@@ -15,6 +17,7 @@ with open("towers.json", encoding="utf-8") as f:
 NAMES = {slug: tower["name"] for slug, tower in DATA.items()}
 CELL_MAX = 150
 MAX_OPTIONS = 25  # Discord select menus hold at most 25 options
+GALLERY_PAGE_SIZE = MAX_OPTIONS - 2  # reserve select options for previous/next navigation
 
 # Shown at the top of the overview, everything else in "general" goes under "Details"
 HEADLINE_KEYS = ("Role", "Placement", "Placement Limit")
@@ -136,7 +139,7 @@ class TowerView(LayoutView):
         container = Container(accent_colour=discord.Colour.blurple())
         label, kind, payload = self.pages[self.page]
 
-        container.add_item(TextDisplay(label))
+        container.add_item(TextDisplay(f"# {NAMES[self.slug]}\n-# {label}"))
         container.add_item(Separator(spacing=discord.SeparatorSpacing.large))
 
         groups, headers = [], []
@@ -152,7 +155,6 @@ class TowerView(LayoutView):
         else:
             headers, rows = payload["headers"], payload["rows"]
             # One row per option; if there are more than 25 rows, each option covers a range
-            # That shouldn't happen though but just to be safe cause why not
             size = max(1, math.ceil(len(rows) / MAX_OPTIONS))
             groups = [rows[i : i + size] for i in range(0, len(rows), size)]
             self.group = max(0, min(self.group, len(groups) - 1)) if groups else 0
@@ -214,6 +216,157 @@ class TowerView(LayoutView):
         await interaction.response.edit_message(view=self)
 
 
+GALLERY_HIDDEN = {"Update History", "Contents", "Notes"}
+# The wiki names the same section differently from tower to tower
+GALLERY_RENAMES = {
+    "Skin Upgrades": "Skins",
+    "Original Variants": "Previous Variants",
+    "Gallery": "Other",
+    "Regular Faces": "Faces",
+    "Face": "Faces",
+}
+GALLERY_ORDER = ["Skins", "Previous Variants", "Weapons", "Faces", "Upgrade Icons"]  # anything else, then "Other"
+GALLERY_ROW = 10  # a media gallery holds at most 10 images
+GALLERY_MAX_IMAGES = 2 * GALLERY_ROW  # largest entry in the data is 16
+
+
+def gallery_sections(tower):
+    """[(section name, [entry, ...])] where an entry is one thing to look at: {label, images: [{caption, sub, image}]}.
+
+    Images that sit in the same tab (\"Red\", \"Red / Version 2\", \"Red / Top Path\") are merged into one entry,
+    so a skin is one entry holding all of its pictures. Images without a tab are their own entry, labelled by caption.
+    """
+    sections = {}
+    for item in tower.get("gallery", []):
+        if item["section"] in GALLERY_HIDDEN or item["image"].endswith("/Transparent.png"):
+            continue
+        name = GALLERY_RENAMES.get(item["section"], item["section"]) or "Other"
+        entries = sections.setdefault(name, {})
+        panel = item["panel"]
+        # No tab: captioned images stay separate, uncaptioned ones are pooled into one entry per section
+        key = panel or (f"#{len(entries)}" if item["caption"] else "")
+        entry = entries.setdefault(key, {"label": panel or item["caption"] or name, "images": []})
+        entry["images"].append({"caption": item["caption"], "sub": "", "image": item["image"]})
+
+    def rank(name):
+        if name == "Other":
+            return len(GALLERY_ORDER) + 1
+        return GALLERY_ORDER.index(name) if name in GALLERY_ORDER else len(GALLERY_ORDER)
+
+    def split(entry):
+        """Entries with more images than fit in one message become "Default (1/3)", "Default (2/3)"..."""
+        images = entry["images"]
+        if len(images) <= GALLERY_MAX_IMAGES:
+            return [entry]
+        parts = math.ceil(len(images) / GALLERY_MAX_IMAGES)
+        return [
+            {"label": f"{entry['label']} ({n}/{parts})", "images": images[(n - 1) * GALLERY_MAX_IMAGES : n * GALLERY_MAX_IMAGES]}
+            for n in range(1, parts + 1)
+        ]
+
+    ordered = sorted(sections.items(), key=lambda kv: rank(kv[0]))  # stable, so the page order is kept otherwise
+    return [(name, [part for e in entries.values() for part in split(e)]) for name, entries in ordered][:MAX_OPTIONS]
+
+
+def render_gallery_entry(entry):
+    """Text under the title: a numbered list of what each picture is (only if the pictures are labelled)."""
+    tags = [image["sub"] or image["caption"] for image in entry["images"]]
+    if not any(tags):
+        return None
+    lines = [f"**{n}.** {clean(tag)}" for n, tag in enumerate(tags, 1) if tag]
+    return TextDisplay("\n".join(lines))
+
+
+class GalleryView(LayoutView):
+    def __init__(self, slug):
+        super().__init__(timeout=600)
+        self.slug = slug
+        self.sections = gallery_sections(DATA[slug])
+        self.section = 0  # selected section
+        self.entry = 0  # selected entry inside the section
+        self.chunk = 0  # which block of entries the select menu shows
+        self.build()
+
+    def build(self):
+        self.clear_items()
+        name, entries = self.sections[self.section]
+        self.entry = max(0, min(self.entry, len(entries) - 1))
+        self.chunk = self.entry // GALLERY_PAGE_SIZE
+        entry = entries[self.entry]
+
+        container = Container(accent_colour=discord.Colour.blurple())
+        title = f"# {NAMES[self.slug]} Gallery\n-# {name} • {clean(entry['label'], 80)}"
+        if len(entries) > 1:
+            title += f" ({self.entry + 1}/{len(entries)})"
+        container.add_item(TextDisplay(title))
+        container.add_item(Separator(spacing=discord.SeparatorSpacing.large))
+
+        tags = render_gallery_entry(entry)
+        if tags:
+            container.add_item(tags)
+        images = entry["images"]
+        for i in range(0, len(images), GALLERY_ROW):
+            container.add_item(MediaGallery(*[
+                discord.MediaGalleryItem(image["image"], description=clean(image["caption"], 1024) or None)
+                for image in images[i : i + GALLERY_ROW]
+            ]))
+
+        container.add_item(Separator(spacing=discord.SeparatorSpacing.large))
+
+        if len(entries) > 1:
+            start = self.chunk * GALLERY_PAGE_SIZE
+            chunks = math.ceil(len(entries) / GALLERY_PAGE_SIZE)
+            options = [
+                discord.SelectOption(label=clean(e["label"], 100), value=str(i), default=(i == self.entry))
+                for i, e in enumerate(entries[start : start + GALLERY_PAGE_SIZE], start)
+            ]
+            if self.chunk > 0:
+                options.append(discord.SelectOption(label=f"← Previous page ({self.chunk}/{chunks})", value="__previous__"))
+            if self.chunk < chunks - 1:
+                options.append(discord.SelectOption(label=f"Next page ({self.chunk + 2}/{chunks}) →", value="__next__"))
+            entry_select = discord.ui.Select(
+                placeholder=f"Choose from {name.lower()}",
+                options=options,
+            )
+            entry_select.callback = self.on_entry
+            entry_row = ActionRow()
+            entry_row.add_item(entry_select)
+            container.add_item(entry_row)
+
+        if len(self.sections) > 1:
+            section_select = discord.ui.Select(
+                placeholder="Choose a section",
+                options=[
+                    discord.SelectOption(label=name[:100], value=str(i), default=(i == self.section))
+                    for i, (name, _) in enumerate(self.sections)
+                ],
+            )
+            section_select.callback = self.on_section
+            section_row = ActionRow()
+            section_row.add_item(section_select)
+            container.add_item(section_row)
+
+        self.add_item(container)
+
+    async def show(self, interaction: discord.Interaction):
+        self.build()
+        await interaction.response.edit_message(view=self)
+
+    async def on_entry(self, interaction: discord.Interaction):
+        value = interaction.data["values"][0]
+        if value == "__previous__":
+            self.entry = (self.chunk - 1) * GALLERY_PAGE_SIZE
+        elif value == "__next__":
+            self.entry = (self.chunk + 1) * GALLERY_PAGE_SIZE
+        else:
+            self.entry = int(value)
+        await self.show(interaction)
+
+    async def on_section(self, interaction: discord.Interaction):
+        self.section = int(interaction.data["values"][0])
+        self.entry = 0
+        await self.show(interaction)
+
 class Bot(discord.Client):
     def __init__(self):
         super().__init__(intents=discord.Intents.default())
@@ -266,6 +419,20 @@ async def tower(interaction: discord.Interaction, name: str):
         await interaction.response.send_message(f"Couldn't find a tower called `{name}`.", ephemeral=True)
         return
     await interaction.response.send_message(view=TowerView(slug))
+
+@client.tree.command(name="gallery", description="Browse a tower's skins, weapons and other art")
+@app_commands.describe(name="Tower name")
+@app_commands.autocomplete(name=tower_autocomplete)
+async def gallery(interaction: discord.Interaction, name: str):
+    slug = name.lower().replace(" ", "_")
+    if slug not in DATA:
+        await interaction.response.send_message(f"Couldn't find a tower called `{name}`.", ephemeral=True)
+        return
+    view = GalleryView(slug)
+    if not view.sections:
+        await interaction.response.send_message(f"{NAMES[slug]} has no gallery images.", ephemeral=True)
+        return
+    await interaction.response.send_message(view=view)
 
 @client.tree.command(name="loadout", description="Generate a random loadout")
 @app_commands.describe(remove="Towers to remove from the loadout seperated by commas")
