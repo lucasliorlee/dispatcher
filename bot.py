@@ -10,7 +10,7 @@ import discord
 from discord import app_commands
 from discord.ui import ActionRow, Container, LayoutView, MediaGallery, Section, Separator, TextDisplay, Thumbnail
 
-# Requires discord.py 2.6+ (Components V2: LayoutView, Container, TextDisplay)
+from config import Emoji
 
 with open("towers.json", encoding="utf-8") as f:
     DATA = json.load(f)
@@ -21,11 +21,51 @@ MAX_OPTIONS = 25  # Discord select menus hold at most 25 options
 GALLERY_PAGE_SIZE = MAX_OPTIONS - 2  # reserve select options for previous/next navigation
 
 # Shown at the top of the overview, everything else in "general" goes under "Details"
-HEADLINE_KEYS = ("Role", "Placement", "Placement Limit")
+HEADLINE_KEYS = ("Role", "Placement")
+CURRENCY_EMOJIS = {
+    "coins": Emoji.Coin,
+    "gems": Emoji.Gem,
+    "robux": Emoji.Robux,
+}
+CURRENCY_PATTERN = re.compile(r"(?P<amount>\d[\d,]*)\s+(?P<currency>Coins|Gems|Robux)\b", re.IGNORECASE)
+STAT_EMOJIS = {
+    "Range": Emoji.Range,
+    "Firerate": Emoji.Firerate,
+    "Damage": Emoji.Damage,
+    "Cost": Emoji.Cash,
+}
+DETECTION_EMOJIS = {
+    "Hidden": Emoji.HiddenDetection,
+    "Lead": Emoji.LeadDetection,
+    "Flying": Emoji.FlyingDetection,
+}
+IMMUNITY_EMOJIS = {
+    "Stun": Emoji.noStun,
+    "Freeze": Emoji.noFreeze,
+    "Debuff": Emoji.Defense,
+}
 
 
 def clean(text, limit=CELL_MAX):
     return text if len(text) <= limit else text[: limit - 1] + "…"
+
+
+def format_overview_value(key, value):
+    if key == "Placement Limit":
+        return re.sub(
+            r"(?<![\w])(?:\d+|∞)(?![\w])",
+            lambda match: f"{match.group()} {Emoji.PlacementLimit.get()}",
+            value,
+        )
+    if key == "Evolution Levels":
+        return f"{Emoji.Level.get()} {value}"
+    if key == "Base Exp":
+        return f"{Emoji.Exp.get()} {value}"
+
+    return CURRENCY_PATTERN.sub(
+        lambda match: f"{CURRENCY_EMOJIS[match.group('currency').lower()].get()} {match.group('amount')}",
+        value,
+    )
 
 
 def find_upgrade(tower, table, row):
@@ -55,7 +95,7 @@ def level_traits(tower, table, level):
     for key, label in (("Hidden Detection", "Hidden"), ("Lead Detection", "Lead"), ("Flying Detection", "Flying")):
         value = base_stats.get(key, "").strip()
         if value and value.lower() not in {"n/a", "unknown"}:
-            matches = list(re.finditer(r"\bLevel\s+(\d+)[A-Z]?\+?", value, re.IGNORECASE))
+            matches = list(re.finditer(r"\bLevel\s+(\d+)([A-Z])?\+?", value, re.IGNORECASE))
             if matches:
                 tower_match = next(
                     (match for index, match in enumerate(matches)
@@ -64,6 +104,8 @@ def level_traits(tower, table, level):
                 )
                 match = tower_match or (matches[0] if len(matches) == 1 else None)
                 if match:
+                    if match.group(2):
+                        continue
                     qualifier = value[match.end() : matches[matches.index(match) + 1].start() if matches.index(match) + 1 < len(matches) else len(value)]
                     unit_only = "only" in qualifier.lower() and not re.search(
                         r"\b(Tower|Collision|Splash|Burn|Poison|Bleed|Sting)\b", qualifier, re.IGNORECASE
@@ -90,7 +132,7 @@ def level_traits(tower, table, level):
     for upgrade in tower.get("upgrades", []):
         if (
             upgrade.get("mode") != mode
-            or upgrade.get("path") != table.get("path")
+            or upgrade.get("path") not in (None, table.get("path"))
             or upgrade.get("ability")
             or upgrade.get("level", level + 1) > level
         ):
@@ -128,15 +170,27 @@ def with_thumbnail(text, image):
 def render_row(headers, row, upgrade=None, include_changes=False, traits=None):
     """One table row as a card: heading (with level name), what the upgrade does, stats, picture."""
     lines = [f"### {clean(row_heading(headers, row, upgrade))}"]
+    cells = list(zip(headers[1:], row[1:]))
+    stat_cells = [(header, cell) for header, cell in cells if header in STAT_EMOJIS and cell]
+    stat_cells.sort(key=lambda item: list(STAT_EMOJIS).index(item[0]))
+    if stat_cells:
+        lines.append("  ".join(f"{STAT_EMOJIS[header].get()} {clean(cell)}" for header, cell in stat_cells))
     if upgrade and include_changes:
         lines += [f"> {clean(d, 200)}" for d in upgrade["description"]]
-    for header, cell in zip(headers[1:], row[1:]):
-        if cell:
+    for header, cell in cells:
+        if cell and header not in STAT_EMOJIS:
             lines.append(f"**{clean(header)}:** {clean(cell)}")
     if traits is not None:
         detections, immunities = traits
-        lines.append(f"**Detection:** {', '.join(detections) or 'None'}")
-        lines.append(f"**Immunities:** {', '.join(immunities) or 'None'}")
+        detection_icons = [DETECTION_EMOJIS[name].get() for name in detections if name in DETECTION_EMOJIS]
+        immunity_icons = [
+            ("~" if name.startswith("Partial ") else "")
+            + IMMUNITY_EMOJIS[name.removeprefix("Partial ")].get()
+            for name in immunities
+            if name.removeprefix("Partial ") in IMMUNITY_EMOJIS
+        ]
+        lines.append(f"**Detections:** {' '.join(detection_icons) or 'None'}")
+        lines.append(f"**Immunities:** {' '.join(immunity_icons) or 'None'}")
     return with_thumbnail("\n".join(lines), upgrade["image"] if upgrade else "")
 
 
@@ -165,12 +219,20 @@ def render_overview(tower):
     lines = [clean(t, 300) for t in info["tooltips"]]
     for key in HEADLINE_KEYS:
         if general.get(key):
-            lines.append(f"**{key}:** {clean(general[key])}")
+            lines.append(f"**{key}:** {clean(format_overview_value(key, general[key]))}")
     if footprint:
         lines.append(f"**Placement Footprint:** {clean(footprint)}")
+    if general.get("Placement Limit"):
+        lines.append(
+            f"**Placement Limit:** {clean(format_overview_value('Placement Limit', general['Placement Limit']))}"
+        )
     items = [with_thumbnail("\n".join(lines) or "No info found.", tower["image"])]
 
-    details = [f"**{k}:** {clean(v)}" for k, v in general.items() if k not in HEADLINE_KEYS]
+    details = [
+        f"**{key}:** {clean(format_overview_value(key, value))}"
+        for key, value in general.items()
+        if key not in (*HEADLINE_KEYS, "Placement Limit")
+    ]
     if details:
         items += [Separator(), TextDisplay("### Details\n" + "\n".join(details))]
 
@@ -199,6 +261,8 @@ class TowerView(LayoutView):
         tables = self.tower["tables"]
         has_pvp = any(t["mode"] == "PvP" for t in tables)
         for table in tables:
+            if table["mode"] == "Levels": # for old data
+                continue
             title = table["title"]
             if has_pvp and table["mode"] in ("Regular", "PvP") and not title.lower().startswith(table["mode"].lower()):
                 title = f"{table['mode']} ({title})"
@@ -234,7 +298,8 @@ class TowerView(LayoutView):
             else:
                 shown = groups[self.group]
                 for i, row in enumerate(shown):
-                    traits = level_traits(self.tower, payload, int(row[0])) if row and str(row[0]).isdigit() else None
+                    has_stats = any(header in STAT_EMOJIS for header in headers)
+                    traits = level_traits(self.tower, payload, int(row[0])) if has_stats and row and str(row[0]).isdigit() else None
                     container.add_item(render_row(
                         headers,
                         row,

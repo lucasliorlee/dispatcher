@@ -236,6 +236,8 @@ def parse_tables(soup, name):
         if not title:
             title = "Stats" if headers[0] == "Level" else headers[0]
         mode, path = mode_and_path(table)
+        if mode == "Levels": # redundant info
+            continue # cause it's the same for everything
         title_path = re.search(r"(Top|Bottom) Path", title)
         tables.append({
             "mode": mode,
