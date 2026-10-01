@@ -126,6 +126,7 @@ COMMANDS = [
         _option("name", "Tower name", 3, True, autocomplete=True),
         _option("page", "Overview, abilities, or a stats table", 3, autocomplete=True),
         _option("include_changes", "Show the upgrade changes for each level", 5),
+        _option("include_description", "Include the tower description", 5),
         _option("enhanced_optics", "Enhanced Optics level (0-20)", 4, min_value=0, max_value=20),
         _option("improved_gunpowder", "Improved Gunpowder level (0-25)", 4, min_value=0, max_value=25),
         _option("fight_dirty", "Fight Dirty level (0-25)", 4, min_value=0, max_value=25),
@@ -475,18 +476,19 @@ def _format_overview_value(key, value):
     )
 
 
-def _format_tower_content(tower, page, include_changes, group=0):
+def _format_tower_content(tower, page, include_changes, group=0, include_description=False):
     title, kind, payload = page
-    tower_title = (
-        f"[{tower['name']}]({tower['url']})"
-        if kind == "overview" and tower.get("url")
-        else tower["name"]
-    )
-    lines = [f"# {tower_title}", f"## {title}"]
+    if kind == "overview":
+        tower_title = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
+        lines = [f"# {tower_title}", f"## {title}"]
+    else:
+        lines = [f"# {title}"]
     if kind == "overview":
         info = tower.get("info", {})
         general = info.get("general", {})
-        lines.extend(str(text) for text in info.get("tooltips", []))
+        descriptions = [str(text) for text in info.get("tooltips", [])]
+        if include_description and descriptions:
+            lines.extend(["", *descriptions])
         for key in ("Role", "Placement"):
             if general.get(key):
                 lines.append(f"**{key}:** {clean(_format_overview_value(key, general[key]))}")
@@ -502,7 +504,7 @@ def _format_tower_content(tower, page, include_changes, group=0):
         details = [
             f"**{key}:** {clean(_format_overview_value(key, value))}"
             for key, value in general.items()
-            if key not in {"Role", "Placement", "Placement Limit"}
+            if key not in {"Description", "Role", "Placement", "Placement Limit"}
         ]
         if details:
             lines.extend(["", "### Details", *details])
@@ -536,10 +538,10 @@ def _format_tower_content(tower, page, include_changes, group=0):
     return "\n".join(lines)
 
 
-def _tower_children(tower, pages, page_index, group, include_changes):
+def _tower_children(tower, pages, page_index, group, include_changes, include_description=False):
     page = pages[page_index]
     if page[1] == "table":
-        children = [_section(f"# {tower['name']}\n## {page[0]}")]
+        children = [_section(f"# {page[0]}")]
         rows = page[2].get("rows", [])
         group_size = max(1, math.ceil(len(rows) / TABLE_GROUP_LIMIT))
         groups = [rows[index : index + group_size] for index in range(0, len(rows), group_size)]
@@ -564,7 +566,7 @@ def _tower_children(tower, pages, page_index, group, include_changes):
             children.extend([_separator(), _section("\n".join(content_lines), upgrade.get("image") if upgrade else None)])
     else:
         image = tower.get("image") if page[1] == "overview" else None
-        children = [_section(_format_tower_content(tower, page, include_changes, group), image)]
+        children = [_section(_format_tower_content(tower, page, include_changes, group, include_description), image)]
     if page[1] == "table":
         rows = page[2].get("rows", [])
         group_size = max(1, math.ceil(len(rows) / TABLE_GROUP_LIMIT))
@@ -576,7 +578,7 @@ def _tower_children(tower, pages, page_index, group, include_changes):
                 return first if first == last else f"{first} … {last}"
 
             children.append(_action_row(_select(
-                f"tower|{_tower_slug(tower['name'])}|group|{page_index},{int(include_changes)}",
+                f"tower|{_tower_slug(tower['name'])}|group|{page_index},{int(include_changes)},{int(include_description)}",
                 "Choose a level range",
                 [
                     _select_option(
@@ -589,7 +591,7 @@ def _tower_children(tower, pages, page_index, group, include_changes):
             )))
     if len(pages) > 1:
         children.append(_action_row(_select(
-            f"tower|{_tower_slug(tower['name'])}|page|{page_index},{int(include_changes)}",
+            f"tower|{_tower_slug(tower['name'])}|page|{page_index},{int(include_changes)},{int(include_description)}",
             "Choose a page",
             [
                 _select_option(
@@ -645,12 +647,13 @@ def _gallery_children(tower, sections, section_index, entry_index):
     return children
 
 
-def _render_tower_page(tower, page, include_changes):
+def _render_tower_page(tower, page, include_changes, include_description=False):
     title, kind, payload = page
-    lines = [f"**{tower['name']} — {title}**"]
+    lines = [f"**{tower['name']} — {title}**" if kind == "overview" else f"**{title}**"]
     if kind == "overview":
         info = tower.get("info", {})
-        lines.extend(info.get("tooltips", []))
+        if include_description:
+            lines.extend(info.get("tooltips", []))
         general = info.get("general", {})
         for key in ("Role", "Placement", "Unlock Cost", "Level Requirement", "Placement Limit", "Evolution Levels"):
             if general.get(key):
@@ -678,7 +681,7 @@ def _render_tower_page(tower, page, include_changes):
             lines.append(f"**{label}**" + (" | " + " | ".join(values) if values else ""))
             if include_changes and upgrade:
                 lines.extend(f"> {change}" for change in upgrade.get("description", []))
-    if tower.get("url"):
+    if kind == "overview" and tower.get("url"):
         lines.append(f"[Tower page]({tower['url']})")
     return "\n".join(lines)
 
@@ -717,7 +720,14 @@ def _handle_tower(options, towers):
     page_index = pages.index(page)
     return _reply(
         "",
-        children=_tower_children(tower, pages, page_index, 0, bool(options.get("include_changes", False))),
+        children=_tower_children(
+            tower,
+            pages,
+            page_index,
+            0,
+            bool(options.get("include_changes", False)),
+            bool(options.get("include_description", False)),
+        ),
     )
 
 
@@ -866,15 +876,17 @@ def handle_component(interaction, towers):
         if selected >= len(pages):
             return _reply("This page could not be found. Run the command again.", ephemeral=True)
         include_changes = bool(state[1]) if len(state) > 1 else False
-        return _component_update(_tower_children(tower, pages, selected, 0, include_changes))
+        include_description = bool(state[2]) if len(state) > 2 else False
+        return _component_update(_tower_children(tower, pages, selected, 0, include_changes, include_description))
 
     if kind == "tower" and action == "group":
         page_index = state[0]
         include_changes = bool(state[1]) if len(state) > 1 else False
+        include_description = bool(state[2]) if len(state) > 2 else False
         pages = _tower_pages(tower)
         if page_index >= len(pages) or pages[page_index][1] != "table":
             return _reply("This table could not be found. Run the command again.", ephemeral=True)
-        return _component_update(_tower_children(tower, pages, page_index, selected, include_changes))
+        return _component_update(_tower_children(tower, pages, page_index, selected, include_changes, include_description))
 
     sections = _gallery_sections(tower)
     if kind == "gallery" and action == "section":

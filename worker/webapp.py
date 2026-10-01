@@ -18,6 +18,14 @@ def _html(body, response_class, status=200):
     )
 
 
+def _json_response(value, response_class, status=200):
+    return response_class(
+        json.dumps(value, ensure_ascii=True, separators=(",", ":")),
+        status=status,
+        headers={"Content-Type": "application/json; charset=utf-8"},
+    )
+
+
 def _escape(value):
     return html.escape(str(value), quote=True)
 
@@ -244,7 +252,7 @@ def _widget_page():
     return """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TDS Stats Updater</title>
 <style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:440px;margin:36px auto;padding:22px}h1{color:#fff;font-size:24px}p,label{color:#aaa}label{display:block;margin-top:14px;font-size:14px}input{width:100%;padding:10px;margin-top:6px;border:1px solid #36363c;border-radius:6px;background:#202024;color:white;font-size:16px}button{width:100%;padding:12px;margin-top:24px;border:0;border-radius:6px;background:#3e5968;color:#fff;font-size:16px;font-weight:600;cursor:pointer}</style></head>
-<body><h1>TDS Stats</h1><p>This updater is configured for the original profile widget.</p><p><a href="/">&larr; back</a></p>
+<body><h1>TDS Stats</h1><p>Don't use this if you're not me.</p><p><a href="/">&larr; back</a></p>
 <form action="/widget/submit" method="post" id="statsForm">
 <label>Level<input name="level" value="1"></label><label>Coins<input name="coins" value="0"></label><label>Gems<input name="gems" value="0"></label><label>Tower<input name="tower" value="Scout"></label><label>Wins<input name="wins" value="0"></label><label>Losses<input name="losses" value="0"></label><label>Username<input name="username" value=""></label><button>Submit and Authorize</button></form>
 <script>const key='tdsStatsForm',form=document.getElementById('statsForm'),inputs=form.querySelectorAll('input');try{const saved=JSON.parse(localStorage.getItem(key)||'{}');inputs.forEach(i=>{if(saved[i.name]!==undefined)i.value=saved[i.name]})}catch(e){}function save(){const data={};inputs.forEach(i=>data[i.name]=i.value);localStorage.setItem(key,JSON.stringify(data))}inputs.forEach(i=>i.addEventListener('input',save));</script></body></html>"""
@@ -252,30 +260,96 @@ def _widget_page():
 
 def _towers_page(towers):
     cards = []
-    for slug, tower in sorted(towers.items(), key=lambda item: item[1].get("name", item[0]).lower()):
+    for slug, tower in towers.items():
         info = tower.get("info", {})
         general = info.get("general", {})
         cards.append({
             "slug": slug,
             "name": tower.get("name", slug.replace("_", " ").title()),
+            "rarity": tower.get("rarity", ""),
             "image": tower.get("image", ""),
             "url": tower.get("url", ""),
             "role": general.get("Role", ""),
             "placement": general.get("Placement", ""),
-            "description": " ".join(info.get("tooltips", [])),
+            "description": " ".join(info.get("tooltips", [])) or general.get("Description", ""),
+            "general": {key: value for key, value in general.items() if key != "Description"},
+            "regular": info.get("regular", {}),
+            "pvp": info.get("pvp", {}),
+            "tables": tower.get("tables", []),
         })
+    rarities = list(dict.fromkeys(card["rarity"] for card in cards if card["rarity"]))
+    rarity_options = '<option value="">All rarities</option>' + "".join(
+        f'<option value="{_escape(rarity)}">{_escape(rarity)}</option>'
+        for rarity in rarities
+    )
 
     page = r"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TDS Towers</title>
-<style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:1100px;margin:32px auto;padding:20px}h1{color:#fff;font-size:24px}p{color:#aaa}.top{display:flex;gap:10px;flex-wrap:wrap}input{flex:1;min-width:200px;padding:10px;border:1px solid #36363c;border-radius:6px;background:#202024;color:#fff;font-size:16px}.status{color:#aaa;margin:14px 0}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{border:1px solid #303036;border-radius:8px;background:#19191d;overflow:hidden}.card img{width:100%;height:140px;object-fit:cover;background:#222}.card-body{padding:12px}.card p{font-size:13px;line-height:1.4}.meta{display:flex;gap:8px;color:#9ca3af;font-size:12px}.foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:12px}.foot a{color:#60a5fa;text-decoration:none}@media(max-width:650px){body{padding:14px}}</style></head>
-<body><h1>TDS Towers</h1><p><a href="/">&larr; back</a></p><p>Towers and details scraped from the local game data.</p><div class="top"><input id="search" type="search" placeholder="Search tower name, role, or description"></div><div class="status" id="status"></div><div class="grid" id="grid"></div>
+<style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:1100px;margin:32px auto;padding:20px}h1{color:#fff;font-size:24px}p{color:#aaa}.top{display:flex;gap:10px;flex-wrap:wrap}input,select{min-width:200px;padding:10px;border:1px solid #36363c;border-radius:6px;background:#202024;color:#fff;font-size:16px}.top input{flex:1}.status{color:#aaa;margin:14px 0}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}.card{border:1px solid #303036;border-radius:8px;background:#19191d;overflow:hidden}.card-media{display:block;width:100%;padding:0;border:0;background:#222;cursor:pointer}.card img{display:block;width:100%;height:140px;object-fit:cover}.card-body{padding:12px}.card h2{margin:0;font-size:18px}.card-title{padding:0;border:0;background:none;color:#fff;font:inherit;text-align:left;cursor:pointer}.card-title:hover,.card-title:focus-visible{color:#8dc9ff}.card p{font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.meta{display:flex;gap:8px;color:#9ca3af;font-size:12px}.foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:12px}.foot a{color:#8dc9ff;text-decoration:none}.foot button,.dialog-close{padding:7px 10px;border:1px solid #444;background:#25252a;color:#eee;border-radius:5px;cursor:pointer}.card button:focus-visible,.dialog button:focus-visible,.dialog select:focus-visible{outline:2px solid #8dc9ff;outline-offset:2px}.dialog{width:min(900px,calc(100% - 28px));max-height:min(88vh,900px);padding:0;border:1px solid #45454d;border-radius:8px;background:#17171b;color:#e4e4e7}.dialog::backdrop{background:#000b}.dialog-header{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:18px;border-bottom:1px solid #35353b;background:#17171b}.dialog-header h2{margin:0 0 6px;color:#fff;font-size:22px}.dialog-content{padding:18px}.detail-description{max-width:75ch;line-height:1.55;color:#d4d4d8}.detail-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:20px 0}.detail-facts h3,.stats-section h3{margin:0 0 10px;color:#fff;font-size:15px}.fact-list{display:grid;grid-template-columns:minmax(110px,1fr) 1.2fr;gap:6px 12px;margin:0;font-size:13px}.fact-list dt{color:#a1a1aa}.fact-list dd{margin:0;overflow-wrap:anywhere}.stats-section{border-top:1px solid #35353b;padding-top:16px}.stats-section label{display:grid;gap:6px;max-width:420px;color:#aaa;font-size:13px}.table-wrap{max-width:100%;overflow:auto;margin-top:14px;border:1px solid #35353b}.stats-table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}.stats-table th,.stats-table td{padding:8px 10px;border-bottom:1px solid #303036;text-align:left}.stats-table th{position:sticky;top:0;background:#25252a;color:#fff}.stats-table tbody tr:nth-child(even){background:#202024}.dialog-links{margin-top:16px;font-size:13px}.dialog-links a{color:#8dc9ff}@media(max-width:650px){body{padding:14px}.dialog{width:100%;max-height:100dvh;border-radius:0}.dialog-header,.dialog-content{padding:14px}.fact-list{grid-template-columns:1fr 1.2fr}}</style></head>
+<body><h1>TDS Towers</h1><p><a href="/">&larr; back</a></p><p>Towers details and stuff</p><div class="top"><input id="search" type="search" placeholder="Search tower name, role, or description"></div><div class="status" id="status"></div><div class="grid" id="grid"></div>
+<dialog class="dialog" id="towerDialog" aria-labelledby="detailName"><header class="dialog-header"><div><h2 id="detailName"></h2><div class="meta" id="detailMeta"></div></div><button class="dialog-close" id="closeDialog" type="button">Close</button></header><div class="dialog-content"><p class="detail-description" id="detailDescription"></p><nav class="detail-tabs" role="tablist" aria-label="Tower details"><button class="detail-tab" id="statsTab" type="button" role="tab" aria-selected="true" aria-controls="statsPanel">Stats</button><button class="detail-tab" id="galleryTab" type="button" role="tab" aria-selected="false" aria-controls="galleryPanel">Gallery</button></nav><section id="statsPanel" role="tabpanel" aria-labelledby="statsTab"><div class="detail-facts" id="detailFacts"></div><section class="stats-section"><h3>Level stats</h3><label for="statTableSelect">Stats table<select id="statTableSelect"></select></label><div class="table-wrap" id="statTable"></div></section><div class="dialog-links" id="detailLinks"></div></section><section id="galleryPanel" role="tabpanel" aria-labelledby="galleryTab" hidden><label for="gallerySectionSelect">Gallery section<select id="gallerySectionSelect" disabled></select></label><p class="gallery-status" id="galleryStatus" aria-live="polite">Open the Gallery tab to load images.</p><div class="gallery-grid" id="galleryGrid"></div></section></div></dialog>
 <script>
-const TOWERS=__TOWERS__,grid=document.getElementById('grid'),status=document.getElementById('status'),search=document.getElementById('search');
+const TOWERS=__TOWERS__,grid=document.getElementById('grid'),status=document.getElementById('status'),search=document.getElementById('search'),rarityFilter=document.getElementById('rarityFilter');
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function draw(){const q=search.value.toLowerCase().trim(),items=TOWERS.filter(t=>!q||[t.name,t.role,t.description].some(v=>String(v||'').toLowerCase().includes(q)));status.textContent=items.length+' of '+TOWERS.length+' towers';grid.innerHTML=items.length?items.map(t=>'<article class="card">'+(t.image?'<img loading="lazy" src="'+esc(t.image)+'" alt="'+esc(t.name)+'">':'')+'<div class="card-body"><h2>'+esc(t.name)+'</h2><div class="meta">'+(t.role?'<span>'+esc(t.role)+'</span>':'')+(t.placement?'<span>'+esc(t.placement)+'</span>':'')+'</div><p>'+esc(t.description||'No description available.')+'</p><div class="foot"><span></span>'+(t.url?'<a href="'+esc(t.url)+'" target="_blank" rel="noopener">Wiki page</a>':'')+'</div></div></article>').join(''):'<p>No towers found.</p>'}
-search.addEventListener('input',draw);draw();
+const dialog=document.getElementById('towerDialog'),detailName=document.getElementById('detailName'),detailMeta=document.getElementById('detailMeta'),detailDescription=document.getElementById('detailDescription'),detailFacts=document.getElementById('detailFacts'),statTableSelect=document.getElementById('statTableSelect'),statTable=document.getElementById('statTable'),detailLinks=document.getElementById('detailLinks');
+function draw(){const q=search.value.toLowerCase().trim(),selected=rarityFilter.value,items=TOWERS.filter(t=>(!q||[t.name,t.role,t.description,t.rarity].some(v=>String(v||'').toLowerCase().includes(q)))&&(!selected||t.rarity===selected));status.textContent=items.length+' of '+TOWERS.length+' towers';grid.innerHTML=items.length?items.map(t=>'<article class="card">'+(t.image?'<button class="card-media" type="button" data-slug="'+esc(t.slug)+'" aria-label="View '+esc(t.name)+' stats"><img loading="lazy" src="'+esc(t.image)+'" alt=""></button>':'')+'<div class="card-body"><h2><button class="card-title" type="button" data-slug="'+esc(t.slug)+'">'+esc(t.name)+'</button></h2><div class="meta">'+(t.rarity?'<span class="rarity-badge" data-rarity="'+esc(t.rarity)+'">'+esc(t.rarity)+'</span>':'')+(t.role?'<span>'+esc(t.role)+'</span>':'')+(t.placement?'<span>'+esc(t.placement)+'</span>':'')+'</div><p>'+esc(t.description||'No description available.')+'</p><div class="foot"><button type="button" data-slug="'+esc(t.slug)+'">View stats</button>'+(t.url?'<a href="'+esc(t.url)+'" target="_blank" rel="noopener">Wiki page</a>':'')+'</div></div></article>').join(''):'<p>No towers found.</p>'}
+function renderStatTable(tower){const index=Number(statTableSelect.value),table=tower.tables[index];if(!table){statTable.innerHTML='<p>No level tables available.</p>';return}statTable.innerHTML='<table class="stats-table"><thead><tr>'+table.headers.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+table.rows.map(row=>'<tr>'+table.headers.map((_,i)=>'<td>'+esc(row[i]??'')+'</td>').join('')+'</tr>').join('')+'</tbody></table>'}
+function openTower(slug){const tower=TOWERS.find(t=>t.slug===slug);if(!tower)return;detailName.textContent=tower.name;detailMeta.innerHTML=[tower.role,tower.placement].filter(Boolean).map(v=>'<span>'+esc(v)+'</span>').join('');detailDescription.textContent=tower.description||'No description available.';const facts=Object.entries(tower.general||{}).filter(([key,value])=>!['Role','Placement','Description'].includes(key)&&value);detailFacts.innerHTML=['regular','pvp'].filter(mode=>Object.keys(tower[mode]||{}).length).map(mode=>'<section><h3>'+mode.toUpperCase()+' base stats</h3><dl class="fact-list">'+Object.entries(tower[mode]).map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl></section>').join('')+(facts.length?'<section><h3>Details</h3><dl class="fact-list">'+facts.map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl></section>':'');statTableSelect.innerHTML=(tower.tables||[]).map((table,index)=>{const label=[table.mode,table.title,table.path].filter(Boolean).filter((part,index,array)=>array.indexOf(part)===index).join(' · ');return '<option value="'+index+'">'+esc(label||'Stats')+'</option>'}).join('');statTableSelect.disabled=!(tower.tables||[]).length;renderStatTable(tower);detailLinks.innerHTML=tower.url?'<a href="'+esc(tower.url)+'" target="_blank" rel="noopener">Wiki page</a>':'';dialog.showModal()}
+grid.addEventListener('click',event=>{const button=event.target.closest('[data-slug]');if(button)openTower(button.dataset.slug)});
+statTableSelect.addEventListener('change',()=>{const tower=TOWERS.find(item=>item.name===detailName.textContent);if(tower)renderStatTable(tower)});
+document.getElementById('closeDialog').addEventListener('click',()=>dialog.close());
+dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
+search.addEventListener('input',draw);
+rarityFilter.addEventListener('change',draw);
+draw();
 </script></body></html>"""
-    return page.replace("__TOWERS__", _json_for_script(cards))
+    page = page.replace(
+        'id="search" type="search" placeholder="Search tower name, role, or description">',
+        'id="search" type="search" placeholder="Search tower name, role, or description"><select id="rarityFilter" aria-label="Filter by rarity">__RARITY_OPTIONS__</select>',
+        1,
+    )
+    page = page.replace("</head>", """<style>
+ .grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+ .card{display:grid;grid-template-columns:minmax(90px,38%) minmax(0,1fr)}
+ .card-media{height:auto;min-height:210px;display:grid;place-items:center}
+.card-media img{width:100%;height:100%;object-fit:contain}
+ .card-body{display:flex;flex-direction:column;min-width:0}
+ .foot{margin-top:auto;padding-top:8px}
+.rarity-badge{display:inline-flex;padding:2px 7px;border:1px solid;border-radius:4px;font-size:11px;font-weight:700}
+.rarity-badge[data-rarity="Beginner"]{color:#b7bec8;border-color:#b7bec877;background:#b7bec81a}
+.rarity-badge[data-rarity="Intermediate"]{color:#4ade80;border-color:#4ade8077;background:#4ade801a}
+.rarity-badge[data-rarity="Advanced"]{color:#60a5fa;border-color:#60a5fa77;background:#60a5fa1a}
+.rarity-badge[data-rarity="Hardcore"]{color:#c084fc;border-color:#c084fc77;background:#c084fc1a}
+.rarity-badge[data-rarity="Evolved"]{color:#22d3ee;border-color:#22d3ee77;background:#22d3ee1a}
+.rarity-badge[data-rarity="Exclusive"],.rarity-badge[data-rarity="Event"]{color:#f87171;border-color:#f8717177;background:#f871711a}
+.rarity-badge[data-rarity="Golden"]{color:#facc15;border-color:#facc1577;background:#facc151a}
+.rarity-badge[data-rarity="Unreleased"]{color:#fff;border-color:#777;background:#080808}
+.detail-tabs{display:flex;gap:6px;margin:0 0 18px;border-bottom:1px solid #35353b}
+.detail-tab{padding:10px 14px;border:0;border-bottom:2px solid transparent;background:transparent;color:#aaa;font-size:14px;cursor:pointer}
+.detail-tab[aria-selected="true"]{border-color:#8dc9ff;color:#fff}
+.detail-tab:focus-visible{outline:2px solid #8dc9ff;outline-offset:2px}
+.gallery-panel-label{display:grid;gap:6px;max-width:420px;color:#aaa;font-size:13px}
+.gallery-status{font-size:13px}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.gallery-item{min-width:0;margin:0;border:1px solid #35353b;background:#202024}
+.gallery-item img{display:block;width:100%;height:180px;object-fit:contain;background:#17171b}
+.gallery-item figcaption{padding:8px;font-size:12px;color:#ccc;overflow-wrap:anywhere}
+ @media(max-width:650px){.grid{grid-template-columns:1fr}.card{grid-template-columns:minmax(90px,34%) minmax(0,1fr)}.card-media{min-height:190px}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery-item img{height:150px}}
+</style></head>""", 1)
+    page = page.replace("</body>", """<script>
+const statsTab=document.getElementById('statsTab'),galleryTab=document.getElementById('galleryTab'),statsPanel=document.getElementById('statsPanel'),galleryPanel=document.getElementById('galleryPanel'),gallerySectionSelect=document.getElementById('gallerySectionSelect'),galleryStatus=document.getElementById('galleryStatus'),galleryGrid=document.getElementById('galleryGrid');
+const galleryCache=new Map();
+let activeTowerSlug='';
+function selectDetailTab(name){const showGallery=name==='gallery';statsTab.setAttribute('aria-selected',String(!showGallery));galleryTab.setAttribute('aria-selected',String(showGallery));statsPanel.hidden=showGallery;galleryPanel.hidden=!showGallery;if(showGallery)loadTowerGallery(activeTowerSlug)}
+function renderGallerySection(){const section=gallerySectionSelect.value,items=(galleryCache.get(activeTowerSlug)||[]).filter(item=>(item.section||'Other')===section);galleryGrid.innerHTML=items.map(item=>{const caption=item.caption||item.panel||item.section||'Tower gallery image';return '<figure class="gallery-item"><img loading="lazy" src="'+esc(item.image)+'" alt="'+esc(caption)+'"><figcaption>'+esc(caption)+'</figcaption></figure>'}).join('');galleryStatus.textContent=items.length+' images'}
+async function loadTowerGallery(slug){if(!slug)return;if(galleryCache.has(slug)){renderGalleryOptions();return}galleryStatus.textContent='Loading gallery...';galleryGrid.innerHTML='';gallerySectionSelect.disabled=true;try{const response=await fetch('/api/towers/'+encodeURIComponent(slug)+'/gallery');if(!response.ok)throw new Error('Gallery request failed');const items=await response.json();galleryCache.set(slug,items);renderGalleryOptions()}catch(error){galleryStatus.textContent='Gallery could not be loaded. Try again.'}}
+function renderGalleryOptions(){const items=galleryCache.get(activeTowerSlug)||[],sections=[...new Set(items.map(item=>item.section||'Other'))];if(!sections.length){gallerySectionSelect.innerHTML='';gallerySectionSelect.disabled=true;galleryGrid.innerHTML='';galleryStatus.textContent='No gallery images available.';return}gallerySectionSelect.innerHTML=sections.map(section=>'<option value="'+esc(section)+'">'+esc(section)+'</option>').join('');gallerySectionSelect.disabled=sections.length<2;renderGallerySection()}
+document.getElementById('grid').addEventListener('click',event=>{const button=event.target.closest('[data-slug]');if(button){activeTowerSlug=button.dataset.slug;selectDetailTab('stats')}},true);
+statsTab.addEventListener('click',()=>selectDetailTab('stats'));
+galleryTab.addEventListener('click',()=>selectDetailTab('gallery'));
+gallerySectionSelect.addEventListener('change',renderGallerySection);
+</script></body>""", 1)
+    return page.replace("__TOWERS__", _json_for_script(cards)).replace("__RARITY_OPTIONS__", rarity_options)
 
 
 async def _exchange_code(code, redirect_uri, env, fetch_function):
@@ -440,6 +514,20 @@ async def handle_web_request(request, env, response_class, fetch_function):
                 200 if success else 400,
             )
         return _html(_widget_page(), response_class)
+
+    if method == "GET" and path.startswith("/api/towers/") and path.endswith("/gallery"):
+        slug = path.removeprefix("/api/towers/").removesuffix("/gallery").strip("/")
+        if not slug or "/" in slug:
+            return _json_response({"error": "Invalid tower"}, response_class, 404)
+        try:
+            towers = await _load_scraped_towers(env)
+            tower = towers.get(slug)
+            if tower is None:
+                return _json_response({"error": "Tower not found"}, response_class, 404)
+            return _json_response(tower.get("gallery", []), response_class)
+        except Exception as error:
+            print(f"Tower gallery could not be loaded: {error}")
+            return _json_response({"error": "Gallery unavailable"}, response_class, 503)
 
     if path == "/widget/submit" and method == "POST":
         try:

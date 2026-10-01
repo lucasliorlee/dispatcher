@@ -5,4 +5,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [dependency-groups]
-dev = ["workers-py"]
+dev = [
+    "python-dotenv>=1.2.4",
+    "workers-py",
+]

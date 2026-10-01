@@ -1,6 +1,7 @@
 {
  "scout": {
   "name": "Scout",
+  "rarity": "Beginner",
   "url": "https://tds.wiki/w/Scout",
   "image": "https://tds.wiki/images/4/4e/DefaultScout3.png",
   "info": {
@@ -12,8 +13,7 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "499 Robux",
-    "Description": "The Scout is one of two starter towers obtained upon joining the game for the first time, with the other being the Sniper."
+    "Skip Cost": "499 Robux"
    },
    "regular": {
     "Base Cost": "$125",
@@ -43,7 +43,8 @@
    },
    "tooltips": [
     "A well rounded and cheap basic tower.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Scout is one of two starter towers obtained upon joining the game for the first time, with the other being the Sniper."
    ]
   },
   "upgrades": [
@@ -4874,14 +4875,14 @@
  },
  "sniper": {
   "name": "Sniper",
+  "rarity": "Beginner",
   "url": "https://tds.wiki/w/Sniper",
   "image": "https://tds.wiki/images/e/e0/DefaultSniperIcon1.png",
   "info": {
    "general": {
     "Unlock Cost": "Free",
     "Role": "Defense",
-    "Placement": "Cliff",
-    "Description": "The Sniper is one of the two starter towers obtained upon joining the game for the first time, along with the Scout. It is a long-ranged cliff tower with a slow firerate, possessing high damage per shot."
+    "Placement": "Cliff"
    },
    "regular": {
     "Base Cost": "$450",
@@ -4911,7 +4912,8 @@
    },
    "tooltips": [
     "A cheap cliff tower that fires strong shots at a slow fire-rate. Better suited for taking down big single targets.",
-    "Capable of detecting hidden, lead, and flying enemies."
+    "Capable of detecting hidden, lead, and flying enemies.",
+    "The Sniper is one of the two starter towers obtained upon joining the game for the first time, along with the Scout. It is a long-ranged cliff tower with a slow firerate, possessing high damage per shot."
    ]
   },
   "upgrades": [
@@ -7273,14 +7275,14 @@
  },
  "paintballer": {
   "name": "Paintballer",
+  "rarity": "Beginner",
   "url": "https://tds.wiki/w/Paintballer",
   "image": "https://tds.wiki/images/b/b3/NewPaintballerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "100 Coins",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Paintballer is a starter splash damage tower that can be bought in the store for 100 Coins, but it could also be obtained by a now expired code."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$100",
@@ -7310,7 +7312,8 @@
    },
    "tooltips": [
     "A cheap AOE tower with a medium rate of fire and low damage and splash radius.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Paintballer is a starter splash damage tower that can be bought in the store for 100 Coins, but it could also be obtained by a now expired code."
    ]
   },
   "upgrades": [
@@ -8559,14 +8562,14 @@
  },
  "demoman": {
   "name": "Demoman",
+  "rarity": "Beginner",
   "url": "https://tds.wiki/w/Demoman",
   "image": "https://tds.wiki/images/c/c3/DefaultDemomanIcon2.png",
   "info": {
    "general": {
     "Unlock Cost": "200 Coins",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Demoman is a starter splash damage tower that can be bought in the store for 200 Coins. While targeting a specific enemy, it will also affect those around the target, dealing splash damage."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$700",
@@ -8596,7 +8599,8 @@
    },
    "tooltips": [
     "A cheap AOE tower with a slow rate of fire and moderate damage and splash radius.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Demoman is a starter splash damage tower that can be bought in the store for 200 Coins. While targeting a specific enemy, it will also affect those around the target, dealing splash damage."
    ]
   },
   "upgrades": [
@@ -10578,6 +10582,7 @@
  },
  "boomerang": {
   "name": "Boomerang",
+  "rarity": "Beginner",
   "url": "https://tds.wiki/w/Boomerang",
   "image": "https://tds.wiki/images/4/41/DefaultBoomerang0.png",
   "info": {
@@ -10585,8 +10590,7 @@
     "Unlock Cost": "300 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "12",
-    "Description": "The Boomerang is a starter tower bought for 300 Coins. It attacks enemies by throwing a boomerang at them."
+    "Placement Limit": "12"
    },
    "regular": {
     "Base Cost": "$550",
@@ -10907,14 +10911,14 @@
  },
  "slime_trooper": {
   "name": "Slime Trooper",
+  "rarity": "Beginner",
   "url": "https://tds.wiki/w/Slime_Trooper",
   "image": "https://tds.wiki/images/4/4b/SlimeTrooperIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "300 Coins",
     "Role": "Support",
-    "Placement": "Ground",
-    "Description": "The Slime Trooper is a starter support tower which fires globs of slime at enemies, slowing them down. It costs 300 Coins to purchase."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$500",
@@ -11324,14 +11328,14 @@
  },
  "soldier": {
   "name": "Soldier",
+  "rarity": "Beginner",
   "url": "https://tds.wiki/w/Soldier",
   "image": "https://tds.wiki/images/d/da/KrampusRevengeSoldierIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "350 Coins",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Soldier is a starter ground tower that fires in bursts. It can be bought for 350 Coins in the store."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$400",
@@ -11361,7 +11365,8 @@
    },
    "tooltips": [
     "A well rounded burst fire tower with solid range and low damage.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Soldier is a starter ground tower that fires in bursts. It can be bought for 350 Coins in the store."
    ]
   },
   "upgrades": [
@@ -14944,14 +14949,14 @@
  },
  "freezer": {
   "name": "Freezer",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Freezer",
   "image": "https://tds.wiki/images/6/6e/ReworkedFreezerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "650 Coins",
     "Role": "Defense",
-    "Placement": "Ground",
-    "Description": "The Freezer is a ground tower that fires an ice beam and applies chill and slow down enemies, freezing at later levels. It can be bought in the store for 650 Coins."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$450",
@@ -14981,7 +14986,8 @@
    },
    "tooltips": [
     "A support tower focused on slowing down and freezing enemies to support the team.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Freezer is a ground tower that fires an ice beam and applies chill and slow down enemies, freezing at later levels. It can be bought in the store for 650 Coins."
    ]
   },
   "upgrades": [
@@ -16919,14 +16925,14 @@
  },
  "assassin": {
   "name": "Assassin",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Assassin",
   "image": "https://tds.wiki/images/6/69/Assassin.png",
   "info": {
    "general": {
     "Unlock Cost": "800 Coins",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Assassin is an intermediate melee ground tower that can be purchased from the store for 800 Coins."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$300",
@@ -16956,7 +16962,8 @@
    },
    "tooltips": [
     "Silent but deadly. Clear out enemies with fatal stabs, whirlwind slashes, and throwing knifes!",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Assassin is an intermediate melee ground tower that can be purchased from the store for 800 Coins."
    ]
   },
   "upgrades": [
@@ -17902,14 +17909,14 @@
  },
  "militant": {
   "name": "Militant",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Militant",
   "image": "https://tds.wiki/images/6/62/EasterMilitant_Icon.png",
   "info": {
    "general": {
     "Unlock Cost": "800 Coins",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Militant, formerly known as John, is an intermediate tower that costs 800 Coins to buy from the store, but can also be obtained by purchasing the Starter Bundle. It could also be obtained by a now expired code."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$600",
@@ -17939,7 +17946,8 @@
    },
    "tooltips": [
     "A [sic] early-mid game tower with moderately low damage, high fire rate, and great range.",
-    "Capable of detection hidden and flying enemies."
+    "Capable of detection hidden and flying enemies.",
+    "The Militant, formerly known as John, is an intermediate tower that costs 800 Coins to buy from the store, but can also be obtained by purchasing the Starter Bundle. It could also be obtained by a now expired code."
    ]
   },
   "upgrades": [
@@ -20691,6 +20699,7 @@
  },
  "shotgunner": {
   "name": "Shotgunner",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Shotgunner",
   "image": "https://tds.wiki/images/9/9a/EasterShotgunner_Icon.png",
   "info": {
@@ -20703,8 +20712,7 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "499 Robux",
-    "Description": "The Shotgunner, formerly known as the Enforcer, is an intermediate ground tower that wields a powerful pump shotgun to attack enemies with. It costs 850 Coins to buy from the store."
+    "Skip Cost": "499 Robux"
    },
    "regular": {
     "Base Cost": "$1,500",
@@ -20734,7 +20742,8 @@
    },
    "tooltips": [
     "A close range tower that fires a spread of bullets capable of piercing multiple enemies.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Shotgunner, formerly known as the Enforcer, is an intermediate ground tower that wields a powerful pump shotgun to attack enemies with. It costs 850 Coins to buy from the store."
    ]
   },
   "upgrades": [
@@ -22827,6 +22836,7 @@
  },
  "hunter": {
   "name": "Hunter",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Hunter",
   "image": "https://tds.wiki/images/2/26/NewHunterIcon.png",
   "info": {
@@ -22834,8 +22844,7 @@
     "Unlock Cost": "1,000 Coins",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "10",
-    "Description": "The Hunter is an intermediate tower that can be purchased from the store for 1,000 Coins. It could have also been obtained from a now expired code."
+    "Placement Limit": "10"
    },
    "regular": {
     "Base Cost": "$1,625",
@@ -22865,7 +22874,8 @@
    },
    "tooltips": [
     "A long range slow firing tower that's proficient in taking down high health enemies.",
-    "Capable of detecting hidden and flying enemies."
+    "Capable of detecting hidden and flying enemies.",
+    "The Hunter is an intermediate tower that can be purchased from the store for 1,000 Coins. It could have also been obtained from a now expired code."
    ]
   },
   "upgrades": [
@@ -24136,14 +24146,14 @@
  },
  "pyromancer": {
   "name": "Pyromancer",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Pyromancer",
   "image": "https://tds.wiki/images/4/4b/DefaultPyromancerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "1,250 Coins",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Pyromancer is an intermediate tower that costs 1,250 Coins to buy from the store. It is capable of dealing burn damage to enemies, damaging them over time even when not directly targeted. At higher levels, it can also melt defense by up to 50% of the listed value. For example, an enemy with 50% defense will have its defense decreased to 25%."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$900",
@@ -24171,7 +24181,8 @@
    },
    "tooltips": [
     "A close range tower that sprays fire, melts defense, and burns enemies to deal damage over time.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Pyromancer is an intermediate tower that costs 1,250 Coins to buy from the store. It is capable of dealing burn damage to enemies, damaging them over time even when not directly targeted. At higher levels, it can also melt defense by up to 50% of the listed value. For example, an enemy with 50% defense will have its defense decreased to 25%."
    ]
   },
   "upgrades": [
@@ -27607,6 +27618,7 @@
  },
  "ace_pilot": {
   "name": "Ace Pilot",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Ace_Pilot",
   "image": "https://tds.wiki/images/8/87/AcePilotNewIcon.png",
   "info": {
@@ -27614,8 +27626,7 @@
     "Unlock Cost": "1,500 Coins",
     "Role": "Defense",
     "Placement": "Ground (Air-based)",
-    "Placement Limit": "8",
-    "Description": "The Ace Pilot is an intermediate tower that can be bought for 1,500 Coins. Unlike other ground towers, the attacking unit of the Ace Pilot, the plane, is an air unit."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$500",
@@ -27634,7 +27645,8 @@
    "tooltips": [
     "An early to mid game tower that flies in a circular or figure 8 strafing pattern. Fires a barrage of bullets and bombs when staffing by enemies.",
     "Also capable of giving nearby towers hidden detection at later levels.",
-    "Capable of detecting hidden, and flying enemies."
+    "Capable of detecting hidden, and flying enemies.",
+    "The Ace Pilot is an intermediate tower that can be bought for 1,500 Coins. Unlike other ground towers, the attacking unit of the Ace Pilot, the plane, is an air unit."
    ]
   },
   "upgrades": [
@@ -28850,6 +28862,7 @@
  },
  "medic": {
   "name": "Medic",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Medic",
   "image": "https://tds.wiki/images/6/66/DefaultMedicIconAug25.png",
   "info": {
@@ -28857,8 +28870,7 @@
     "Unlock Cost": "2,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "4",
-    "Description": "The Medic is an intermediate support tower that provides various buffs to other towers and replenishes base health after it has been lost. It can be unlocked from the store for 2,000 Coins."
+    "Placement Limit": "4"
    },
    "regular": {
     "Base Cost": "$400",
@@ -28876,7 +28888,8 @@
    "pvp": {},
    "tooltips": [
     "A support tower that heals the base at the start of each wave and can assign its medi gun to nearby towers to give them a shield and a cooldown boost.",
-    "Active ability uber charge also provides a temporary damage boost to all assigned towers."
+    "Active ability uber charge also provides a temporary damage boost to all assigned towers.",
+    "The Medic is an intermediate support tower that provides various buffs to other towers and replenishes base health after it has been lost. It can be unlocked from the store for 2,000 Coins."
    ]
   },
   "upgrades": [
@@ -31532,6 +31545,7 @@
  },
  "farm": {
   "name": "Farm",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Farm",
   "image": "https://tds.wiki/images/e/e2/DefaultFarmIcon.png",
   "info": {
@@ -31539,8 +31553,7 @@
     "Unlock Cost": "2,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "10 (Regular) 8 (PVP)",
-    "Description": "The Farm is an intermediate cash-generating tower that can be purchased from the store for 2,000 Coins."
+    "Placement Limit": "10 (Regular) 8 (PVP)"
    },
    "regular": {
     "Base Cost": "$300",
@@ -31571,7 +31584,8 @@
     "Placement Footprint": "Above Average (1.75)"
    },
    "tooltips": [
-    "Provides extra cash at the start of each wave."
+    "Provides extra cash at the start of each wave.",
+    "The Farm is an intermediate cash-generating tower that can be purchased from the store for 2,000 Coins."
    ]
   },
   "upgrades": [
@@ -33333,6 +33347,7 @@
  },
  "electroshocker": {
   "name": "Electroshocker",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Electroshocker",
   "image": "https://tds.wiki/images/d/d5/DefaultElectroshockerIcon2.png",
   "info": {
@@ -33340,8 +33355,7 @@
     "Unlock Cost": "2,500 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "7",
-    "Description": "The Electroshocker is an intermediate tower that has the capability to deal damage through chain reactions. At later levels, it also becomes a support tower as it gains the ability to stun enemies and reduce Defense. It can be purchased in the store for 2,500 Coins. It can also damage Lead enemies from Level 0 and detect Hidden enemies from Level 2 onward."
+    "Placement Limit": "7"
    },
    "regular": {
     "Base Cost": "$650",
@@ -33359,7 +33373,8 @@
    "pvp": {},
    "tooltips": [
     "An early game tower that unlocks the ability to stun multiple enemies with a chain of lightning at higher levels.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Electroshocker is an intermediate tower that has the capability to deal damage through chain reactions. At later levels, it also becomes a support tower as it gains the ability to stun enemies and reduce Defense. It can be purchased in the store for 2,500 Coins. It can also damage Lead enemies from Level 0 and detect Hidden enemies from Level 2 onward."
    ]
   },
   "upgrades": [
@@ -35692,6 +35707,7 @@
  },
  "rocketeer": {
   "name": "Rocketeer",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Rocketeer",
   "image": "https://tds.wiki/images/8/89/RocketeerIcon2025.png",
   "info": {
@@ -35699,8 +35715,7 @@
     "Unlock Cost": "2,500 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "8",
-    "Description": "The Rocketeer, formerly known as the Rocketer, is an intermediate ground tower that attacks enemies with a rocket launcher. It is purchasable in the store for 2,500 Coins."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -35718,7 +35733,8 @@
    "pvp": {},
    "tooltips": [
     "A mid-game AOE tower with a slow fire-rate and solid damage. At max level it locks onto multiple enemies to fire a barrage of missiles.",
-    "Capable of targeting hidden, and lead enemies."
+    "Capable of targeting hidden, and lead enemies.",
+    "The Rocketeer, formerly known as the Rocketer, is an intermediate ground tower that attacks enemies with a rocket launcher. It is purchasable in the store for 2,500 Coins."
    ]
   },
   "upgrades": [
@@ -38932,6 +38948,7 @@
  },
  "trapper": {
   "name": "Trapper",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Trapper",
   "image": "https://tds.wiki/images/0/0f/TrapperIcon.png",
   "info": {
@@ -38939,8 +38956,7 @@
     "Unlock Cost": "3,000 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "7",
-    "Description": "The Trapper is an intermediate tower that can be bought for 3,000 Coins. It places down various traps on the ground, which when they come in contact with an enemy, the traps damage it in various ways or apply debuffs to them. All traps can damage Hidden enemies, damage Lead enemies and bypass defense. When there are no enemies in range, the Trapper will lay its traps randomly, but if there is an enemy within range the Trapper will target it by laying its traps directly at the enemy. It takes it 0.5 seconds to throw a trap, with the thrown traps having a velocity of 15. The only exception is when it is set to Random. Although a random enemy will still be highlighted when the Trapper is selected, the Trapper will lay its traps randomly and not at the highlighted enemy. There is a 10 second cooldown before a trap can be changed again."
+    "Placement Limit": "7"
    },
    "regular": {
     "Base Cost": "$500",
@@ -38970,7 +38986,8 @@
    },
    "tooltips": [
     "A [sic] early game defensive tower that lays down traps. At later levels the tower can select from multiple traps to focus on AOE or stuns.",
-    "Traps trigger on all enemies except for flying."
+    "Traps trigger on all enemies except for flying.",
+    "The Trapper is an intermediate tower that can be bought for 3,000 Coins. It places down various traps on the ground, which when they come in contact with an enemy, the traps damage it in various ways or apply debuffs to them. All traps can damage Hidden enemies, damage Lead enemies and bypass defense. When there are no enemies in range, the Trapper will lay its traps randomly, but if there is an enemy within range the Trapper will target it by laying its traps directly at the enemy. It takes it 0.5 seconds to throw a trap, with the thrown traps having a velocity of 15. The only exception is when it is set to Random. Although a random enemy will still be highlighted when the Trapper is selected, the Trapper will lay its traps randomly and not at the highlighted enemy. There is a 10 second cooldown before a trap can be changed again."
    ]
   },
   "upgrades": [
@@ -40768,6 +40785,7 @@
  },
  "pulse_trooper": {
   "name": "Pulse Trooper",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Pulse_Trooper",
   "image": "https://tds.wiki/images/c/c8/DefaultPulseTrooper0.png",
   "info": {
@@ -40775,8 +40793,7 @@
     "Unlock Cost": "3,250 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "7",
-    "Description": "The Pulse Trooper is an intermediate tower that fires pulses at enemies in its range. It can be purchased in the store for 3,250 Coins. It can also damage Lead enemies from Level 2 onward."
+    "Placement Limit": "7"
    },
    "regular": {
     "Base Cost": "$2,100",
@@ -41251,6 +41268,7 @@
  },
  "military_base": {
   "name": "Military Base",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Military_Base",
   "image": "https://tds.wiki/images/d/d0/DefaultMilitaryBaseIconM29.png",
   "info": {
@@ -41258,8 +41276,7 @@
     "Unlock Cost": "4,000 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "5",
-    "Description": "The Military Base is an intermediate tower that spawns various military-themed vehicles, which can be bought in the store for 4,000 Coins. Levels 0-3 will spawn Humvees of varying strength, Level 4 will spawn a Tank and Level 5 will spawn a Railgun Tank."
+    "Placement Limit": "5"
    },
    "regular": {
     "Base Cost": "$400",
@@ -41291,7 +41308,8 @@
    },
    "tooltips": [
     "A unit summoning tower that endlessly spawns friendly Humvees and tanks down the path. At later levels can also call in air-strikes on the path.",
-    "Units are capable of detecting hidden enemies."
+    "Units are capable of detecting hidden enemies.",
+    "The Military Base is an intermediate tower that spawns various military-themed vehicles, which can be bought in the store for 4,000 Coins. Levels 0-3 will spawn Humvees of varying strength, Level 4 will spawn a Tank and Level 5 will spawn a Railgun Tank."
    ]
   },
   "upgrades": [
@@ -43429,6 +43447,7 @@
  },
  "crook_boss": {
   "name": "Crook Boss",
+  "rarity": "Intermediate",
   "url": "https://tds.wiki/w/Crook_Boss",
   "image": "https://tds.wiki/images/b/b6/CBRCBossIcon.png",
   "info": {
@@ -43441,8 +43460,7 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "599 Robux",
-    "Description": "The Crook Boss is an intermediate tower that sends out goons to fight alongside it. The tower is unlocked upon reaching Level 30, but it can alternatively be purchased as a gamepass for 168 Robux. The Crook Boss can be claimed using the pop up message that appears when joining the lobby."
+    "Skip Cost": "599 Robux"
    },
    "regular": {
     "Base Cost": "$2,250",
@@ -43474,7 +43492,8 @@
    },
    "tooltips": [
     "A well rounded tower with good detection coverage, reliable damage, and the ability to spawn friendly units.",
-    "Capable of detection hidden and flying enemies."
+    "Capable of detection hidden and flying enemies.",
+    "The Crook Boss is an intermediate tower that sends out goons to fight alongside it. The tower is unlocked upon reaching Level 30, but it can alternatively be purchased as a gamepass for 168 Robux. The Crook Boss can be claimed using the pop up message that appears when joining the lobby."
    ]
   },
   "upgrades": [
@@ -48859,6 +48878,7 @@
  },
  "commander": {
   "name": "Commander",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Commander",
   "image": "https://tds.wiki/images/c/c9/Commandernew.png",
   "info": {
@@ -48866,8 +48886,7 @@
     "Unlock Cost": "4,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "6",
-    "Description": "The Commander is an advanced support tower that decreases the firerate of towers within its range, increasing their damage output. It can be purchased in the store for 4,000 Coins."
+    "Placement Limit": "6"
    },
    "regular": {
     "Base Cost": "$650",
@@ -48885,7 +48904,8 @@
    "pvp": {},
    "tooltips": [
     "A support tower that provides a passive attack speed buff to nearby towers. Can also use its active skills to provide a temporary massive buff to nearby towers.",
-    "At final level also unlocks the ability to summon a caravan of friendly APC units."
+    "At final level also unlocks the ability to summon a caravan of friendly APC units.",
+    "The Commander is an advanced support tower that decreases the firerate of towers within its range, increasing their damage output. It can be purchased in the store for 4,000 Coins."
    ]
   },
   "upgrades": [
@@ -54834,6 +54854,7 @@
  },
  "warden": {
   "name": "Warden",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Warden",
   "image": "https://tds.wiki/images/a/a5/Warden.png",
   "info": {
@@ -54841,8 +54862,7 @@
     "Unlock Cost": "Triumph Pizza Party & 4,000 Coins or 337 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "12 15 (PVP)",
-    "Description": "The Warden is an advanced ground tower with short range that can be purchased from the store for 4,000 Coins after triumphing Pizza Party. Alternatively, it is obtainable through a gamepass for 337 Robux without having to triumph the map."
+    "Placement Limit": "12 15 (PVP)"
    },
    "regular": {
     "Base Cost": "$1,850",
@@ -54872,7 +54892,8 @@
    },
    "tooltips": [
     "A mid-game melee tower that deals solid damage and has the ability to stun and deal a critical hit every 3 hits.",
-    "Capable of targeting hidden and lead enemies."
+    "Capable of targeting hidden and lead enemies.",
+    "The Warden is an advanced ground tower with short range that can be purchased from the store for 4,000 Coins after triumphing Pizza Party. Alternatively, it is obtainable through a gamepass for 337 Robux without having to triumph the map."
    ]
   },
   "upgrades": [
@@ -56651,6 +56672,7 @@
  },
  "cowboy": {
   "name": "Cowboy",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Cowboy",
   "image": "https://tds.wiki/images/8/82/WDDefaultCowboyIcon.png",
   "info": {
@@ -56658,8 +56680,7 @@
     "Unlock Cost": "Triumph Badlands II & 4,000 Coins or 340 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "12 (Regular) 10 (PVP)",
-    "Description": "The Cowboy is an advanced ground tower which generates income every few shots. It can be purchased from the store for 4,000 Coins only after triumphing Badlands II. Due to a bug, the tower does not need to be purchased, instead appearing in the Gift Box. Alternatively, its gamepass can be purchased for 340 Robux."
+    "Placement Limit": "12 (Regular) 10 (PVP)"
    },
    "regular": {
     "Base Cost": "$550",
@@ -56691,7 +56712,8 @@
    },
    "tooltips": [
     "A gunslinger with solid range and moderately low damage. Helps by giving the player extra cash every time it needs to reload.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Cowboy is an advanced ground tower which generates income every few shots. It can be purchased from the store for 4,000 Coins only after triumphing Badlands II. Due to a bug, the tower does not need to be purchased, instead appearing in the Gift Box. Alternatively, its gamepass can be purchased for 340 Robux."
    ]
   },
   "upgrades": [
@@ -60301,6 +60323,7 @@
  },
  "dj_booth": {
   "name": "DJ Booth",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/DJ_Booth",
   "image": "https://tds.wiki/images/3/33/DefaultDJBoothIconAug2024.png",
   "info": {
@@ -60308,8 +60331,7 @@
     "Unlock Cost": "5,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "1",
-    "Description": "The DJ Booth is an advanced tower that is primarily a support tower with some economic and offensive capabilities through its Drop the Beat ability unlocked at Level 3. It can be bought from the store for 5,000 Coins."
+    "Placement Limit": "1"
    },
    "regular": {
     "Base Cost": "$850",
@@ -60327,7 +60349,8 @@
    "pvp": {},
    "tooltips": [
     "A support tower that can switch tracks to provide either a range, discount, or damage buff to nearby towers.",
-    "Later levels comes [sic] with an active skill that will change depending on what track is active."
+    "Later levels comes [sic] with an active skill that will change depending on what track is active.",
+    "The DJ Booth is an advanced tower that is primarily a support tower with some economic and offensive capabilities through its Drop the Beat ability unlocked at Level 3. It can be bought from the store for 5,000 Coins."
    ]
   },
   "upgrades": [
@@ -62831,6 +62854,7 @@
  },
  "tesla": {
   "name": "Tesla",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Tesla",
   "image": "https://tds.wiki/images/0/05/TeslaIcon.png",
   "info": {
@@ -62838,8 +62862,7 @@
     "Unlock Cost": "6,000 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "2",
-    "Description": "The Tesla is a mid-late game advanced tower which attacks enemies with chain lightning, temporarily immobilizing them. It can be bought for 6,000 Coins."
+    "Placement Limit": "2"
    },
    "regular": {
     "Base Cost": "$5,750",
@@ -62857,7 +62880,8 @@
    "pvp": {},
    "tooltips": [
     "A powerful tower that deals high damage and can stun all enemies in range with its active ability.",
-    "Capable of detecting flying and lead enemies."
+    "Capable of detecting flying and lead enemies.",
+    "The Tesla is a mid-late game advanced tower which attacks enemies with chain lightning, temporarily immobilizing them. It can be bought for 6,000 Coins."
    ]
   },
   "upgrades": [
@@ -63453,6 +63477,7 @@
  },
  "saboteur": {
   "name": "Saboteur",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Saboteur",
   "image": "https://tds.wiki/images/c/c8/SaboteurIcon.png",
   "info": {
@@ -63460,8 +63485,7 @@
     "Unlock Cost": "Triumph Polluted Wasteland II & 7,500 Coins or 449 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "8",
-    "Description": "The Saboteur is a poison-based tower bought for 7,500 Coins after triumphing Polluted Wasteland II or bought for 449 Robux."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$775",
@@ -64443,6 +64467,7 @@
  },
  "minigunner": {
   "name": "Minigunner",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Minigunner",
   "image": "https://tds.wiki/images/8/81/NewMinigunner.png",
   "info": {
@@ -64455,8 +64480,7 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "479 Robux",
-    "Description": "The Minigunner is a fast-firing advanced tower that can be purchased from the store for 8,000 Coins."
+    "Skip Cost": "479 Robux"
    },
    "regular": {
     "Base Cost": "$1,850",
@@ -64486,7 +64510,8 @@
    },
    "tooltips": [
     "A reliable moderately priced DPS tower with solid range, dependable damage, and a high rate of fire.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Minigunner is a fast-firing advanced tower that can be purchased from the store for 8,000 Coins."
    ]
   },
   "upgrades": [
@@ -71415,6 +71440,7 @@
  },
  "ranger": {
   "name": "Ranger",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Ranger",
   "image": "https://tds.wiki/images/5/52/Newranger.png",
   "info": {
@@ -71422,8 +71448,7 @@
     "Unlock Cost": "12,000 Coins",
     "Role": "Defense",
     "Placement": "Cliff",
-    "Placement Limit": "8",
-    "Description": "The Ranger, formerly known as the Outlaw, is an advanced cliff tower with long range that can be purchased in the store for 12,000 Coins."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$4,500",
@@ -71454,7 +71479,8 @@
    "tooltips": [
     "An expensive cliff tower with great range and damage. Fires extremely slow so best used targeting high health targets.",
     "Later levels provide nearby towers with a range boost at the beginner [sic] of waves.",
-    "Capable of detecting flying and lead enemies."
+    "Capable of detecting flying and lead enemies.",
+    "The Ranger, formerly known as the Outlaw, is an advanced cliff tower with long range that can be purchased in the store for 12,000 Coins."
    ]
   },
   "upgrades": [
@@ -75685,6 +75711,7 @@
  },
  "pursuit": {
   "name": "Pursuit",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Pursuit",
   "image": "https://tds.wiki/images/0/0e/PursuitNewIcon.png",
   "info": {
@@ -75693,8 +75720,7 @@
     "Level Requirement": "Level 100",
     "Role": "Offense",
     "Placement": "Ground (Air-based)",
-    "Placement Limit": "6 (Regular) 5 (PVP)",
-    "Description": "The Pursuit is an advanced tower that can be bought for 15,000 Coins after reaching Level 100 or bought via a gamepass for 1,500 Robux. The Pursuit patrols a specified area, attacking any enemy that enters it that it can also see in its own range. The area it patrols can be changed with its Patrol ability. It also has two upgrade paths."
+    "Placement Limit": "6 (Regular) 5 (PVP)"
    },
    "regular": {
     "Base Cost": "$5,000",
@@ -75724,7 +75750,8 @@
    },
    "tooltips": [
     "An expensive and high damage dealing tower that occasionally fires AOE rockets. Can be ordered to patrol specific areas of the map to provide universal coverage.",
-    "Capable of targeting flying and lead enemies."
+    "Capable of targeting flying and lead enemies.",
+    "The Pursuit is an advanced tower that can be bought for 15,000 Coins after reaching Level 100 or bought via a gamepass for 1,500 Robux. The Pursuit patrols a specified area, attacking any enemy that enters it that it can also see in its own range. The area it patrols can be changed with its Patrol ability. It also has two upgrade paths."
    ]
   },
   "upgrades": [
@@ -77787,6 +77814,7 @@
  },
  "gatling_gun": {
   "name": "Gatling Gun",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Gatling_Gun",
   "image": "https://tds.wiki/images/8/8a/GatlingGunIcon.png",
   "info": {
@@ -77795,8 +77823,7 @@
     "Level Requirement": "Level 175",
     "Role": "Offense",
     "Placement": "Ground Cliff",
-    "Placement Limit": "1",
-    "Description": "The Gatling Gun is an advanced tower that is able to be placed on both ground and cliffs, which can be controlled by the player using its ability. It can be bought for 35,000 Coins when the player has reached Level 175 or bought for 1,364 Robux."
+    "Placement Limit": "1"
    },
    "regular": {
     "Base Cost": "$5,250",
@@ -77827,7 +77854,8 @@
    "tooltips": [
     "An expensiveone of a kind tower that fires within a cone range. Comes with high damage, range, and the ability to pierce multiple targets.",
     "Players can also take personal control to fire the gatling gun in first person mode.",
-    "Capable of detecting flying and hidden enemies."
+    "Capable of detecting flying and hidden enemies.",
+    "The Gatling Gun is an advanced tower that is able to be placed on both ground and cliffs, which can be controlled by the player using its ability. It can be bought for 35,000 Coins when the player has reached Level 175 or bought for 1,364 Robux."
    ]
   },
   "upgrades": [
@@ -78742,6 +78770,7 @@
  },
  "turret": {
   "name": "Turret",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Turret",
   "image": "https://tds.wiki/images/6/6f/TurretIcon.png",
   "info": {
@@ -78749,8 +78778,7 @@
     "Unlock Cost": "Level 50 or 340 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "3 (Regular) 5 (PVP)",
-    "Description": "The Turret is an advanced tower with long range and high damage. It cannot be purchased from the store, instead unlocked at Level 50 or via its gamepass, priced at 340 Robux. When the player reaches Level 50, the Turret can be claimed using the pop up message that appears when joining the lobby."
+    "Placement Limit": "3 (Regular) 5 (PVP)"
    },
    "regular": {
     "Base Cost": "$7,750",
@@ -78780,7 +78808,8 @@
    },
    "tooltips": [
     "An expensive high damage dealing tower with great range. Exceptional stats make up for low placement limit.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Turret is an advanced tower with long range and high damage. It cannot be purchased from the store, instead unlocked at Level 50 or via its gamepass, priced at 340 Robux. When the player reaches Level 50, the Turret can be claimed using the pop up message that appears when joining the lobby."
    ]
   },
   "upgrades": [
@@ -80060,6 +80089,7 @@
  },
  "mortar": {
   "name": "Mortar",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Mortar",
   "image": "https://tds.wiki/images/0/05/MortarIcon.png",
   "info": {
@@ -80067,8 +80097,7 @@
     "Unlock Cost": "Level 75 or 300 Robux",
     "Role": "Defense",
     "Placement": "Cliff",
-    "Placement Limit": "4 5 (PVP)",
-    "Description": "The Mortar is an advanced cliff tower with a long range capable of damaging enemies with its explosions. It can be unlocked by reaching Level 75 or purchased via a gamepass for 300 Robux. When the player reaches Level 75, the Mortar can be claimed by using the pop-up message that appears when joining the lobby."
+    "Placement Limit": "4 5 (PVP)"
    },
    "regular": {
     "Base Cost": "$1,000",
@@ -80098,7 +80127,8 @@
    },
    "tooltips": [
     "AOE cliff tower that deals dependable damage and can be upgraded to release cluster bombs on impact.",
-    "Capable of detecting flying and lead enemies."
+    "Capable of detecting flying and lead enemies.",
+    "The Mortar is an advanced cliff tower with a long range capable of damaging enemies with its explosions. It can be unlocked by reaching Level 75 or purchased via a gamepass for 300 Robux. When the player reaches Level 75, the Mortar can be claimed by using the pop-up message that appears when joining the lobby."
    ]
   },
   "upgrades": [
@@ -82404,6 +82434,7 @@
  },
  "mercenary_base": {
   "name": "Mercenary Base",
+  "rarity": "Advanced",
   "url": "https://tds.wiki/w/Mercenary_Base",
   "image": "https://tds.wiki/images/d/d6/DefaultMercenaryBaseIcon.png",
   "info": {
@@ -82411,8 +82442,7 @@
     "Tower Cost": "Level 150 or 945 Robux",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "3",
-    "Description": "The Mercenary Base is an advanced tower unlocked at Level 150. It can also be bought for 945 Robux. It can spawn various units on the path within its range, which can deal damage to enemies or support other units. These units have varying strengths, spawnrates and purposes."
+    "Placement Limit": "3"
    },
    "regular": {
     "Base Cost": "$2,750",
@@ -82443,7 +82473,8 @@
    "tooltips": [
     "A unit summoning tower that releases an endless stream of mercenary units.",
     "Player can choose between a riflemen [sic], grenadier, a riot guard, or the medic; each unit having their own strengths and weaknesses.",
-    "Units can detect hidden, flying, and lead enemies."
+    "Units can detect hidden, flying, and lead enemies.",
+    "The Mercenary Base is an advanced tower unlocked at Level 150. It can also be bought for 945 Robux. It can spawn various units on the path within its range, which can deal damage to enemies or support other units. These units have varying strengths, spawnrates and purposes."
    ]
   },
   "upgrades": [
@@ -84108,6 +84139,7 @@
  },
  "brawler": {
   "name": "Brawler",
+  "rarity": "Hardcore",
   "url": "https://tds.wiki/w/Brawler",
   "image": "https://tds.wiki/images/c/c5/BrawlerFromTDS.png",
   "info": {
@@ -84116,8 +84148,7 @@
     "Level Requirement": "Level 50",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "10 (Regular) 6 (PVP)",
-    "Description": "The Brawler is a hardcore melee tower that attacks enemies with its mechanical fists. It can be purchased from the store for 1,250 Gems and has a level requirement of Level 50."
+    "Placement Limit": "10 (Regular) 6 (PVP)"
    },
    "regular": {
     "Base Cost": "$300",
@@ -84147,7 +84178,8 @@
    },
    "tooltips": [
     "An early game melee tower that comes with the ability to knockback enemies. Also have [sic] the ability to relocate anywhere on the map.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Brawler is a hardcore melee tower that attacks enemies with its mechanical fists. It can be purchased from the store for 1,250 Gems and has a level requirement of Level 50."
    ]
   },
   "upgrades": [
@@ -85825,6 +85857,7 @@
  },
  "necromancer": {
   "name": "Necromancer",
+  "rarity": "Hardcore",
   "url": "https://tds.wiki/w/Necromancer",
   "image": "https://tds.wiki/images/0/0b/NecromancerTowerIcon.png",
   "info": {
@@ -85833,8 +85866,7 @@
     "Level Requirement": "Level 50",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "3",
-    "Description": "The Necromancer is a hardcore spawner tower that can be unlocked in the store for 2,250 Gems and has a level requirement of Level 50. It could have also been obtained through a gamepass for 1,500 Robux."
+    "Placement Limit": "3"
    },
    "regular": {
     "Base Cost": "$4,200",
@@ -85864,7 +85896,8 @@
    },
    "tooltips": [
     "A mid-late game tower that fires piercing magical projectiles. Dealing damage creates tombstones which can then be triggered to summon a variety of different skeletal minions.",
-    "Capable of targeting flying and hidden enemies."
+    "Capable of targeting flying and hidden enemies.",
+    "The Necromancer is a hardcore spawner tower that can be unlocked in the store for 2,250 Gems and has a level requirement of Level 50. It could have also been obtained through a gamepass for 1,500 Robux."
    ]
   },
   "upgrades": [
@@ -87405,6 +87438,7 @@
  },
  "accelerator": {
   "name": "Accelerator",
+  "rarity": "Hardcore",
   "url": "https://tds.wiki/w/Accelerator",
   "image": "https://tds.wiki/images/5/56/DefaultAcceleratorIcon2.png",
   "info": {
@@ -87413,8 +87447,7 @@
     "Level Requirement": "Level 50",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "5",
-    "Description": "The Accelerator is a hardcore tower that attacks in delayed bursts. It has a charge-up that happens before the burst and a cooldown that happens after the burst. During the burst, it can deal massive amounts of damage in a short period of time, but does no damage in between bursts. It can be purchased from the store for 2,500 Gems and has a level requirement of Level 50."
+    "Placement Limit": "5"
    },
    "regular": {
     "Base Cost": "$7,500",
@@ -87444,7 +87477,8 @@
    },
    "tooltips": [
     "An expensive late game tower that deal [sic] great single target damage. Needs a second to charge up and cooldown when over-heated, but makes up for it with great range and DPS.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Accelerator is a hardcore tower that attacks in delayed bursts. It has a charge-up that happens before the burst and a cooldown that happens after the burst. During the burst, it can deal massive amounts of damage in a short period of time, but does no damage in between bursts. It can be purchased from the store for 2,500 Gems and has a level requirement of Level 50."
    ]
   },
   "upgrades": [
@@ -90654,6 +90688,7 @@
  },
  "engineer": {
   "name": "Engineer",
+  "rarity": "Hardcore",
   "url": "https://tds.wiki/w/Engineer",
   "image": "https://tds.wiki/images/e/ec/EngineerIcon.png",
   "info": {
@@ -90662,8 +90697,7 @@
     "Level Requirement": "Level 50",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "6 (Regular) 5 (PVP)",
-    "Description": "The Engineer is a hardcore tower that attacks enemies with a rebar launcher and can build various sentries within its range to assist with defense. It can be purchased from the store for 4,500 Gems and has a level requirement of Level 50. The Engineer is also available through a gamepass for 1,267 Robux."
+    "Placement Limit": "6 (Regular) 5 (PVP)"
    },
    "regular": {
     "Base Cost": "$600",
@@ -90693,7 +90727,8 @@
    },
    "tooltips": [
     "A well-rounded tower that takes time to ramp up and build its turrets but can create a strong defensive line with great coverage once its turrets are setup.",
-    "Capable of detecting hidden, lead, and flying enemies."
+    "Capable of detecting hidden, lead, and flying enemies.",
+    "The Engineer is a hardcore tower that attacks enemies with a rebar launcher and can build various sentries within its range to assist with defense. It can be purchased from the store for 4,500 Gems and has a level requirement of Level 50. The Engineer is also available through a gamepass for 1,267 Robux."
    ]
   },
   "upgrades": [
@@ -93823,6 +93858,7 @@
  },
  "hacker": {
   "name": "Hacker",
+  "rarity": "Hardcore",
   "url": "https://tds.wiki/w/Hacker",
   "image": "https://tds.wiki/images/8/8a/HackerIcon.png",
   "info": {
@@ -93830,8 +93866,7 @@
     "Unlock Cost": "5,500 Gems or 1,574 Robux",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "2",
-    "Description": "The Hacker is a hardcore tower that hacks enemies, applying various effects to them. It can be purchased from the store for 5,500 Gems or through a gamepass for 1,574 Robux."
+    "Placement Limit": "2"
    },
    "regular": {
     "Base Cost": "$900",
@@ -93863,7 +93898,8 @@
     "A defensive tower that targets multiple enemies and applies slow to targets",
     "Enemy attacked by Hacker will be hacked and turned into a friendly units [sic].",
     "Enemies killed in Hacker's range will reward more cash at later levels.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Hacker is a hardcore tower that hacks enemies, applying various effects to them. It can be purchased from the store for 5,500 Gems or through a gamepass for 1,574 Robux."
    ]
   },
   "upgrades": [
@@ -95334,6 +95370,7 @@
  },
  "operator": {
   "name": "Operator",
+  "rarity": "Evolved",
   "url": "https://tds.wiki/w/Operator",
   "image": "https://tds.wiki/images/a/a7/DefaultOperator0.png",
   "info": {
@@ -95346,8 +95383,7 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "999 Robux",
-    "Description": "The Operator, internally referred to as EvolvedOperator, is the evolved version of the Scout, unlocked by reaching Level 20 on the Scout tower, either by getting the experience or by skipping the need to get it by paying 499 Robux. Once done, it can be bought for 4,500 Gems and 15,000 Coins. As it is an evolved tower, only some of its upgrades are unlocked at the start. All other have to be unlocked by reaching higher evolution levels on the tower."
+    "Skip Cost": "999 Robux"
    },
    "regular": {
     "Base Cost": "$300",
@@ -95970,6 +96006,7 @@
  },
  "enforcer": {
   "name": "Enforcer",
+  "rarity": "Evolved",
   "url": "https://tds.wiki/w/Enforcer",
   "image": "https://tds.wiki/images/a/af/DefaultEnforcer0.png",
   "info": {
@@ -95982,8 +96019,7 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "999 Robux",
-    "Description": "The Enforcer, internally referred to as EvolvedEnforcer, is the evolved version of the Shotgunner, unlocked by reaching Level 20 on the Shotgunner tower, either by getting the experience or by skipping the need to get it by paying 499 Robux. Once done, it can be bought for 4,750 Gems and 15,000 Coins. As it is an evolved tower, only some of its upgrades are unlocked at the start. All other have to be unlocked by reaching higher evolution levels on the tower."
+    "Skip Cost": "999 Robux"
    },
    "regular": {
     "Base Cost": "$3,000",
@@ -97132,6 +97168,7 @@
  },
  "kingpin": {
   "name": "Kingpin",
+  "rarity": "Evolved",
   "url": "https://tds.wiki/w/Kingpin",
   "image": "https://tds.wiki/images/c/c6/DefaultKingpin0.png",
   "info": {
@@ -97144,8 +97181,7 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "1,199 Robux",
-    "Description": "The Kingpin, internally referred to as EvolvedKingpin, is the evolved version of the Crook Boss, unlocked by reaching Level 20 on the Crook Boss tower, either by getting the experience or by skipping the need to get it by paying 599 Robux. Once done, it can be bought for 5,500 Gems and 15,000 Coins. As it is an evolved tower, only some of its upgrades are unlocked at the start. All other have to be unlocked by reaching higher evolution levels on the tower."
+    "Skip Cost": "1,199 Robux"
    },
    "regular": {
     "Base Cost": "$3,600",
@@ -98191,6 +98227,7 @@
  },
  "juggernaut": {
   "name": "Juggernaut",
+  "rarity": "Evolved",
   "url": "https://tds.wiki/w/Juggernaut",
   "image": "https://tds.wiki/images/3/3f/EvolvedJuggernautIcon.png",
   "info": {
@@ -98203,8 +98240,7 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "1,199 Robux",
-    "Description": "The Juggernaut or EvolvedJuggernaut is the evolved version of the Minigunner, unlocked by reaching Level 20 on the Minigunner tower, either by getting the experience or by paying 599 Robux. Once done, it can be bought for 6,000 Gems and 15,000 Coins. As it is an evolved tower, only some of its upgrades are unlocked at the start. All others have to be unlocked by reaching higher evolution levels on the tower."
+    "Skip Cost": "1,199 Robux"
    },
    "regular": {
     "Base Cost": "$10,000",
@@ -98224,7 +98260,8 @@
     "A massive offensive tower that fires high damage shots at a quick rate. At level 4, splits into two paths.",
     "On top path, gains a fortify zone that reduces debuff and stun times for nearby towers.",
     "On Bottom Path, gains a damage multiplier on boss enemies.",
-    "Capable of detecting hidden enemies, flying enemies on top path, and lead enemies on bottom path."
+    "Capable of detecting hidden enemies, flying enemies on top path, and lead enemies on bottom path.",
+    "The Juggernaut or EvolvedJuggernaut is the evolved version of the Minigunner, unlocked by reaching Level 20 on the Minigunner tower, either by getting the experience or by paying 599 Robux. Once done, it can be bought for 6,000 Gems and 15,000 Coins. As it is an evolved tower, only some of its upgrades are unlocked at the start. All others have to be unlocked by reaching higher evolution levels on the tower."
    ]
   },
   "upgrades": [
@@ -99145,6 +99182,7 @@
  },
  "golden_minigunner": {
   "name": "Golden Minigunner",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Minigunner",
   "image": "https://tds.wiki/images/c/cb/Goldenminigunner.png",
   "info": {
@@ -99157,8 +99195,7 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "599 Robux",
-    "Description": "The Golden Minigunner is a golden perk for the Minigunner, obtained from the Golden Crate for 50,000 Coins if you own the Minigunner. It can also be bought in the Daily Store for 75,000 Coins."
+    "Skip Cost": "599 Robux"
    },
    "regular": {
     "Base Cost": "$2,400",
@@ -99176,7 +99213,8 @@
    "pvp": {},
    "tooltips": [
     "A reliable moderately priced DPS tower with solid range, dependable damage, and a high rate of fire.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Golden Minigunner is a golden perk for the Minigunner, obtained from the Golden Crate for 50,000 Coins if you own the Minigunner. It can also be bought in the Daily Store for 75,000 Coins."
    ]
   },
   "upgrades": [
@@ -105944,6 +105982,7 @@
  },
  "golden_pyromancer": {
   "name": "Golden Pyromancer",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Pyromancer",
   "image": "https://tds.wiki/images/f/fb/DHGoldenPyroIcon.png",
   "info": {
@@ -105951,8 +105990,7 @@
     "Golden Perk Cost": "50,000 Coins (Golden Crate) or 65,000 Coins (Daily Store)",
     "Tower Cost": "1,250 Coins (Pyromancer)",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Golden Pyromancer is a golden perk for the Pyromancer, obtained from the Golden Crate for 50,000 Coins, if you own the Pyromancer. Its main gimmick is its ability to burn enemies, dealing extra damage over time and later reducing the enemy Defense."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$850",
@@ -105970,7 +106008,8 @@
    "pvp": {},
    "tooltips": [
     "A close range tower that sprays fire, melts defense, and burns enemies to deal damage over time.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "The Golden Pyromancer is a golden perk for the Pyromancer, obtained from the Golden Crate for 50,000 Coins, if you own the Pyromancer. Its main gimmick is its ability to burn enemies, dealing extra damage over time and later reducing the enemy Defense."
    ]
   },
   "upgrades": [
@@ -109160,6 +109199,7 @@
  },
  "golden_crook_boss": {
   "name": "Golden Crook Boss",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Crook_Boss",
   "image": "https://tds.wiki/images/b/bb/NewGoldenCrookBoss.png",
   "info": {
@@ -109173,8 +109213,7 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "599 Robux",
-    "Description": "The Golden Crook Boss is an upgraded version of the Crook Boss, obtained from the Golden Crate for 50,000 Coins if the player owns the Crook Boss. It can also be bought in the Daily Store for 55,000 Coins. The normal counterpart, the Crook Boss, can be claimed by reaching Level 30 or alternatively purchasing it for 300 Robux."
+    "Skip Cost": "599 Robux"
    },
    "regular": {
     "Base Cost": "$2,400",
@@ -109193,7 +109232,8 @@
    "pvp": {},
    "tooltips": [
     "A well rounded tower with good detection coverage, reliable damage, and the ability to spawn friendly units.",
-    "Capable of detection hidden and flying enemies."
+    "Capable of detection hidden and flying enemies.",
+    "The Golden Crook Boss is an upgraded version of the Crook Boss, obtained from the Golden Crate for 50,000 Coins if the player owns the Crook Boss. It can also be bought in the Daily Store for 55,000 Coins. The normal counterpart, the Crook Boss, can be claimed by reaching Level 30 or alternatively purchasing it for 300 Robux."
    ]
   },
   "upgrades": [
@@ -114344,6 +114384,7 @@
  },
  "golden_scout": {
   "name": "Golden Scout",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Scout",
   "image": "https://tds.wiki/images/a/a0/GoldenScout3.png",
   "info": {
@@ -114356,8 +114397,7 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "499 Robux",
-    "Description": "The Golden Scout is a upgraded version of the Scout, obtained in the Golden Crate for 50,000 Coins. It can also appear in the Daily Skin Store for 55,000 Coins. You automatically unlock the Golden Scout's normal counterpart, the Scout, when you first join in the game."
+    "Skip Cost": "499 Robux"
    },
    "regular": {
     "Base Cost": "$250",
@@ -114375,7 +114415,8 @@
    "pvp": {},
    "tooltips": [
     "A well rounded and cheap basic tower.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Golden Scout is a upgraded version of the Scout, obtained in the Golden Crate for 50,000 Coins. It can also appear in the Daily Skin Store for 55,000 Coins. You automatically unlock the Golden Scout's normal counterpart, the Scout, when you first join in the game."
    ]
   },
   "upgrades": [
@@ -119056,6 +119097,7 @@
  },
  "golden_cowboy": {
   "name": "Golden Cowboy",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Cowboy",
   "image": "https://tds.wiki/images/b/b6/WDGoldenCowboyIcon.png",
   "info": {
@@ -119064,8 +119106,7 @@
     "Tower Cost": "Triumph Badlands II & 4,000 Coins or 340 Robux (Cowboy)",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "12",
-    "Description": "The Golden Cowboy is a golden perk for the Cowboy, unlocked from the Golden Crate for 50,000 Coins, if you have the Cowboy. It can also appear in the daily skin store for 70,000 Coins."
+    "Placement Limit": "12"
    },
    "regular": {
     "Base Cost": "$600",
@@ -119084,7 +119125,8 @@
    "pvp": {},
    "tooltips": [
     "A gunslinger with solid range and moderately low damage. Helps by giving the player extra cash every time it needs to reload.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Golden Cowboy is a golden perk for the Cowboy, unlocked from the Golden Crate for 50,000 Coins, if you have the Cowboy. It can also appear in the daily skin store for 70,000 Coins."
    ]
   },
   "upgrades": [
@@ -122476,6 +122518,7 @@
  },
  "golden_soldier": {
   "name": "Golden Soldier",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Soldier",
   "image": "https://tds.wiki/images/e/e7/KR_Golden_Soldier_Icon.png",
   "info": {
@@ -122483,8 +122526,7 @@
     "Golden Perk Cost": "50,000 Coins (Golden Crate & Daily Store)",
     "Tower Cost": "350 Coins (Soldier)",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Golden Soldier is a ground tower that fires in bursts. It is an upgraded version of the Soldier, obtained from the Golden Crate for 50,000 Coins, if you own the Soldier. It can also appear in the Daily Skin Store for 50,000 Coins."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$450",
@@ -122502,7 +122544,8 @@
    "pvp": {},
    "tooltips": [
     "A well rounded burst fire tower with solid range and low damage.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "The Golden Soldier is a ground tower that fires in bursts. It is an upgraded version of the Soldier, obtained from the Golden Crate for 50,000 Coins, if you own the Soldier. It can also appear in the Daily Skin Store for 50,000 Coins."
    ]
   },
   "upgrades": [
@@ -125917,6 +125960,7 @@
  },
  "golden_demoman": {
   "name": "Golden Demoman",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Demoman",
   "image": "https://tds.wiki/images/9/95/GoldenDemoman0.png",
   "info": {
@@ -125924,8 +125968,7 @@
     "Golden Perk Cost": "50,000 Coins (Golden Crate) or 55,000 Coins (Daily Store)",
     "Tower Cost": "200 Coins",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "The Golden Demoman is a splash damage tower that is an upgraded version of the Demoman, obtained from the Golden Crate for 50,000 Coins, if you own the Demoman. It can also appear in the Daily Skin Store for 55,000 Coins."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$875",
@@ -127759,6 +127802,7 @@
  },
  "golden_snowballer": {
   "name": "Golden Snowballer",
+  "rarity": "Golden",
   "url": "https://tds.wiki/w/Golden_Snowballer",
   "image": "https://tds.wiki/images/a/a8/GoldenSnowballer.png",
   "info": {
@@ -127767,8 +127811,7 @@
     "Tower Cost": "Triumph Outpost 32 on Easy difficultly (Snowballer)",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "67",
-    "Description": "This page is about content exclusive to a limited amount of people. Because of this, not all of the information about the item may be listed here or some information may be outdated/incorrect. Additionally, the Golden Snowballer will not be included in strategy sections for pages, unless it is specifically referring to the state of the game where the Golden Snowballer was publicly obtainable."
+    "Placement Limit": "67"
    },
    "regular": {
     "Base Cost": "$67",
@@ -127785,7 +127828,8 @@
    },
    "pvp": {},
    "tooltips": [
-    "A cheap tower that can be quickly upgraded to provide some freezing AOE support."
+    "A cheap tower that can be quickly upgraded to provide some freezing AOE support.",
+    "This page is about content exclusive to a limited amount of people. Because of this, not all of the information about the item may be listed here or some information may be outdated/incorrect. Additionally, the Golden Snowballer will not be included in strategy sections for pages, unless it is specifically referring to the state of the game where the Golden Snowballer was publicly obtainable."
    ]
   },
   "upgrades": [
@@ -128144,14 +128188,14 @@
  },
  "gladiator": {
   "name": "Gladiator",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Gladiator",
   "image": "https://tds.wiki/images/1/12/DefaultGladiatorRework0.png",
   "info": {
    "general": {
     "Unlock Cost": "Triumph The Heights",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "Gladiator has been made unobtainable from the game as of the 13th of October 2019 as it was part of the SFOTH Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$525",
@@ -128169,7 +128213,8 @@
    "pvp": {},
    "tooltips": [
     "An early game melee tower that's capable of hitting multiple enemies as it swings its sword.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "Gladiator has been made unobtainable from the game as of the 13th of October 2019 as it was part of the SFOTH Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -130555,6 +130600,7 @@
  },
  "commando": {
   "name": "Commando",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Commando",
   "image": "https://tds.wiki/images/e/e2/NewCommandoIcon.png",
   "info": {
@@ -130562,8 +130608,7 @@
     "Unlock Cost": "Triumph Area 51",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "8",
-    "Description": "Commando has been made unobtainable from the game as of the 20th of September 2019 as it was part of the Area 51 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$2,150",
@@ -130581,7 +130626,8 @@
    "pvp": {},
    "tooltips": [
     "A mid game tower that fires a flurry of piercing bullets at close range. Later levels unlock concussive missiles that stun enemies and can be planted onto the path to act as a trap.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "Commando has been made unobtainable from the game as of the 20th of September 2019 as it was part of the Area 51 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -131475,6 +131521,7 @@
  },
  "slasher": {
   "name": "Slasher",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Slasher",
   "image": "https://tds.wiki/images/2/28/HexscapeSlasherIcon.png",
   "info": {
@@ -131482,8 +131529,7 @@
     "Unlock Cost": "Triumph Nightmare Carnival",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "8",
-    "Description": "Slasher has been made unobtainable from the game as of the 19th of November 2019 as it was part of the Halloween 2019 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$2,400",
@@ -131502,7 +131548,8 @@
    "tooltips": [
     "A mid to late-game melee tower that applies a bleed damage over time debuff on enemies.",
     "At 450 bleed stacks enemies will take a massive burst of damage. (Amount of damage done by bleed is relative to the health of the enemy)",
-    "Capable of detecting hidden & lead enemies."
+    "Capable of detecting hidden & lead enemies.",
+    "Slasher has been made unobtainable from the game as of the 19th of November 2019 as it was part of the Halloween 2019 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -132687,6 +132734,7 @@
  },
  "frost_blaster": {
   "name": "Frost Blaster",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Frost_Blaster",
   "image": "https://tds.wiki/images/b/b5/KRFrostBlasterIcon.png",
   "info": {
@@ -132694,8 +132742,7 @@
     "Unlock Cost": "Triumph Village of Despair",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "12",
-    "Description": "Frost Blaster has been made unobtainable from the game as of the 26th of January 2020 as it was part of the Christmas 2019 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "12"
    },
    "regular": {
     "Base Cost": "$850",
@@ -132713,7 +132760,8 @@
    "pvp": {},
    "tooltips": [
     "A mid game support tower that fires piercing frost bolts to freeze multiple enemies. Relies on the good placement to get the most use.",
-    "Capable of detecting lead, flying and hidden enemies."
+    "Capable of detecting lead, flying and hidden enemies.",
+    "Frost Blaster has been made unobtainable from the game as of the 26th of January 2020 as it was part of the Christmas 2019 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -133319,6 +133367,7 @@
  },
  "archer": {
   "name": "Archer",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Archer",
   "image": "https://tds.wiki/images/d/dd/ArcherIcon2025.png",
   "info": {
@@ -133326,8 +133375,7 @@
     "Unlock Cost": "Gift of Sharpness",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "15",
-    "Description": "Archer has been made unobtainable from the game as of the 26th of January 2020 as it was part of the Christmas 2019 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "15"
    },
    "regular": {
     "Base Cost": "$600",
@@ -133345,7 +133393,8 @@
    "pvp": {},
    "tooltips": [
     "Shoot a piercing arrow that bounces towards nearby enemies. Pick between Fire, Stun, & Explosive arrows.",
-    "Capable of detecting hidden enemies, and indirectly damaging lead enemies."
+    "Capable of detecting hidden enemies, and indirectly damaging lead enemies.",
+    "Archer has been made unobtainable from the game as of the 26th of January 2020 as it was part of the Christmas 2019 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -134792,14 +134841,14 @@
  },
  "swarmer": {
   "name": "Swarmer",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Swarmer",
   "image": "https://tds.wiki/images/6/63/SwarmerNewIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Triumph Eggy Island (Hard Difficulty)",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "Swarmer has been made unobtainable from the game as of the 26th of May 2020 as it was part of the Spring 2020 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$900",
@@ -134818,7 +134867,8 @@
    "tooltips": [
     "A cheap single target DPS tower that shoots bees that apply a damage over time debuff on enemies.",
     "Swarmers can stack multiple bees on a target increasing the strength of the damage over time.",
-    "Later levels also gain a bee grenade that applies the debuff to multiple enemies."
+    "Later levels also gain a bee grenade that applies the debuff to multiple enemies.",
+    "Swarmer has been made unobtainable from the game as of the 26th of May 2020 as it was part of the Spring 2020 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -135435,14 +135485,14 @@
  },
  "toxic_gunner": {
   "name": "Toxic Gunner",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Toxic_Gunner",
   "image": "https://tds.wiki/images/6/66/ToxicGunnerNewIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Triumph Trick or Threat Town",
     "Role": "Offense",
-    "Placement": "Ground",
-    "Description": "Toxic Gunner has been made unobtainable from the game as of the 8th of May 2021 as it was part of the Halloween 2020 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$525",
@@ -135460,7 +135510,8 @@
    "pvp": {},
    "tooltips": [
     "A rapid fire debuff tower that applies poison to enemies. Poison deals damage overtime and applies a slow debuff on enemies.",
-    "Capable of detecting lead and flying enemies"
+    "Capable of detecting lead and flying enemies",
+    "Toxic Gunner has been made unobtainable from the game as of the 8th of May 2021 as it was part of the Halloween 2020 Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -136132,6 +136183,7 @@
  },
  "sledger": {
   "name": "Sledger",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Sledger",
   "image": "https://tds.wiki/images/1/12/OICESledgerIcon.png",
   "info": {
@@ -136139,8 +136191,7 @@
     "Unlock Cost": "Triumph Outpost 32",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "6",
-    "Description": "Sledger has been made unobtainable from the game as of the 4th of December 2021 as it was part of the Frost Invasion Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "6"
    },
    "regular": {
     "Base Cost": "$950",
@@ -136157,7 +136208,8 @@
    "pvp": {},
    "tooltips": [
     "A mid-game AOE melee tower that hits multiples [sic] enemies in an arc and is capable of slowing and freeze [sic] enemies.",
-    "Capable of detecting lead enemies."
+    "Capable of detecting lead enemies.",
+    "Sledger has been made unobtainable from the game as of the 4th of December 2021 as it was part of the Frost Invasion Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -137246,6 +137298,7 @@
  },
  "executioner": {
   "name": "Executioner",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Executioner",
   "image": "https://tds.wiki/images/0/00/DefaultExecutioner0.png",
   "info": {
@@ -137253,8 +137306,7 @@
     "Unlock Cost": "Triumph Totality Tower",
     "Role": "Offensive",
     "Placement": "Ground",
-    "Placement Limit": "9",
-    "Description": "Executioner has been made unobtainable from the game as of the 26th of January 2022 as it was part of the Solar Eclipse Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "9"
    },
    "regular": {
     "Base Cost": "$1,800",
@@ -137272,7 +137324,8 @@
    "pvp": {},
    "tooltips": [
     "A [sic] early-mid game tower that throws an axe that bounces across multiple enemies.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "Executioner has been made unobtainable from the game as of the 26th of January 2022 as it was part of the Solar Eclipse Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -138210,6 +138263,7 @@
  },
  "elf_camp": {
   "name": "Elf Camp",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Elf_Camp",
   "image": "https://tds.wiki/images/c/c4/ElfCampNewIcon.png",
   "info": {
@@ -138217,8 +138271,7 @@
     "Unlock Cost": "Triumph Cold Ambush",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "4",
-    "Description": "Elf Camp has been made unobtainable from the game as of the 4th of February 2023 as it was part of the Violent Night Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "4"
    },
    "regular": {
     "Base Cost": "$300",
@@ -138237,7 +138290,8 @@
    "pvp": {},
    "tooltips": [
     "A cheap unit spawning tower that summons a steady supply of friendly elf units.",
-    "Elves come with hidden, flying, and lead detections."
+    "Elves come with hidden, flying, and lead detections.",
+    "Elf Camp has been made unobtainable from the game as of the 4th of February 2023 as it was part of the Violent Night Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -139224,6 +139278,7 @@
  },
  "jester": {
   "name": "Jester",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Jester",
   "image": "https://tds.wiki/images/7/71/JesterIcon.png",
   "info": {
@@ -139231,8 +139286,7 @@
     "Unlock Cost": "Triumph The Great Finale",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "8",
-    "Description": "Jester has been made unobtainable from the game as of the 21st of December 2023 as it was part of the Lunar Overture Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$650",
@@ -139250,7 +139304,8 @@
    "pvp": {},
    "tooltips": [
     "An AOE tower that comes with 4 different types of debuffs to adapt to different scenarios and enemies.",
-    "Capable of detecting hidden and lead enemies."
+    "Capable of detecting hidden and lead enemies.",
+    "Jester has been made unobtainable from the game as of the 21st of December 2023 as it was part of the Lunar Overture Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -140086,14 +140141,14 @@
  },
  "cryomancer": {
   "name": "Cryomancer",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Cryomancer",
   "image": "https://tds.wiki/images/6/6d/OICECryomancerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Triumph Krampus Frosthold",
     "Role": "Defense",
-    "Placement": "Ground",
-    "Description": "Cryomancer has been made unobtainable from the game as of the 31st of January 2024 as it was part of the Krampus' Revenge Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$250",
@@ -140111,7 +140166,8 @@
    "pvp": {},
    "tooltips": [
     "A support tower that fires a stream of frost to slow and freeze multiple enemies. Great support tower for slowing down hordes.",
-    "Capable of detecting lead enemies."
+    "Capable of detecting lead enemies.",
+    "Cryomancer has been made unobtainable from the game as of the 31st of January 2024 as it was part of the Krampus' Revenge Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -140614,6 +140670,7 @@
  },
  "hallow_punk": {
   "name": "Hallow Punk",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Hallow_Punk",
   "image": "https://tds.wiki/images/6/6b/HallowPunkIcon.png",
   "info": {
@@ -140621,8 +140678,7 @@
     "Unlock Cost": "Triumph Failed Gateway, The Nightmare Realm & Containment on Easy difficulty",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "10",
-    "Description": "Hallow Punk has been made unobtainable from the game as of the 20th of November 2024 as it was part of the Hexscape Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "10"
    },
    "regular": {
     "Base Cost": "$500",
@@ -140639,7 +140695,8 @@
    "pvp": {},
    "tooltips": [
     "A cheap AOE tower that can also apply knockback and burn onto enemies, with a small targeting deadzone. Great backline defense for pushing enemies back.",
-    "Capable of detecting hidden, lead and flying enemies."
+    "Capable of detecting hidden, lead and flying enemies.",
+    "Hallow Punk has been made unobtainable from the game as of the 20th of November 2024 as it was part of the Hexscape Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -140967,6 +141024,7 @@
  },
  "harvester": {
   "name": "Harvester",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Harvester",
   "image": "https://tds.wiki/images/c/cc/HarvesterIcon.png",
   "info": {
@@ -140974,8 +141032,7 @@
     "Unlock Cost": "Triumph Failed Gateway, The Nightmare Realm & Containment on Hard difficulty",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "5",
-    "Description": "Harvester has been made unobtainable from the game as of the 20th of November 2024 as it was part of the Hexscape Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "5"
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -140992,7 +141049,8 @@
    "pvp": {},
    "tooltips": [
     "A mid-game long range tower that fires piercing crossbow bolts. Can also summon thorns on the path to damage and slow down hordes of enemies.",
-    "Capable of detecting flying and hidden enemies."
+    "Capable of detecting flying and hidden enemies.",
+    "Harvester has been made unobtainable from the game as of the 20th of November 2024 as it was part of the Hexscape Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -141588,14 +141646,14 @@
  },
  "snowballer": {
   "name": "Snowballer",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Snowballer",
   "image": "https://tds.wiki/images/e/e3/SnowballerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Triumph Outpost 32 on Easy difficulty",
     "Role": "Defense",
-    "Placement": "Ground",
-    "Description": "Snowballer has been made unobtainable from the game as of the 15th of January 2025 as it was part of the Operation I.C.E Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$300",
@@ -141611,7 +141669,8 @@
    },
    "pvp": {},
    "tooltips": [
-    "A cheap tower that can be quickly upgraded to provide some freezing AOE support."
+    "A cheap tower that can be quickly upgraded to provide some freezing AOE support.",
+    "Snowballer has been made unobtainable from the game as of the 15th of January 2025 as it was part of the Operation I.C.E Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -141960,6 +142019,7 @@
  },
  "elementalist": {
   "name": "Elementalist",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Elementalist",
   "image": "https://tds.wiki/images/0/07/ElementalistIcon.png",
   "info": {
@@ -141967,8 +142027,7 @@
     "Unlock Cost": "Triumph Outpost 32 on Hard difficulty",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "5",
-    "Description": "Elementalist has been made unobtainable from the game as of the 15th of January 2025 as it was part of the Operation I.C.E Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "5"
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -141985,7 +142044,8 @@
    "pvp": {},
    "tooltips": [
     "A mid-game burst tower that can switch between a fire and ice mode to apply 2 different kinds of debuffs onto targets. Also changes the active skill depending on what mode the tower is in.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "Elementalist has been made unobtainable from the game as of the 15th of January 2025 as it was part of the Operation I.C.E Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -142643,6 +142703,7 @@
  },
  "firework_technician": {
   "name": "Firework Technician",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Firework_Technician",
   "image": "https://tds.wiki/images/5/56/FireworkTechnicianIcon.png",
   "info": {
@@ -142650,8 +142711,7 @@
     "Unlock Cost": "Mission Quests",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "1",
-    "Description": "The Firework Technician is a support based tower that can only be obtained from completing a specific Mission Quest. Either the 🇺🇸 Rise for the Pledge! or Happy New Years! quests must be completed to get the Firework Technician, either of which costs 650 Coins to start. Currently, the 🇺🇸 Rise for the Pledge! quest can be started."
+    "Placement Limit": "1"
    },
    "regular": {
     "Base Cost": "$1,500",
@@ -142669,7 +142729,8 @@
    "pvp": {},
    "tooltips": [
     "A support tower that gives all towers in range all detections at the beginning of the wave for a short amount of time.",
-    "All towers in range get the chance to randomly fire a firework that applies burn and deal [sic] AOE damage."
+    "All towers in range get the chance to randomly fire a firework that applies burn and deal [sic] AOE damage.",
+    "The Firework Technician is a support based tower that can only be obtained from completing a specific Mission Quest. Either the 🇺🇸 Rise for the Pledge! or Happy New Years! quests must be completed to get the Firework Technician, either of which costs 650 Coins to start. Currently, the 🇺🇸 Rise for the Pledge! quest can be started."
    ]
   },
   "upgrades": [
@@ -143172,6 +143233,7 @@
  },
  "biologist": {
   "name": "Biologist",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Biologist",
   "image": "https://tds.wiki/images/c/c9/BiologistIcon.png",
   "info": {
@@ -143179,8 +143241,7 @@
     "Unlock Cost": "Triumph Bathroom Approach in Hard difficulty",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "8",
-    "Description": "Biologist has been made unobtainable from the game as of the 5th of June 2026 as it was part of the Ducky Revenge Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "8"
    },
    "regular": {
     "Base Cost": "$750",
@@ -143198,7 +143259,8 @@
    "pvp": {},
    "tooltips": [
     "A defense tower that grows 3 different plant turrets each with their own strengths, detections, and debuffs. Able to cover a wide range, apply debuffs, or provide solid DPS.",
-    "Flowers are capable of detecting hidden, lead and flying enemies."
+    "Flowers are capable of detecting hidden, lead and flying enemies.",
+    "Biologist has been made unobtainable from the game as of the 5th of June 2026 as it was part of the Ducky Revenge Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -143869,6 +143931,7 @@
  },
  "warlock": {
   "name": "Warlock",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Warlock",
   "image": "https://tds.wiki/images/5/50/WarlockNewIcon.png",
   "info": {
@@ -143876,8 +143939,7 @@
     "Unlock Cost": "Triumph Outpost 16, Banlands and Blind Faith on Hard difficulty",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "4",
-    "Description": "Warlock has been made unobtainable from the game as of the 26th of November 2025 as it was part of the Null & Void Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "4"
    },
    "regular": {
     "Base Cost": "$4,200",
@@ -143895,7 +143957,8 @@
    "pvp": {},
    "tooltips": [
     "A hybrid melee and ranged tower that's capable of knocking back enemies and applying bleed.",
-    "Capable of detecting hidden enemies."
+    "Capable of detecting hidden enemies.",
+    "Warlock has been made unobtainable from the game as of the 26th of November 2025 as it was part of the Null & Void Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -144734,6 +144797,7 @@
  },
  "spotlight_tech": {
   "name": "Spotlight Tech",
+  "rarity": "Event",
   "url": "https://tds.wiki/w/Spotlight_Tech",
   "image": "https://tds.wiki/images/f/f2/SpotlightTechIcon.png",
   "info": {
@@ -144741,8 +144805,7 @@
     "Unlock Cost": "Triumph The Narratorium on Hard Difficulty",
     "Role": "Support",
     "Placement": "Cliff",
-    "Placement Limit": "1",
-    "Description": "Spotlight Tech has been made unobtainable from the game as of the 11th of February 2026 as it was part of the The Final Act Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
+    "Placement Limit": "1"
    },
    "regular": {
     "Base Cost": "$3,225",
@@ -144762,7 +144825,8 @@
     "A large cliff tower that shines a spotlight onto enemies, damaging them over time and applying burn at higher levels.",
     "Specializes in dealing high area damage to large crowds of enemies.",
     "At max level, gains a meter that builds up to apply confusion to any enemies in the spotlight radius.",
-    "Has hidden and flying detection, indirectly damages lead enemies with burn. At Level 2, reveals hidden enemies in spotlight radius."
+    "Has hidden and flying detection, indirectly damages lead enemies with burn. At Level 2, reveals hidden enemies in spotlight radius.",
+    "Spotlight Tech has been made unobtainable from the game as of the 11th of February 2026 as it was part of the The Final Act Event. Players with the item in question can continue using it, but you cannot obtain this item anymore, outside of limited-time promotional sales."
    ]
   },
   "upgrades": [
@@ -145160,6 +145224,7 @@
  },
  "war_machine": {
   "name": "War Machine",
+  "rarity": "Exclusive",
   "url": "https://tds.wiki/w/War_Machine",
   "image": "https://tds.wiki/images/8/82/DefaultWarMachineRework0.png",
   "info": {
@@ -145167,8 +145232,7 @@
     "Unlock Cost": "Exclusive",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "5",
-    "Description": "This page is about content exclusive to a limited amount of people. Because of this, not all of the information about the item may be listed here or some information may be outdated/incorrect. Additionally, the War Machine will not be included in strategy sections for pages, unless it is specifically referring to the state of the game where the War Machine was publicly obtainable."
+    "Placement Limit": "5"
    },
    "regular": {
     "Base Cost": "$6,750",
@@ -145186,7 +145250,8 @@
    "pvp": {},
    "tooltips": [
     "This guy does a LOT of damage",
-    "Capable of detecting flying, hidden, and lead enemies."
+    "Capable of detecting flying, hidden, and lead enemies.",
+    "This page is about content exclusive to a limited amount of people. Because of this, not all of the information about the item may be listed here or some information may be outdated/incorrect. Additionally, the War Machine will not be included in strategy sections for pages, unless it is specifically referring to the state of the game where the War Machine was publicly obtainable."
    ]
   },
   "upgrades": [
@@ -145786,6 +145851,7 @@
  },
  "mecha_base": {
   "name": "Mecha Base",
+  "rarity": "Exclusive",
   "url": "https://tds.wiki/w/Mecha_Base",
   "image": "https://tds.wiki/images/c/ce/OUMechaBaseIcon.png",
   "info": {
@@ -145793,8 +145859,7 @@
     "Unlock Cost": "Exclusive",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "3",
-    "Description": "This page is about content exclusive to a limited amount of people. Because of this, not all of the information about the item may be listed here or some information may be outdated/incorrect. Additionally, the Mecha Base will not be included in strategy sections for pages, unless it is specifically referring to the state of the game where the Mecha Base was publicly obtainable."
+    "Placement Limit": "3"
    },
    "regular": {
     "Base Cost": "$6,000",
@@ -145813,7 +145878,8 @@
    "pvp": {},
    "tooltips": [
     "A unit summoning tower that releases a steady stream of Mechas from the base. Mechas come with a lot of health and missile launcher.",
-    "Units are capable of detecting ALL enemies. and being pretty cool"
+    "Units are capable of detecting ALL enemies. and being pretty cool",
+    "This page is about content exclusive to a limited amount of people. Because of this, not all of the information about the item may be listed here or some information may be outdated/incorrect. Additionally, the Mecha Base will not be included in strategy sections for pages, unless it is specifically referring to the state of the game where the Mecha Base was publicly obtainable."
    ]
   },
   "upgrades": [
@@ -146463,12 +146529,12 @@
  },
  "mine": {
   "name": "Mine",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Mine",
   "image": "https://tds.wiki/images/b/bd/MineTower.png",
   "info": {
    "general": {
-    "Placement": "Ground",
-    "Description": "Mine was only shown off in a poll. Because of this, not all information on the item in question is known and certain information may not be entirely accurate. Additionally, whenever it will be added in the future is not always clear."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "Unknown",
@@ -146506,13 +146572,13 @@
  },
  "sentry": {
   "name": "Sentry",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Sentry",
   "image": "https://tds.wiki/images/e/e5/Sentry.png",
   "info": {
    "general": {
     "Unlock Cost": "3,650 Coins",
-    "Placement": "Ground",
-    "Description": "Sentry has been removed from the game as of the 29th of October 2020. Sentry may still exist in the game's code, though it is no longer officially used in-game. This page has been preserved for historical purposes."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$750",
@@ -146909,13 +146975,13 @@
  },
  "moderator": {
   "name": "Moderator",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Moderator",
   "image": "https://tds.wiki/images/e/e2/ModeratorIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground",
-    "Description": "Moderator has been removed from the game as of the 29th of October 2020. Moderator may still exist in the game's code, though it is no longer officially used in-game. This page has been preserved for historical purposes."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$300",
@@ -147019,13 +147085,13 @@
  },
  "railgunner": {
   "name": "Railgunner",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Railgunner",
   "image": "https://tds.wiki/images/3/3a/DefaultRailgunnerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Cliff (Presumably)",
-    "Description": "Railgunner has been removed from the game as of the 29th of October 2020. Railgunner may still exist in the game's code, though it is no longer officially used in-game. This page has been preserved for historical purposes."
+    "Placement": "Cliff (Presumably)"
    },
    "regular": {
     "Base Cost": "Unknown",
@@ -147215,13 +147281,13 @@
  },
  "twitgunner": {
   "name": "Twitgunner",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Twitgunner",
   "image": "https://tds.wiki/images/1/13/DefaultTwitgunnerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground",
-    "Description": "Twitgunner has been removed from the game as of the 21st of March 2023. Twitgunner may still exist in the game's code, though it is no longer officially used in-game. This page has been preserved for historical purposes."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$350",
@@ -147533,13 +147599,13 @@
  },
  "void_miner": {
   "name": "Void Miner",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Void_Miner",
   "image": "https://tds.wiki/images/4/46/VoidMinerIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground",
-    "Description": "Void Miner has been removed from the game as of the 29th of October 2020. Void Miner may still exist in the game's code, though it is no longer officially used in-game. This page has been preserved for historical purposes."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$800",
@@ -147814,13 +147880,13 @@
  },
  "combatant": {
   "name": "Combatant",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Combatant",
   "image": "https://tds.wiki/images/3/32/DefaultCombatantIcon.png",
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground",
-    "Description": "Combatant has been removed from the game as of the 21st of March 2023. Combatant may still exist in the game's code, though it is no longer officially used in-game. This page has been preserved for historical purposes."
+    "Placement": "Ground"
    },
    "regular": {
     "Base Cost": "$300 (Brawler) $100 (Combatant)",
@@ -148308,13 +148374,13 @@
  },
  "crystallizer": {
   "name": "Crystallizer",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Crystallizer",
   "image": "https://tds.wiki/images/f/f3/Crystallizer.png",
   "info": {
    "general": {
     "Placement": "Ground",
-    "Placement Limit": "4",
-    "Description": "Crystallizer has not been implemented in the actual game, though it may have been in testing places, teased by the developers or left unused in-game. Because of this, not all information on the item in question is known and certain information may not be entirely accurate. Additionally, whenever it will be added in the future is not always clear."
+    "Placement Limit": "4"
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -148552,12 +148618,11 @@
  },
  "time_dilator": {
   "name": "Time Dilator",
+  "rarity": "Unreleased",
   "url": "https://tds.wiki/w/Time_Dilator",
   "image": "https://tds.wiki/images/c/c7/PlaceC.png",
   "info": {
-   "general": {
-    "Description": "Time Dilator is currently in the roadmap and planned to release for the fourth quarter of 2026. Because of this, not all information on the item in question is known and certain information may not be entirely accurate. Additionally, whenever it will be added in the future is not always clear."
-   },
+   "general": {},
    "regular": {},
    "pvp": {},
    "tooltips": [

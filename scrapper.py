@@ -18,25 +18,19 @@ TOWER_DATA_FILE = PROJECT_DIR / "towers.json"
 SKILLS_DATA_FILE = SKILLS_CACHE_DIR / "skills.json"
 SKILLS_URL = f"{BASE_URL}/w/Skills"
 
-towers = [
-    "Scout", "Sniper", "Paintballer", "Demoman", "Boomerang", "Slime Trooper", "Soldier",
-
-    "Freezer", "Assassin", "Militant", "Shotgunner", "Hunter", "Pyromancer", "Ace Pilot", "Medic", "Farm", "Electroshocker", "Rocketeer", "Trapper", "Pulse Trooper", "Military Base", "Crook Boss",
-
-    "Commander", "Warden", "Cowboy", "DJ Booth", "Tesla", "Saboteur", "Minigunner", "Ranger", "Pursuit", "Gatling Gun", "Turret", "Mortar", "Mercenary Base",
-
-    "Brawler", "Necromancer", "Accelerator", "Engineer", "Hacker",
-
-    "Operator", "Enforcer", "Kingpin", "Juggernaut",
-
-    "Golden Minigunner", "Golden Pyromancer", "Golden Crook Boss", "Golden Scout", "Golden Cowboy", "Golden Soldier", "Golden Demoman", "Golden Snowballer",
-
-    "Gladiator", "Commando", "Slasher", "Frost Blaster", "Archer", "Swarmer", "Toxic Gunner", "Sledger", "Executioner", "Elf Camp", "Jester", "Cryomancer", "Hallow Punk", "Harvester", "Snowballer", "Elementalist", "Firework Technician", "Biologist", "Warlock", "Spotlight Tech",
-
-    "War Machine", "Mecha Base",
-
-    "Mine", "Sentry", "Moderator", "Railgunner", "Twitgunner", "Void Miner", "Combatant", "Crystallizer", "Time Dilator"
-]
+TOWER_GROUPS = {
+    "Beginner": ["Scout", "Sniper", "Paintballer", "Demoman", "Boomerang", "Slime Trooper", "Soldier"],
+    "Intermediate": ["Freezer", "Assassin", "Militant", "Shotgunner", "Hunter", "Pyromancer", "Ace Pilot", "Medic", "Farm", "Electroshocker", "Rocketeer", "Trapper", "Pulse Trooper", "Military Base", "Crook Boss"],
+    "Advanced": ["Commander", "Warden", "Cowboy", "DJ Booth", "Tesla", "Saboteur", "Minigunner", "Ranger", "Pursuit", "Gatling Gun", "Turret", "Mortar", "Mercenary Base"],
+    "Hardcore": ["Brawler", "Necromancer", "Accelerator", "Engineer", "Hacker"],
+    "Evolved": ["Operator", "Enforcer", "Kingpin", "Juggernaut"],
+    "Golden": ["Golden Minigunner", "Golden Pyromancer", "Golden Crook Boss", "Golden Scout", "Golden Cowboy", "Golden Soldier", "Golden Demoman", "Golden Snowballer"],
+    "Event": ["Gladiator", "Commando", "Slasher", "Frost Blaster", "Archer", "Swarmer", "Toxic Gunner", "Sledger", "Executioner", "Elf Camp", "Jester", "Cryomancer", "Hallow Punk", "Harvester", "Snowballer", "Elementalist", "Firework Technician", "Biologist", "Warlock", "Spotlight Tech"],
+    "Exclusive": ["War Machine", "Mecha Base"],
+    "Unreleased": ["Mine", "Sentry", "Moderator", "Railgunner", "Twitgunner", "Void Miner", "Combatant", "Crystallizer", "Time Dilator"],
+}
+towers = [name for names in TOWER_GROUPS.values() for name in names]
+TOWER_RARITY = {name: rarity for rarity, names in TOWER_GROUPS.items() for name in names}
 
 MODE_KEYS = {
     "basecost", "basesellingprice", "basedamage", "damagetype", "basefirerate", "baserange",
@@ -177,7 +171,6 @@ def parse_infobox(soup):
     if box is None:
         description = article_description(soup)
         if description:
-            info["general"]["Description"] = description
             info["tooltips"].append(description)
         return info
     for item in box.select("[data-source]"):
@@ -201,9 +194,7 @@ def parse_infobox(soup):
         else:
             info["general"][label] = value
     description = article_description(soup)
-    if description and "Description" not in info["general"]:
-        info["general"]["Description"] = description
-    if description and not info["tooltips"]:
+    if description and description not in info["tooltips"]:
         info["tooltips"].append(description)
     return info
 
@@ -433,6 +424,7 @@ def parse_tower(tower, path):
     og_image = soup.find("meta", property="og:image")
     return {
         "name": tower,
+        "rarity": TOWER_RARITY[tower],
         "url": f"{BASE_URL}/w/{tower.replace(' ', '_')}",
         "image": og_image["content"].split("?")[0] if og_image else "",
         "info": info,
