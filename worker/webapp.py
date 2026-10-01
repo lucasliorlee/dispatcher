@@ -90,6 +90,25 @@ def _safe_float(value, fallback=0.0):
     return max(result, 0.0) if math.isfinite(result) else fallback
 
 
+def _parse_timestamp(value):
+    """Parse an optional datetime-local value (interpreted as UTC) into a unix timestamp."""
+    value = str(value or "").strip()
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        raise ValueError("Invalid timestamp. Use the date and time picker.")
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    timestamp = parsed.timestamp()
+    if timestamp < 0:
+        raise ValueError("Timestamp is too far in the past.")
+    if timestamp > time.time() + 60:
+        raise ValueError("Timestamp cannot be in the future.")
+    return timestamp
+
+
 def _exp_requirement(next_level):
     if next_level <= 0:
         return 0
@@ -132,10 +151,13 @@ async def _query(env, sql, *values):
     return _rows_to_python(result.results)
 
 
-async def _insert_progress(env, user_id, level, exp):
+async def _insert_progress(env, user_id, level, exp, timestamp=None):
+    now = time.time()
+    if not timestamp or timestamp > now:
+        timestamp = now
     await _database(env).prepare(
         "INSERT INTO tds (user_id, level, exp, timestamp) VALUES (?1, ?2, ?3, ?4)"
-    ).bind(user_id, level, exp, time.time()).run()
+    ).bind(user_id, level, exp, timestamp).run()
 
 
 async def _delete_progress(env, user_id, record_ids):
@@ -147,7 +169,7 @@ async def _delete_progress(env, user_id, record_ids):
     placeholders = ", ".join(f"?{index + 2}" for index in range(len(ids)))
     owned_rows = await _query(
         env,
-        f"SELECT id FROM tds WHERE user_id = ?1 AND id IN ({placeholders})",
+        f"SELECT rowid AS id FROM tds WHERE user_id = ?1 AND rowid IN ({placeholders})",
         user_id,
         *ids,
     )
@@ -156,7 +178,7 @@ async def _delete_progress(env, user_id, record_ids):
         return 0
     delete_placeholders = ", ".join(f"?{index + 2}" for index in range(len(owned_ids)))
     await _database(env).prepare(
-        f"DELETE FROM tds WHERE user_id = ?1 AND id IN ({delete_placeholders})"
+        f"DELETE FROM tds WHERE user_id = ?1 AND rowid IN ({delete_placeholders})"
     ).bind(user_id, *owned_ids).run()
     return len(owned_ids)
 
@@ -170,12 +192,12 @@ async def _load_progress(env, user_id=None):
     if user_id:
         return await _query(
             env,
-            "SELECT id, user_id, level, exp, timestamp FROM tds WHERE user_id = ?1 ORDER BY timestamp ASC",
+            "SELECT rowid AS id, user_id, level, exp, timestamp FROM tds WHERE user_id = ?1 ORDER BY timestamp ASC",
             user_id,
         )
     return await _query(
         env,
-        "SELECT id, user_id, level, exp, timestamp FROM tds ORDER BY timestamp ASC",
+        "SELECT rowid AS id, user_id, level, exp, timestamp FROM tds ORDER BY timestamp ASC",
     )
 
 
@@ -187,35 +209,6 @@ async def _load_scraped_towers(env):
             raise RuntimeError("Scraped tower data could not be loaded.")
         TOWERS_CACHE = await response.json()
     return TOWERS_CACHE
-
-
-async def _exchange_code(code, redirect_uri, env, fetch_function):
-    client_secret = str(getattr(env, "CLIENT_SECRET", "") or "").strip()
-    if not client_secret:
-        raise RuntimeError("Missing CLIENT_SECRET Worker secret.")
-    response = await fetch_function(
-        "https://discord.com/api/v10/oauth2/token",
-        method="POST",
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        body=urlencode({
-            "client_id": CLIENT_ID,
-            "client_secret": client_secret,
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": redirect_uri,
-        }),
-    )
-    if response.status >= 400:
-        raise RuntimeError(f"Discord token exchange failed: {await response.text()}")
-    token_data = await response.json()
-    user_response = await fetch_function(
-        "https://discord.com/api/v10/users/@me",
-        headers={"Authorization": f"Bearer {token_data['access_token']}"},
-    )
-    if user_response.status >= 400:
-        raise RuntimeError("Discord did not return the authorized user's profile.")
-    user_data = await user_response.json()
-    return str(user_data["id"])
 
 
 def _authorize_url(redirect_uri, scope, state=None):
@@ -262,12 +255,11 @@ def _tracker_page(rows, users, selected_user, deleted_count=None):
     current_level = points[-1]["level"] if points else 0
     wanted_level = current_level + 1 if points else 1
     points_json = _json_for_script(points)
-    record_rows = "".join(
-        f'<tr><td><input class="record-select" type="checkbox" value="{point["id"]}" aria-label="Select tracker record"></td>'
-        f'<td>{_escape(point["time"])}</td><td>{point["level"]}</td><td>{_escape(point["exp"])}</td></tr>'
+    record_options = "".join(
+        f'<option value="{point["id"]}">{_escape(point["time"])} · Lv {point["level"]} · {_escape(point["exp"])} EXP</option>'
         for point in reversed(points)
         if point["id"] > 0
-    ) or '<tr><td colspan="4">No records to show.</td></tr>'
+    ) or '<option disabled>No records to show</option>'
     delete_notice = (
         f'<p class="note">Deleted {deleted_count} record{"s" if deleted_count != 1 else ""} after Discord authorization.</p>'
         if deleted_count is not None else ""
@@ -275,7 +267,7 @@ def _tracker_page(rows, users, selected_user, deleted_count=None):
     page = r"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TDS Stats</title>
 <style>
-*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:920px;margin:32px auto;padding:20px}h1,h2{color:#fff}h1{font-size:24px}h2{font-size:18px;margin-top:0}p,label{color:#a1a1aa}a{color:#aaa}.panel{margin:16px 0;padding:18px;border:1px solid #303036;border-radius:10px;background:#18181b}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:12px;border:1px solid #303036;border-radius:7px;background:#202024}.stat strong,.stat span{display:block}.stat strong{color:#fff;font-size:18px}.stat span{color:#aaa;font-size:13px}select,input[type=number],input[type=range],button{width:100%;margin-top:7px}select,input[type=number]{padding:10px;border:1px solid #36363c;border-radius:6px;background:#202024;color:#fff;font-size:16px}button{padding:11px;border:0;border-radius:6px;background:#3e5968;color:white;font-weight:600;cursor:pointer}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}svg{width:100%;height:auto;background:#141418;border-radius:8px}.note{font-size:13px;line-height:1.5}.target{margin-top:12px}@media(max-width:650px){body{margin:12px auto;padding:14px}.stats,.row{grid-template-columns:1fr}}
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:920px;margin:32px auto;padding:20px;color-scheme:dark}h1,h2{color:#fff}h1{font-size:24px}h2{font-size:18px;margin-top:0}p,label{color:#a1a1aa}a{color:#aaa}.panel{margin:16px 0;padding:18px;border:1px solid #303036;border-radius:10px;background:#18181b}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:12px;border:1px solid #303036;border-radius:7px;background:#202024}.stat strong,.stat span{display:block}.stat strong{color:#fff;font-size:18px}.stat span{color:#aaa;font-size:13px}select,input[type=number],input[type=datetime-local],input[type=range],button{width:100%;margin-top:7px}select,input[type=number],input[type=datetime-local]{padding:10px;border:1px solid #36363c;border-radius:6px;background:#202024;color:#fff;font-size:16px}select[multiple]{padding:6px}select[multiple] option{padding:5px 6px;border-radius:4px}button{padding:11px;border:0;border-radius:6px;background:#3e5968;color:white;font-weight:600;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row-full{margin-top:12px;display:block}svg{width:100%;height:auto;background:#141418;border-radius:8px}.note{font-size:13px;line-height:1.5}.target{margin-top:12px}@media(max-width:650px){body{margin:12px auto;padding:14px}.stats,.row{grid-template-columns:1fr}}
 </style></head><body>
 <h1>TDS Stats</h1><p><a href="/">&larr; back</a></p>
 <form method="get"><label for="user">User</label><select id="user" name="user" onchange="this.form.submit()">__USER_OPTIONS__</select></form>
@@ -286,8 +278,8 @@ def _tracker_page(rows, users, selected_user, deleted_count=None):
 <div class="stat" style="grid-column:1/-1"><strong id="window">No data</strong><span id="span"></span></div></div>
 <div class="row"><label>Zoom start<input id="start" type="range" min="0" max="__MAX__" value="0"><span id="startLabel"></span></label><label>Zoom end<input id="end" type="range" min="0" max="__MAX__" value="__MAX__"><span id="endLabel"></span></label></div>
 <div style="margin-top:16px;overflow:hidden"><svg id="graph" viewBox="0 0 980 480" role="img" aria-label="Progress graph"></svg></div><p class="note">The X axis follows record order; the line shows cumulative progress.</p></section>
-<section class="panel"><h2>Records</h2>__DELETE_NOTICE__<form method="post" action="/tracker/delete/authorize" id="deleteRecords"><input type="hidden" name="ids" id="selectedRecordIds"><div style="max-width:100%;overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th><input type="checkbox" id="selectAllRecords" aria-label="Select all records"></th><th>Time (UTC)</th><th>Level</th><th>EXP</th></tr></thead><tbody>__RECORD_ROWS__</tbody></table></div><p class="note" id="deleteStatus">Select records; Discord authorization is required before they are deleted.</p><button id="deleteButton" type="submit" disabled>Select records to delete</button></form></section>
-<section class="panel"><h2>Add Record</h2><p>Enter a level and EXP value, then authorize with Discord.</p><form method="post" action="/tracker/authorize"><div class="row"><label>Level<input name="level" type="number" min="0" step="1" value="__LEVEL__"></label><label>EXP<input name="exp" type="number" min="0" step="0.1" value="0"></label></div><button>Authorize with Discord</button></form></section>
+<section class="panel"><h2>Records</h2>__DELETE_NOTICE__<form method="post" action="/tracker/delete/authorize" id="deleteRecords"><input type="hidden" name="ids" id="selectedRecordIds"><select id="recordSelect" multiple size="8" aria-label="Tracker records">__RECORD_OPTIONS__</select><p class="note" id="deleteStatus">Select records (Ctrl/Cmd-click or Shift-click for multiple); Discord authorization is required before they are deleted.</p><button id="deleteButton" type="submit" disabled>Select records to delete</button></form></section>
+<section class="panel"><h2>Add Record</h2><p>Enter a level and EXP value, then authorize with Discord.</p><form method="post" action="/tracker/authorize"><div class="row"><label>Level<input name="level" type="number" min="0" step="1" value="__LEVEL__"></label><label>EXP<input name="exp" type="number" min="0" step="0.1" value="0"></label></div><div class="row-full"><label>Timestamp (UTC, optional)<input name="timestamp" type="datetime-local" step="60"></label><p class="note">Leave blank to use the current time. Fill it in to add a previous record.</p></div><button>Authorize with Discord</button></form></section>
 <section class="panel"><h2>Level Target</h2><p>Estimate the time to a target using the selected graph window's average EXP/day.</p><div class="row"><label>Current level<input id="from" type="number" min="0" value="__LEVEL__"></label><label>Wanted level<input id="wanted" type="number" min="0" value="__WANTED__"></label></div><div class="stats target"><div class="stat"><strong id="needed">0</strong><span>EXP needed</span></div><div class="stat"><strong id="rate">0</strong><span>average EXP/day</span></div><div class="stat"><strong id="duration">n/a</strong><span>estimated time</span></div><div class="stat"><strong id="apart">0</strong><span>levels apart</span></div></div></section>
 <script>
 const points=__POINTS__,$=id=>document.getElementById(id),start=$('start'),end=$('end');
@@ -296,15 +288,14 @@ function render(){if(!points.length){$('graph').innerHTML='<text x="30" y="40" f
 start.addEventListener('input',render);end.addEventListener('input',render);$('from').addEventListener('input',render);$('wanted').addEventListener('input',render);render();
 </script></body></html>"""
     page = page.replace("</body>", """<script>
-const recordChecks=[...document.querySelectorAll('.record-select')],selectAllRecords=document.getElementById('selectAllRecords'),selectedRecordIds=document.getElementById('selectedRecordIds'),deleteButton=document.getElementById('deleteButton'),deleteStatus=document.getElementById('deleteStatus');
-function updateRecordSelection(){const selected=recordChecks.filter(input=>input.checked);selectedRecordIds.value=selected.map(input=>input.value).join(',');deleteButton.disabled=selected.length===0||selected.length>99;deleteButton.textContent=selected.length?`Authorize and delete ${selected.length} selected record${selected.length===1?'':'s'}`:'Select records to delete';deleteStatus.textContent=selected.length>99?'Select 99 or fewer records at a time.':'Discord authorization is required before deletion.';selectAllRecords.checked=recordChecks.length>0&&selected.length===recordChecks.length;selectAllRecords.indeterminate=selected.length>0&&selected.length<recordChecks.length}
-selectAllRecords.addEventListener('change',()=>{recordChecks.forEach((input,index)=>input.checked=selectAllRecords.checked&&index<99);updateRecordSelection()});
-recordChecks.forEach(input=>input.addEventListener('change',updateRecordSelection));
+const recordSelect=document.getElementById('recordSelect'),selectedRecordIds=document.getElementById('selectedRecordIds'),deleteButton=document.getElementById('deleteButton'),deleteStatus=document.getElementById('deleteStatus');
+function updateRecordSelection(){const selected=[...recordSelect.selectedOptions].filter(o=>!o.disabled);selectedRecordIds.value=selected.map(o=>o.value).join(',');deleteButton.disabled=selected.length===0||selected.length>99;deleteButton.textContent=selected.length?`Authorize and delete ${selected.length} selected record${selected.length===1?'':'s'}`:'Select records to delete';deleteStatus.textContent=selected.length>99?'Select 99 or fewer records at a time.':'Discord authorization is required before deletion.'}
+recordSelect.addEventListener('change',updateRecordSelection);
 </script></body>""", 1)
     return (
         page.replace("__USER_OPTIONS__", user_options)
         .replace("__DELETE_NOTICE__", delete_notice)
-        .replace("__RECORD_ROWS__", record_rows)
+        .replace("__RECORD_OPTIONS__", record_options)
         .replace("__MAX__", str(max(len(points) - 1, 0)))
         .replace("__LEVEL__", str(current_level))
         .replace("__WANTED__", str(wanted_level))
@@ -416,7 +407,7 @@ gallerySectionSelect.addEventListener('change',renderGallerySection);
     return page.replace("__TOWERS__", _json_for_script(cards)).replace("__RARITY_OPTIONS__", rarity_options)
 
 
-async def _exchange_code(code, redirect_uri, env, fetch_function):
+async def _oauth_token(code, redirect_uri, env, fetch_function):
     client_secret = str(getattr(env, "CLIENT_SECRET", "") or "").strip()
     if not client_secret:
         raise RuntimeError("Missing CLIENT_SECRET Worker secret.")
@@ -434,7 +425,11 @@ async def _exchange_code(code, redirect_uri, env, fetch_function):
     )
     if response.status >= 400:
         raise RuntimeError(f"Discord token exchange failed: {await response.text()}")
-    token_data = await response.json()
+    return await response.json()
+
+
+async def _exchange_code(code, redirect_uri, env, fetch_function):
+    token_data = await _oauth_token(code, redirect_uri, env, fetch_function)
     user_response = await fetch_function(
         "https://discord.com/api/v10/users/@me",
         headers={"Authorization": f"Bearer {token_data['access_token']}"},
@@ -485,27 +480,6 @@ async def _update_widget(code, redirect_uri, stats, env, fetch_function):
         return False, str(error)
 
 
-async def _oauth_token(code, redirect_uri, env, fetch_function):
-    client_secret = str(getattr(env, "CLIENT_SECRET", "") or "").strip()
-    if not client_secret:
-        raise RuntimeError("Missing CLIENT_SECRET Worker secret.")
-    response = await fetch_function(
-        "https://discord.com/api/v10/oauth2/token",
-        method="POST",
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        body=urlencode({
-            "client_id": CLIENT_ID,
-            "client_secret": client_secret,
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": redirect_uri,
-        }),
-    )
-    if response.status >= 400:
-        raise RuntimeError(f"Discord token exchange failed: {await response.text()}")
-    return await response.json()
-
-
 def _error_page(title, message, response_class, status=400):
     return _html(
         f'<!doctype html><html><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
@@ -544,7 +518,8 @@ async def handle_web_request(request, env, response_class, fetch_function):
                     )
                 level = _safe_int(state.get("level"))
                 exp = _safe_float(state.get("exp"))
-                await _insert_progress(env, user_id, level, exp)
+                timestamp = _safe_float(state.get("timestamp")) or None
+                await _insert_progress(env, user_id, level, exp, timestamp)
                 return response_class.redirect(
                     f"{_base_url(parts)}/tracker?user={user_id}",
                     303,
@@ -587,8 +562,12 @@ async def handle_web_request(request, env, response_class, fetch_function):
             form = await request.form_data()
             level = _safe_int(form.get("level"))
             exp = _safe_float(form.get("exp"))
+            timestamp = _parse_timestamp(form.get("timestamp"))
             redirect_uri = f"{_base_url(parts)}/tracker"
-            state = _encode_state({"level": level, "exp": exp})
+            state_data = {"level": level, "exp": exp}
+            if timestamp is not None:
+                state_data["timestamp"] = timestamp
+            state = _encode_state(state_data)
             location = _authorize_url(redirect_uri, "identify", state)
             return response_class.redirect(location, 303)
         except Exception as error:

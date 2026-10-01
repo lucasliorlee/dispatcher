@@ -1,10 +1,19 @@
 import json
 from urllib.parse import urlsplit
 
-from commands import _track_records_reply, handle_autocomplete, handle_command, handle_component
-from js import Uint8Array, crypto
-from pyodide.ffi import to_js
-from workers import Response, WorkerEntrypoint, fetch
+from commands import (
+    _track_records_reply,
+    confirmed_delete_ids,
+    handle_autocomplete,
+    handle_command,
+    handle_component,
+    parse_track_timestamp,
+    track_zoom_from_state,
+    track_page_from_state,
+)
+from js import Uint8Array, crypto # type: ignore
+from pyodide.ffi import to_js # type: ignore
+from workers import Response, WorkerEntrypoint, fetch # type: ignore
 from webapp import _delete_progress, _insert_progress, _load_progress, handle_web_request
 
 DATA_CACHE = None
@@ -56,18 +65,35 @@ class Default(WorkerEntrypoint):
                     if not user_id:
                         raise RuntimeError("Could not identify the Discord user for this tracker action.")
                     parts = custom_id.split("|")
-                    values = component_data.get("values", [])
-                    if len(parts) != 4 or not values:
+                    if len(parts) != 4:
                         raise RuntimeError("This tracker selection is invalid. Run /track again.")
-                    page = int(parts[3])
-                    if parts[2] == "delete":
-                        record_ids = [int(value) for value in values[:25]]
-                        deleted = await _delete_progress(self.env, user_id, record_ids)
+                    action, state = parts[2], parts[3]
+                    page = track_page_from_state(state)
+                    zoom_start, zoom_end = track_zoom_from_state(state)
+                    values = component_data.get("values", [])
+
+                    if action == "delete":
+                        # Shows the "Delete N records?" confirmation with Cancel/Delete buttons.
+                        response = handle_component(interaction, towers)
+                    elif action == "confirm":
+                        record_ids = confirmed_delete_ids(interaction)[:25]
+                        deleted = await _delete_progress(self.env, user_id, record_ids) if record_ids else 0
                         rows = await _load_progress(self.env, user_id)
-                        response = _track_records_reply(rows, user_id, page, deleted)
-                    elif parts[2] == "page":
+                        response = _track_records_reply(
+                            rows, user_id, page, deleted, zoom_start=zoom_start, zoom_end=zoom_end
+                        )
+                    elif action == "cancel":
                         rows = await _load_progress(self.env, user_id)
-                        response = _track_records_reply(rows, user_id, int(values[0]))
+                        response = _track_records_reply(
+                            rows, user_id, page, zoom_start=zoom_start, zoom_end=zoom_end
+                        )
+                    elif action == "page":
+                        if not values:
+                            raise RuntimeError("This tracker selection is invalid. Run /track again.")
+                        rows = await _load_progress(self.env, user_id)
+                        response = _track_records_reply(
+                            rows, user_id, int(values[0]), zoom_start=zoom_start, zoom_end=zoom_end
+                        )
                     else:
                         raise RuntimeError("This tracker action is not supported.")
                 else:
@@ -86,12 +112,18 @@ class Default(WorkerEntrypoint):
                     has_level = options.get("level") is not None
                     has_exp = options.get("exp") is not None
                     if has_level and has_exp:
-                        await _insert_progress(
-                            self.env,
-                            user_id,
-                            int(options["level"]),
-                            float(options["exp"]),
-                        )
+                        try:
+                            timestamp = parse_track_timestamp(options.get("timestamp"))
+                        except ValueError:
+                            timestamp = False  # invalid: handle_command below returns the error message
+                        if timestamp is not False:
+                            await _insert_progress(
+                                self.env,
+                                user_id,
+                                int(options["level"]),
+                                float(options["exp"]),
+                                timestamp,
+                            )
                         response = handle_command(interaction, towers, skills, tracker_user_id=user_id)
                     else:
                         rows = await _load_progress(self.env, user_id)
@@ -205,7 +237,10 @@ class Default(WorkerEntrypoint):
             self.ctx.waitUntil(self._finish_interaction(interaction))
             if interaction["type"] == 3:
                 return _json_response({"type": 6})
-            return _json_response({"type": 5, "data": {"flags": 1 << 15}})
+            flags = 1 << 15
+            if interaction.get("data", {}).get("name") == "track":
+                flags |= 1 << 6  # ephemeral: only the user sees their tracker
+            return _json_response({"type": 5, "data": {"flags": flags}})
 
         return _json_response({
             "type": 4,

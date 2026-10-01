@@ -2,6 +2,7 @@ import math
 import random
 import re
 import time
+from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 
 from emoji import Emoji
@@ -13,6 +14,7 @@ MAX_CONTENT = 1900
 COMPONENTS_V2 = 1 << 15
 CELL_MAX = 150
 TABLE_GROUP_LIMIT = 15
+LEVEL_SELECT_SIZE = 25  # Discord select menus hold 25 options
 TRACKER_URL = "https://tds.lucasliorleyt.workers.dev/tracker"
 TRIAL_INTERVAL_SECONDS = 3 * 60 * 60
 TRIAL_ANCHOR_EPOCH = 1790845200  # 2:00 AM Pacific Daylight Time on 2026-10-01; Inflation ends.
@@ -54,6 +56,21 @@ IMMUNITY_EMOJIS = {
     "Freeze": Emoji.noFreeze,
     "Debuff": Emoji.Defense,
 }
+SKILL_LABELS = (
+    ("enhanced_optics", Emoji.EnhancedOpticsSkill),
+    ("improved_gunpowder", Emoji.ImprovedGunpowderSkill),
+    ("fight_dirty", Emoji.FightDirtySkill),
+    ("precision", Emoji.PrecisionSkill),
+    ("accelerator", Emoji.AcceleratorSkill),
+    ("expanded_barracks", Emoji.ExpandedBarracksSkill),
+    ("beefed_up_minions", Emoji.BeefedUpMinionsSkill),
+)
+# Order matters: these are packed into the component custom_id after the page/flag values.
+SKILL_TREE_KEYS = (
+    "enhanced_optics", "improved_gunpowder", "fight_dirty", "precision", "accelerator",
+    "expanded_barracks", "beefed_up_minions", "firerate_buff", "range_buff", "damage_buff",
+)
+TEXT_BUDGET = 3700  # Discord allows 4000 characters of text per Components V2 message
 PRECISION_EXCLUDED_TOWERS = {
     "accelerator", "demoman", "dj_booth", "mortar", "paintballer",
     "rocketeer", "snowballer", "trapper", "brawler", "warden",
@@ -186,7 +203,10 @@ COMMANDS = [
     _command("track", "View or update your level and EXP history", [
         _option("level", "Your current level", 4, min_value=0),
         _option("exp", "Your current EXP", 10, min_value=0),
+        _option("timestamp", "When this record happened, in UTC (YYYY-MM-DD HH:MM); defaults to now", 3),
         _option("page", "Records page to view", 4, min_value=1, max_value=1000000),
+        _option("zoom_start", "First record number to include in the stats", 4, min_value=1, max_value=1000000),
+        _option("zoom_end", "Last record number to include in the stats", 4, min_value=1, max_value=1000000),
     ]),
     _command("trials", "Show the upcoming modifier trials", [
         _option("view", "Show upcoming times for a specific trial", 3, choices=[
@@ -250,6 +270,10 @@ def _select_option(label, value, default=False, emoji=None):
 
 def _action_row(component):
     return {"type": 1, "components": [component]}
+
+
+def _action_row_multi(components):
+    return {"type": 1, "components": components}
 
 
 def _separator():
@@ -434,6 +458,287 @@ def format_skill_plan(plan, skills, coin_balance=None):
     return "\n".join(lines)
 
 
+def _skill_tree(options):
+    return {key: int(options.get(key) or 0) for key in SKILL_TREE_KEYS}
+
+
+def _pack_state(page_index, include_changes, include_description, skill_tree):
+    values = [page_index, int(include_changes), int(include_description)]
+    values.extend(int((skill_tree or {}).get(key, 0)) for key in SKILL_TREE_KEYS)
+    return ",".join(str(value) for value in values)
+
+
+def _unpack_state(state):
+    """state: [page, include_changes, include_description, *skill tree values]"""
+    include_changes = bool(state[1]) if len(state) > 1 else False
+    include_description = bool(state[2]) if len(state) > 2 else False
+    skill_tree = {
+        key: state[3 + index] if len(state) > 3 + index else 0
+        for index, key in enumerate(SKILL_TREE_KEYS)
+    }
+    return include_changes, include_description, skill_tree
+
+
+def _dps_multiplier(header, skill_tree, tower_slug, unit_row=False, row_stats=None):
+    multiplier = Decimal(1) + Decimal(skill_tree.get("damage_buff", 0)) / 100
+    multiplier *= Decimal(1) + Decimal(skill_tree.get("firerate_buff", 0)) / 100
+    precision = skill_tree.get("precision", 0)
+    if not precision or unit_row or tower_slug in PRECISION_EXCLUDED_TOWERS:
+        return multiplier
+
+    precision_increase = Decimal("0.25") / (29 - precision)
+    header_lower = header.lower()
+    if tower_slug == "pursuit" and "missile" in header_lower:
+        precision_increase = Decimal(0)
+    elif tower_slug == "pursuit" and "total dps" in header_lower:
+        components = row_stats or {}
+        eligible_dps = sum(
+            (Decimal(raw.replace(",", "").strip()) for name, raw in components.items()
+             if "dps" in name.lower() and "total dps" not in name.lower() and "missile" not in name.lower()
+             and raw.replace(",", "").strip().replace(".", "", 1).isdigit()),
+            Decimal(0),
+        )
+        base_dps = Decimal(row_stats.get(header, "0").replace(",", "").strip()) if row_stats else Decimal(0)
+        if base_dps:
+            precision_increase *= eligible_dps / base_dps
+    return multiplier * (Decimal(1) + precision_increase)
+
+
+def _adjusted_stat(header, value, skill_tree, tower_slug, unit_row=False, row_stats=None):
+    value = str(value)
+    is_cost_efficiency = "cost efficiency" in header.lower()
+    numeric_value = value.replace("$", "") if is_cost_efficiency else value
+
+    try:
+        number = Decimal(numeric_value.replace(",", "").strip())
+    except (InvalidOperation, AttributeError):
+        return value
+
+    enhanced_optics = skill_tree.get("enhanced_optics", 0)
+    improved_gunpowder = skill_tree.get("improved_gunpowder", 0)
+    fight_dirty = skill_tree.get("fight_dirty", 0)
+    accelerator = skill_tree.get("accelerator", 0)
+    expanded_barracks = skill_tree.get("expanded_barracks", 0)
+    beefed_up_minions = skill_tree.get("beefed_up_minions", 0)
+    damage_buff = skill_tree.get("damage_buff", 0)
+    range_buff = skill_tree.get("range_buff", 0)
+    firerate_buff = skill_tree.get("firerate_buff", 0)
+
+    skill_factor = Decimal(1)
+    buff_factor = Decimal(1)
+    header_lower = header.lower()
+
+    if header == "Range" and not unit_row:
+        skill_factor *= Decimal(1) + Decimal("0.005") * enhanced_optics
+        buff_factor *= Decimal(1) + Decimal(range_buff) / 100
+    elif (
+        not unit_row
+        and ("explosion" in header_lower or header in {"Flashbang Radius", "Neuralyze Grenade Radius", "Smite Radius"})
+        and ("range" in header_lower or "radius" in header_lower)
+    ):
+        skill_factor *= Decimal(1) + Decimal("0.005") * improved_gunpowder
+
+    if header in FIGHT_DIRTY_HEADERS:
+        skill_factor *= Decimal(1) + Decimal("0.01") * fight_dirty
+    if header == "Ability Cooldown":
+        skill_factor *= Decimal(1) - Decimal("0.005") * accelerator
+    if header == "Spawnrate":
+        skill_factor *= Decimal(1) - Decimal("0.0075") * expanded_barracks
+    if (header == "Health" and unit_row) or header == "Combined Total Health":
+        skill_factor *= Decimal(1) + Decimal("0.006") * beefed_up_minions
+
+    excluded_damage = ("damage buff", "damage taken bonus", "damage vulnerability", "damage threshold")
+    if "damage" in header_lower and "buff" not in header_lower and not any(term in header_lower for term in excluded_damage):
+        buff_factor *= Decimal(1) + Decimal(damage_buff) / 100
+
+    if "firerate" in header_lower and "buff" not in header_lower:
+        buff_factor *= Decimal(1) + Decimal(firerate_buff) / 100
+        result = number / (skill_factor * buff_factor)
+    elif is_cost_efficiency:
+        result = number / _dps_multiplier(header, skill_tree, tower_slug, unit_row, row_stats)
+    elif "dps" in header_lower:
+        result = number * skill_factor * _dps_multiplier(header, skill_tree, tower_slug, unit_row, row_stats)
+    else:
+        result = number * skill_factor * buff_factor
+
+    if result == number:
+        return value
+    formatted = f"{result:,.4f}".rstrip("0").rstrip(".")
+    return f"${formatted}" if is_cost_efficiency and value.strip().startswith("$") else formatted
+
+
+def _render_stat_changes(skill_tree, tower_slug=""):
+    active_skills = [
+        f"{emoji.get()} {skill_tree[key]}"
+        for key, emoji in SKILL_LABELS
+        if skill_tree.get(key, 0)
+    ]
+    active_buffs = [
+        f"+{skill_tree[key]}% {emoji.get()}"
+        for key, emoji in (
+            ("firerate_buff", Emoji.FirerateBuff),
+            ("range_buff", Emoji.RangeBuff),
+            ("damage_buff", Emoji.DamageBuff),
+        )
+        if skill_tree.get(key, 0)
+    ]
+    level_bonuses = (
+        ("enhanced_optics", Decimal("0.5"), Emoji.EnhancedOpticsSkill),
+        ("improved_gunpowder", Decimal("0.5"), Emoji.ImprovedGunpowderSkill),
+        ("fight_dirty", Decimal(1), Emoji.FightDirtySkill),
+        ("accelerator", Decimal("-0.5"), Emoji.AcceleratorSkill),
+        ("expanded_barracks", Decimal("-0.75"), Emoji.ExpandedBarracksSkill),
+        ("beefed_up_minions", Decimal("0.6"), Emoji.BeefedUpMinionsSkill),
+    )
+    skill_bonuses = []
+    for key, per_level, emoji in level_bonuses:
+        level = skill_tree.get(key, 0)
+        if level:
+            amount = per_level * level
+            formatted = format(amount, "f")
+            if "." in formatted:
+                formatted = formatted.rstrip("0").rstrip(".")
+            sign = "+" if amount > 0 else ""
+            skill_bonuses.append(f"{sign}{formatted}% {emoji.get()}")
+    precision = skill_tree.get("precision", 0)
+    if precision and tower_slug not in PRECISION_EXCLUDED_TOWERS:
+        skill_bonuses.append(
+            f"1 in {29 - precision} attacks: 1.25× damage {Emoji.PrecisionSkill.get()}"
+        )
+
+    if not active_skills and not active_buffs:
+        return ""
+
+    lines = ["### Stat changes"]
+    if active_skills:
+        lines.append("**Skills:** " + ": ".join(active_skills))
+    if active_buffs:
+        lines.append("**Buffs:** " + ": ".join(active_buffs))
+    if skill_bonuses:
+        lines.append("**Skill bonuses:** " + ": ".join(skill_bonuses))
+    return "\n".join(lines)
+
+
+def _level_traits(tower, table, level):
+    mode = table.get("mode", "Regular")
+    base_stats = tower.get("info", {}).get(mode.lower(), {})
+    detections = set()
+    immunities = set()
+
+    for key, label in (("Hidden Detection", "Hidden"), ("Lead Detection", "Lead"), ("Flying Detection", "Flying")):
+        value = str(base_stats.get(key, "")).strip()
+        if value and value.lower() not in {"n/a", "unknown"}:
+            matches = list(re.finditer(r"\bLevel\s+(\d+)([A-Z])?\+?", value, re.IGNORECASE))
+            if matches:
+                tower_match = next(
+                    (match for index, match in enumerate(matches)
+                     if re.search(r"\bTower\b", value[match.end() : matches[index + 1].start() if index + 1 < len(matches) else len(value)], re.IGNORECASE)),
+                    None,
+                )
+                match = tower_match or (matches[0] if len(matches) == 1 else None)
+                if match:
+                    if match.group(2):
+                        continue
+                    qualifier = value[match.end() : matches[matches.index(match) + 1].start() if matches.index(match) + 1 < len(matches) else len(value)]
+                    unit_only = "only" in qualifier.lower() and not re.search(
+                        r"\b(Tower|Collision|Splash|Burn|Poison|Bleed|Sting)\b", qualifier, re.IGNORECASE
+                    )
+                    if level >= int(match.group(1)) and not unit_only:
+                        detections.add(label)
+            else:
+                detections.add(label)
+
+    base_immunities = str(base_stats.get("Immunities", ""))
+    immunity_matches = list(re.finditer(r"(Partial\s+)?(Stun|Freeze|Debuff)(?:\s+Immune)?", base_immunities, re.IGNORECASE))
+    for index, match in enumerate(immunity_matches):
+        tail = base_immunities[match.end() : immunity_matches[index + 1].start() if index + 1 < len(immunity_matches) else len(base_immunities)]
+        if "units only" in tail.lower():
+            continue
+        required_level = re.search(r"\(Level\s*(\d+)", tail, re.IGNORECASE)
+        if required_level and level < int(required_level.group(1)):
+            continue
+        label = f"Partial {match.group(2).title()}" if match.group(1) else match.group(2).title()
+        immunities.add(label)
+
+    detection_pattern = re.compile(r"\+\s*(Hidden|Lead|Flying)\s+Detection", re.IGNORECASE)
+    immunity_pattern = re.compile(r"\+\s*(Stun|Freeze|Debuff)\s+Immunity", re.IGNORECASE)
+    for upgrade in tower.get("upgrades", []):
+        if (
+            upgrade.get("mode") != mode
+            or upgrade.get("path") not in (None, table.get("path"))
+            or upgrade.get("ability")
+            or upgrade.get("level", level + 1) > level
+        ):
+            continue
+        for change in upgrade.get("description", []):
+            detection = detection_pattern.fullmatch(change.strip())
+            if detection:
+                detections.add(detection.group(1).title())
+            immunity = immunity_pattern.fullmatch(change.strip())
+            if immunity:
+                immunities.add(immunity.group(1).title())
+
+    detection_order = ("Hidden", "Lead", "Flying")
+    immunity_order = ("Stun", "Freeze", "Debuff", "Partial Stun", "Partial Freeze", "Partial Debuff")
+    return (
+        [name for name in detection_order if name in detections],
+        [name for name in immunity_order if name in immunities],
+    )
+
+
+def _trait_lines(traits):
+    detections, immunities = traits
+    detection_icons = [DETECTION_EMOJIS[name].get() for name in detections if name in DETECTION_EMOJIS]
+    immunity_icons = [
+        ("~" if name.startswith("Partial ") else "") + IMMUNITY_EMOJIS[name.removeprefix("Partial ")].get()
+        for name in immunities
+        if name.removeprefix("Partial ") in IMMUNITY_EMOJIS
+    ]
+    return [
+        f"**Detections:** {' '.join(detection_icons) or 'None'}",
+        f"**Immunities:** {' '.join(immunity_icons) or 'None'}",
+    ]
+
+
+def _emojify_traits(header, value):
+    """Unit tables have a plain-text "Detections" column ("Hidden, Flying"); show icons instead."""
+    value = str(value)
+    if header != "Detections":
+        return value
+    parts = [part.strip() for part in re.split(r"[,&/]|\band\b", value) if part.strip()]
+    icons = [DETECTION_EMOJIS[part.title()].get() for part in parts if part.title() in DETECTION_EMOJIS]
+    if not icons:
+        return value
+    leftovers = [part for part in parts if part.title() not in DETECTION_EMOJIS]
+    return " ".join(icons + leftovers)
+
+
+def _row_content(tower, tower_slug, table, row, include_changes, skill_tree):
+    """(text, image) for one table row, mirroring bot.py's render_row."""
+    headers = table.get("headers", [])
+    upgrade = _tower_upgrade(tower, table, row)
+    lines = [f"### {clean(_row_heading(headers, row, upgrade))}"]
+    is_unit_table = "Unit" in headers
+    raw_stats = {header: str(cell) for header, cell in zip(headers[1:], row[1:])}
+    cells = [
+        (header, _emojify_traits(header, _adjusted_stat(header, cell, skill_tree, tower_slug, is_unit_table, raw_stats)))
+        for header, cell in zip(headers[1:], row[1:])
+    ]
+    stat_cells = sorted(
+        ((header, cell) for header, cell in cells if header in STAT_EMOJIS and cell),
+        key=lambda item: list(STAT_EMOJIS).index(item[0]),
+    )
+    if stat_cells:
+        lines.append("  ".join(f"{STAT_EMOJIS[header].get()} {clean(cell)}" for header, cell in stat_cells))
+    if include_changes and upgrade:
+        lines.extend(f"> {clean(change, 200)}" for change in upgrade.get("description", []))
+    lines.extend(f"**{clean(header)}:** {clean(cell)}" for header, cell in cells if cell and header not in STAT_EMOJIS)
+    has_stats = any(header in STAT_EMOJIS for header in headers)
+    if has_stats and row and str(row[0]).isdigit():
+        lines.extend(_trait_lines(_level_traits(tower, table, int(row[0]))))
+    return "\n".join(lines), (upgrade.get("image") if upgrade else None)
+
+
 def _tower_slug(value):
     return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
 
@@ -492,6 +797,14 @@ def _row_heading(headers, row, upgrade=None):
     return heading
 
 
+def _level_label(tower, table, row):
+    """Dropdown label for a table row: just the level (upgrade) name, e.g. "Laptop Studio"."""
+    upgrade = _tower_upgrade(tower, table, row)
+    if upgrade and upgrade.get("name"):
+        return upgrade["name"]
+    return _row_heading(table.get("headers", []), row)
+
+
 def _format_overview_value(key, value):
     value = str(value)
     if key == "Level Requirement":
@@ -512,7 +825,7 @@ def _format_overview_value(key, value):
     )
 
 
-def _format_tower_content(tower, page, include_changes, group=0, include_description=False):
+def _format_tower_content(tower, page, include_changes, group=0, include_description=False, skill_tree=None):
     title, kind, payload = page
     if kind == "overview":
         tower_title = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
@@ -544,6 +857,9 @@ def _format_tower_content(tower, page, include_changes, group=0, include_descrip
         ]
         if details:
             lines.extend(["", "### Details", *details])
+        changes = _render_stat_changes(skill_tree or {}, _tower_slug(tower["name"]))
+        if changes:
+            lines.extend(["", changes])
     elif kind == "abilities":
         for upgrade in (item for item in tower.get("upgrades", []) if item.get("ability")):
             lines.append(f"### {upgrade.get('name', 'Ability')}")
@@ -574,60 +890,64 @@ def _format_tower_content(tower, page, include_changes, group=0, include_descrip
     return "\n".join(lines)
 
 
-def _tower_children(tower, pages, page_index, group, include_changes, include_description=False):
+def _tower_children(tower, pages, page_index, row_index, include_changes, include_description=False, skill_tree=None):
+    """Build the message for one tower page. Table pages show a single level, picked from a dropdown."""
+    skill_tree = skill_tree or {}
+    tower_slug = _tower_slug(tower["name"])
+    state = _pack_state(page_index, include_changes, include_description, skill_tree)
     page = pages[page_index]
     if page[1] == "table":
+        table = page[2]
+        rows = table.get("rows", [])
         children = [_section(f"# {page[0]}")]
-        rows = page[2].get("rows", [])
-        group_size = max(1, math.ceil(len(rows) / TABLE_GROUP_LIMIT))
-        groups = [rows[index : index + group_size] for index in range(0, len(rows), group_size)]
-        shown_rows = groups[group] if groups and group < len(groups) else []
-        headers = page[2].get("headers", [])
-        for index, row in enumerate(shown_rows):
-            upgrade = _tower_upgrade(tower, page[2], row)
-            heading = _row_heading(headers, row, upgrade)
-            cells = [(header, value) for header, value in zip(headers[1:], row[1:]) if value]
-            stat_cells = sorted(
-                ((header, value) for header, value in cells if header in STAT_EMOJIS),
-                key=lambda item: list(STAT_EMOJIS).index(item[0]),
-            )
-            stat_line = "  ".join(f"{STAT_EMOJIS[header].get()} {clean(value)}" for header, value in stat_cells)
-            other_cells = [f"**{header}:** {clean(value)}" for header, value in cells if header not in STAT_EMOJIS]
-            content_lines = [f"### {heading}"]
-            if stat_line:
-                content_lines.append(stat_line)
-            content_lines.extend(other_cells)
-            if include_changes and upgrade:
-                content_lines.extend(f"> {clean(change, 200)}" for change in upgrade.get("description", []))
-            children.extend([_separator(), _section("\n".join(content_lines), upgrade.get("image") if upgrade else None)])
+        changes = _render_stat_changes(skill_tree, tower_slug)
+        if changes:
+            children.append(_section(changes))
+        if rows:
+            row_index = max(0, min(row_index, len(rows) - 1))
+            text, image = _row_content(tower, tower_slug, table, rows[row_index], include_changes, skill_tree)
+            children.extend([_separator(), _section(text, image)])
+            group = row_index // LEVEL_SELECT_SIZE
+            start = group * LEVEL_SELECT_SIZE
+            if len(rows) > LEVEL_SELECT_SIZE:
+                chunks = [rows[index : index + LEVEL_SELECT_SIZE] for index in range(0, len(rows), LEVEL_SELECT_SIZE)]
+
+                def range_label(chunk):
+                    first, last = _level_label(tower, table, chunk[0]), _level_label(tower, table, chunk[-1])
+                    return first if first == last else f"{first} … {last}"
+
+                children.append(_action_row(_select(
+                    f"tower|{tower_slug}|group|{state}",
+                    "Choose a level range",
+                    [
+                        _select_option(range_label(chunk), index, default=(index == group))
+                        for index, chunk in enumerate(chunks)
+                    ],
+                )))
+            if len(rows) > 1:
+                children.append(_action_row(_select(
+                    f"tower|{tower_slug}|level|{state}",
+                    "Choose a level",
+                    [
+                        _select_option(
+                            _level_label(tower, table, row),
+                            start + offset,
+                            default=(start + offset == row_index),
+                        )
+                        for offset, row in enumerate(rows[start : start + LEVEL_SELECT_SIZE])
+                    ],
+                )))
+        else:
+            children.append(_section("No rows in this table."))
     else:
         image = tower.get("image") if page[1] == "overview" else None
-        children = [_section(_format_tower_content(tower, page, include_changes, group, include_description), image)]
-    if page[1] == "table":
-        rows = page[2].get("rows", [])
-        group_size = max(1, math.ceil(len(rows) / TABLE_GROUP_LIMIT))
-        groups = [rows[index : index + group_size] for index in range(0, len(rows), group_size)]
-        if len(groups) > 1:
-            def group_label(level_group):
-                first = _row_heading(page[2].get("headers", []), level_group[0], _tower_upgrade(tower, page[2], level_group[0]))
-                last = _row_heading(page[2].get("headers", []), level_group[-1], _tower_upgrade(tower, page[2], level_group[-1]))
-                return first if first == last else f"{first} … {last}"
-
-            children.append(_action_row(_select(
-                f"tower|{_tower_slug(tower['name'])}|group|{page_index},{int(include_changes)},{int(include_description)}",
-                "Choose a level range",
-                [
-                    _select_option(
-                        group_label(level_group),
-                        index,
-                        default=(index == group),
-                    )
-                    for index, level_group in enumerate(groups)
-                ],
-            )))
+        children = [_section(
+            _format_tower_content(tower, page, include_changes, 0, include_description, skill_tree),
+            image,
+        )]
     if len(pages) > 1:
         children.append(_action_row(_select(
-            f"tower|{_tower_slug(tower['name'])}|page|{page_index},{int(include_changes)},{int(include_description)}",
+            f"tower|{tower_slug}|page|{state}",
             "Choose a page",
             [
                 _select_option(
@@ -685,7 +1005,7 @@ def _gallery_children(tower, sections, section_index, entry_index):
 
 def _render_tower_page(tower, page, include_changes, include_description=False):
     title, kind, payload = page
-    lines = [f"**{tower['name']} — {title}**" if kind == "overview" else f"**{title}**"]
+    lines = [f"**{tower['name']}: {title}**" if kind == "overview" else f"**{title}**"]
     if kind == "overview":
         info = tower.get("info", {})
         if include_description:
@@ -712,7 +1032,7 @@ def _render_tower_page(tower, page, include_changes, include_description=False):
             upgrade = _tower_upgrade(tower, payload, row)
             label = row[0] if row else "?"
             if upgrade and upgrade.get("name"):
-                label += f" — {upgrade['name']}"
+                label += f": {upgrade['name']}"
             values = [f"{header}: {value}" for header, value in zip(headers[1:], row[1:]) if value]
             lines.append(f"**{label}**" + (" | " + " | ".join(values) if values else ""))
             if include_changes and upgrade:
@@ -763,6 +1083,7 @@ def _handle_tower(options, towers):
             0,
             bool(options.get("include_changes", False)),
             bool(options.get("include_description", False)),
+            _skill_tree(options),
         ),
     )
 
@@ -869,30 +1190,136 @@ def _handle_loadout(options, towers):
     return _reply(", ".join(towers[slug]["name"] for slug in random.sample(available, 5)))
 
 
-def _track_records_reply(rows, tracker_user_id, page=1, deleted=0):
+def _exp_requirement(next_level):
+    if next_level <= 0:
+        return 0
+    if next_level <= 10:
+        return 45 + next_level * 3.5
+    if next_level <= 40:
+        return next_level * 8
+    return 260 + next_level * 1.5
+
+
+def _progress(level, exp):
+    return exp + sum(_exp_requirement(n) for n in range(1, level + 1))
+
+
+def _fmt_number(value):
+    return f"{value:,.2f}".rstrip("0").rstrip(".")
+
+
+def _utc_text(timestamp):
+    return datetime.fromtimestamp(float(timestamp), timezone.utc).strftime("%Y-%m-%d %H:%M")
+
+
+TRACK_TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M"
+TRACK_TIMESTAMP_HELP = "Invalid timestamp. Use `YYYY-MM-DD HH:MM` in UTC, for example `2026-08-29 09:06`."
+
+
+def parse_track_timestamp(value):
+    """Parse the optional /track timestamp ("YYYY-MM-DD HH:MM", UTC) into a unix timestamp.
+
+    Returns None when blank. Raises ValueError for malformed or future values.
+    """
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        parsed = datetime.strptime(text, TRACK_TIMESTAMP_FORMAT).replace(tzinfo=timezone.utc)
+    except ValueError:
+        raise ValueError(TRACK_TIMESTAMP_HELP)
+    timestamp = parsed.timestamp()
+    if timestamp > time.time() + 60:
+        raise ValueError("Timestamp cannot be in the future.")
+    return timestamp
+
+
+def _zoom_window(total, zoom_start=None, zoom_end=None):
+    """1-based inclusive (start, end) record window, clamped to the available records."""
+    start = int(zoom_start) if zoom_start else 1
+    end = int(zoom_end) if zoom_end else total
+    start = max(1, min(start, total))
+    end = max(1, min(end, total))
+    if start > end:
+        start, end = end, start
+    return start, end
+
+
+def _tracker_stats(rows, zoom_start=None, zoom_end=None):
+    """Summary lines matching the stats panel on the tracker web page, over the zoom window."""
+    if not rows:
+        return []
+    ordered = sorted(rows, key=lambda row: (float(row.get("timestamp", 0)), int(row.get("id", 0))))
+    total = len(ordered)
+    start, end = _zoom_window(total, zoom_start, zoom_end)
+    window = ordered[start - 1 : end]
+    first, last = window[0], window[-1]
+    first_level, last_level = int(first.get("level", 0)), int(last.get("level", 0))
+    last_exp = float(last.get("exp", 0))
+    first_ts, last_ts = float(first.get("timestamp", 0)), float(last.get("timestamp", 0))
+    seconds = max(last_ts - first_ts, 0)
+    exp_gained = _progress(last_level, last_exp) - _progress(first_level, float(first.get("exp", 0)))
+    rate = exp_gained / (seconds / 86400) if seconds else 0
+    until_next = max(_exp_requirement(last_level + 1) - last_exp, 0)
+    return [
+        f"**{len(window):,}** records",
+        f"**{last_level:,}** current level",
+        f"**{last_level - first_level:,}** levels gained in zoom",
+        f"**{_fmt_number(exp_gained)}** EXP gained in zoom",
+        f"**{_fmt_number(rate)}** average EXP/day",
+        f"**{_fmt_number(until_next)}** EXP until next level",
+        f"**{_utc_text(first_ts)} → {_utc_text(last_ts)}** (UTC)",
+        f"Time span: {int(seconds // 3600)}h {int(seconds % 3600 // 60)}m",
+        f"Zoom start: Record {start} / {total}",
+        f"Zoom end: Record {end} / {total}",
+    ]
+
+
+def _track_state(page, zoom_start=None, zoom_end=None):
+    """Packed into component custom_ids as "page,zoom_start,zoom_end" (0 means default)."""
+    return f"{int(page)},{int(zoom_start or 0)},{int(zoom_end or 0)}"
+
+
+def track_zoom_from_state(state):
+    """(zoom_start, zoom_end) from a packed tracker state; None for default."""
+    parts = str(state).split(",")
+
+    def number(index):
+        try:
+            return max(0, int(parts[index])) or None
+        except (IndexError, ValueError):
+            return None
+
+    return number(1), number(2)
+
+
+def _track_records_reply(rows, tracker_user_id, page=1, deleted=0, update=False, zoom_start=None, zoom_end=None):
     if not tracker_user_id:
         return _reply("I couldn't identify your Discord account.", ephemeral=True)
+    stats = _tracker_stats(rows, zoom_start, zoom_end)
     rows = sorted(rows, key=lambda row: (float(row.get("timestamp", 0)), int(row.get("id", 0))), reverse=True)
     page_count = max(1, math.ceil(len(rows) / 25))
     page = max(1, min(int(page), page_count))
     page_rows = rows[(page - 1) * 25 : page * 25]
-    lines = [f"Your tracker history · {len(rows)} records · page {page}/{page_count}"]
+    state = _track_state(page, zoom_start, zoom_end)
+    lines = [f"Your tracker history (page {page}/{page_count})"]
     if deleted:
         lines.append(f"Deleted {deleted} record{'s' if deleted != 1 else ''}.")
-    lines.extend(
-        f"<t:{int(float(row.get('timestamp', 0)))}:f> — Level {int(row.get('level', 0))} · {float(row.get('exp', 0)):g} EXP"
-        for row in page_rows
-    )
-    if not rows:
+    if stats:
+        lines.extend(["", *stats, ""])
+    else:
         lines.append("No records yet. Use `/track level` and `/track exp` to add one.")
     children = [_section("\n".join(lines))]
     if page_rows:
         children.append(_action_row(_select(
-            f"track|records|delete|{page}",
-            "Select records to delete",
+            f"track|records|delete|{state}",
+            f"Select records to delete ({len(page_rows)} on this page)",
             [
                 _select_option(
-                    f"Level {int(row.get('level', 0))} · {float(row.get('exp', 0)):g} EXP · #{int(row['id'])}",
+                    f"{_utc_text(row.get('timestamp', 0))}: Level {int(row.get('level', 0))}"
+                    f" ({float(row.get('exp', 0)):g} EXP #{int(row['id'])})",
                     int(row["id"]),
                 )
                 for row in page_rows
@@ -903,7 +1330,7 @@ def _track_records_reply(rows, tracker_user_id, page=1, deleted=0):
         first_page = max(1, min(page - 12, page_count - 24))
         last_page = min(page_count, first_page + 24)
         children.append(_action_row(_select(
-            f"track|records|page|{page}",
+            f"track|records|page|{state}",
             "Choose a records page",
             [_select_option(f"Page {number}", number, default=number == page) for number in range(first_page, last_page + 1)],
         )))
@@ -913,27 +1340,101 @@ def _track_records_reply(rows, tracker_user_id, page=1, deleted=0):
         "label": "Open level tracker",
         "url": f"{TRACKER_URL}?user={tracker_user_id}",
     }))
-    return _reply("", ephemeral=True, children=children)
+    if update:
+        return _component_update(children)
+    return _reply("", ephemeral=False, children=children)
+
+
+def _walk_components(components):
+    for component in components or []:
+        yield component
+        yield from _walk_components(component.get("components"))
+
+
+def _select_labels(interaction, custom_id):
+    for component in _walk_components(interaction.get("message", {}).get("components")):
+        if component.get("custom_id") == custom_id:
+            return {str(o.get("value")): str(o.get("label", "")) for o in component.get("options", [])}
+    return {}
+
+
+def confirmed_delete_ids(interaction):
+    """Record IDs listed as '#id' in the confirmation message."""
+    ids = []
+    for component in _walk_components(interaction.get("message", {}).get("components")):
+        if component.get("type") == 10:
+            ids.extend(int(match) for match in re.findall(r"#(\d+)", str(component.get("content", ""))))
+    return list(dict.fromkeys(ids))
+
+
+def track_page_from_state(state):
+    try:
+        return max(1, int(str(state).split(",")[0]))
+    except ValueError:
+        return 1
+
+
+def handle_track_component(interaction):
+    """Handles track|records|delete (ask to confirm) and |cancel. Returns None for other actions."""
+    data = interaction.get("data", {})
+    custom_id = str(data.get("custom_id", ""))
+    parts = custom_id.split("|")
+    if len(parts) != 4 or parts[0] != "track" or parts[1] != "records":
+        return None
+    action, state = parts[2], parts[3]
+
+    if action == "cancel":
+        return _component_update([_section("Deletion cancelled.")])
+
+    if action == "delete":
+        ids = list(dict.fromkeys(int(v) for v in data.get("values", []) if str(v).isdigit()))
+        if not ids:
+            return _reply("Select at least one record to delete.", ephemeral=True)
+        labels = _select_labels(interaction, custom_id)
+        lines = [f"### Delete {len(ids)} record{'s' if len(ids) != 1 else ''}?"]
+        for record_id in ids:
+            label = labels.get(str(record_id), "")
+            if f"#{record_id}" not in label:
+                label = f"{label} #{record_id}".strip()
+            lines.append(f"- {label}")
+        lines.append("\nThis can't be undone.")
+        return _component_update([
+            _section("\n".join(lines)),
+            _action_row_multi([
+                {"type": 2, "style": 2, "label": "Cancel", "custom_id": f"track|records|cancel|{state}"},
+                {"type": 2, "style": 4, "label": "Delete", "custom_id": f"track|records|confirm|{state}"},
+            ]),
+        ])
+    return None
 
 
 def _handle_track(options, tracker_user_id=None):
+    try:
+        timestamp = parse_track_timestamp(options.get("timestamp"))
+    except ValueError as error:
+        return _reply(str(error), ephemeral=True)
     has_level = options.get("level") is not None
     has_exp = options.get("exp") is not None
     if has_level != has_exp:
         return _reply("Provide both level and EXP to add a record, or omit both to view your history.", ephemeral=True)
     if not has_level:
-        return _track_records_reply([], tracker_user_id, options.get("page", 1))
+        return _reply("A timestamp can only be used when adding a record with a level and EXP.", ephemeral=True)
     if not tracker_user_id:
         return _reply("I couldn't identify your Discord account.", ephemeral=True)
     level = int(options["level"])
     exp = float(options["exp"])
     tracker_url = TRACKER_URL
     tracker_url += f"?user={tracker_user_id}"
+    saved = f"Saved **Level {level}** with **{exp:g} EXP**"
+    saved += (
+        f" at {_utc_text(timestamp)} UTC (<t:{int(timestamp)}:f> your time)."
+        if timestamp is not None else "."
+    )
     return _reply(
         "",
-        ephemeral=True,
+        ephemeral=False,
         children=[
-            _section(f"Saved **Level {level}** with **{exp:g} EXP**."),
+            _section(saved),
             _action_row({
                 "type": 2,
                 "style": 5,
@@ -975,8 +1476,15 @@ def handle_command(interaction, towers, skills, tracker_user_id=None, tracker_ro
     data = interaction.get("data", {})
     options = _options_map(data.get("options", []))
     if data.get("name") == "track":
-        if options.get("level") is None and options.get("exp") is None:
-            return _track_records_reply(tracker_rows or [], tracker_user_id, options.get("page", 1))
+        adding = any(options.get(key) is not None for key in ("level", "exp", "timestamp"))
+        if not adding:
+            return _track_records_reply(
+                tracker_rows or [],
+                tracker_user_id,
+                options.get("page", 1),
+                zoom_start=options.get("zoom_start"),
+                zoom_end=options.get("zoom_end"),
+            )
         return _handle_track(options, tracker_user_id)
     handlers = {
         "tower": _handle_tower,
@@ -995,15 +1503,24 @@ def handle_command(interaction, towers, skills, tracker_user_id=None, tracker_ro
 def handle_component(interaction, towers):
     data = interaction.get("data", {})
     custom_id = str(data.get("custom_id", ""))
-    values = data.get("values", [])
-    if not values:
-        return _reply("This menu selection is empty.", ephemeral=True)
 
     parts = custom_id.split("|")
     if len(parts) != 4:
         return _reply("This menu has expired. Run the command again.", ephemeral=True)
 
     kind, slug, action, state = parts
+
+    # Tracker components (select menu and buttons) are handled before the "values" check,
+    # because buttons carry no values.
+    if kind == "track":
+        return handle_track_component(interaction) or _reply(
+            "This menu has expired. Run the command again.", ephemeral=True
+        )
+
+    values = data.get("values", [])
+    if not values:
+        return _reply("This menu selection is empty.", ephemeral=True)
+
     tower = towers.get(slug)
     if tower is None:
         return _reply("This tower could not be found. Run the command again.", ephemeral=True)
@@ -1018,18 +1535,19 @@ def handle_component(interaction, towers):
         pages = _tower_pages(tower)
         if selected >= len(pages):
             return _reply("This page could not be found. Run the command again.", ephemeral=True)
-        include_changes = bool(state[1]) if len(state) > 1 else False
-        include_description = bool(state[2]) if len(state) > 2 else False
-        return _component_update(_tower_children(tower, pages, selected, 0, include_changes, include_description))
+        include_changes, include_description, skill_tree = _unpack_state(state)
+        return _component_update(_tower_children(tower, pages, selected, 0, include_changes, include_description, skill_tree))
 
-    if kind == "tower" and action == "group":
+    if kind == "tower" and action in {"group", "level"}:
         page_index = state[0]
-        include_changes = bool(state[1]) if len(state) > 1 else False
-        include_description = bool(state[2]) if len(state) > 2 else False
+        include_changes, include_description, skill_tree = _unpack_state(state)
         pages = _tower_pages(tower)
         if page_index >= len(pages) or pages[page_index][1] != "table":
             return _reply("This table could not be found. Run the command again.", ephemeral=True)
-        return _component_update(_tower_children(tower, pages, page_index, selected, include_changes, include_description))
+        row_index = selected * LEVEL_SELECT_SIZE if action == "group" else selected
+        return _component_update(_tower_children(
+            tower, pages, page_index, row_index, include_changes, include_description, skill_tree,
+        ))
 
     sections = _gallery_sections(tower)
     if kind == "gallery" and action == "section":
