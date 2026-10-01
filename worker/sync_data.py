@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 from urllib.request import urlopen
@@ -6,6 +7,7 @@ from commands import _gallery_sections, _tower_pages
 
 
 WORKER_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = WORKER_DIR.parent
 ASSET_DIR = WORKER_DIR / "assets"
 GITHUB_RAW_BASE = "https://raw.githubusercontent.com/lucasliorlee/dispatcher/main"
 
@@ -15,10 +17,27 @@ def download_github_file(path):
         return response.read()
 
 
-def main():
+def load_data(source):
+    if source == "local":
+        return (
+            (PROJECT_DIR / "towers.json").read_bytes(),
+            (PROJECT_DIR / "skills" / "skills.json").read_bytes(),
+        )
+    return download_github_file("towers.json"), download_github_file("skills/skills.json")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Sync tower and skill data into Worker assets.")
+    parser.add_argument(
+        "--source",
+        choices=("github", "local"),
+        default="github",
+        help="data source (default: github)",
+    )
+    args = parser.parse_args(argv)
+
     ASSET_DIR.mkdir(exist_ok=True)
-    towers_json = download_github_file("towers.json")
-    skills_json = download_github_file("skills/skills.json")
+    towers_json, skills_json = load_data(args.source)
     towers = json.loads(towers_json)
     skills = json.loads(skills_json).get("skills", [])
     (ASSET_DIR / "towers.json").write_bytes(towers_json)

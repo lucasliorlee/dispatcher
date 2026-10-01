@@ -477,12 +477,16 @@ def _format_overview_value(key, value):
 
 def _format_tower_content(tower, page, include_changes, group=0):
     title, kind, payload = page
-    tower_title = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
+    tower_title = (
+        f"[{tower['name']}]({tower['url']})"
+        if kind == "overview" and tower.get("url")
+        else tower["name"]
+    )
     lines = [f"# {tower_title}", f"## {title}"]
     if kind == "overview":
         info = tower.get("info", {})
         general = info.get("general", {})
-        lines.extend(clean(text, 300) for text in info.get("tooltips", []))
+        lines.extend(str(text) for text in info.get("tooltips", []))
         for key in ("Role", "Placement"):
             if general.get(key):
                 lines.append(f"**{key}:** {clean(_format_overview_value(key, general[key]))}")
@@ -535,8 +539,7 @@ def _format_tower_content(tower, page, include_changes, group=0):
 def _tower_children(tower, pages, page_index, group, include_changes):
     page = pages[page_index]
     if page[1] == "table":
-        title = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
-        children = [_section(f"# {title}\n## {page[0]}")]
+        children = [_section(f"# {tower['name']}\n## {page[0]}")]
         rows = page[2].get("rows", [])
         group_size = max(1, math.ceil(len(rows) / TABLE_GROUP_LIMIT))
         groups = [rows[index : index + group_size] for index in range(0, len(rows), group_size)]

@@ -78,7 +78,27 @@ def cell_text(el):
 
 
 def article_description(soup):
-    """Best-effort summary from the page metadata, used when the infobox has no tooltip description."""
+    """Prefer full article prose, falling back to the page metadata when needed."""
+    root = soup.select_one("#mw-content-text .mw-parser-output") or soup.select_one(".mw-parser-output")
+    if root:
+        for element in root.find_all(["h2", "p"]):
+            if element.name == "h2":
+                break
+            if element.name == "p" and not element.find_parent("aside", class_="portable-infobox"):
+                value = cell_text(element)
+                if value:
+                    return value
+
+        heading = root.select_one("h2#Description")
+        if heading:
+            element = heading.parent.find_next_sibling()
+            while element and not element.select_one("h2, h3") and element.name not in ("h2", "h3"):
+                if element.name == "p":
+                    value = cell_text(element)
+                    if value:
+                        return value
+                element = element.find_next_sibling()
+
     candidates = []
     for selector in ("meta[name='description']", "meta[property='og:description']"):
         for tag in soup.select(selector):
