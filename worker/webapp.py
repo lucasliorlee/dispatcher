@@ -1,4 +1,6 @@
 import base64
+import hashlib
+import hmac
 import html
 import json
 import math
@@ -54,6 +56,22 @@ def _decode_state(value):
         return json.loads(base64.b64decode(value).decode("utf-8"))
     except (ValueError, UnicodeDecodeError, json.JSONDecodeError):
         return {}
+
+
+def _encode_signed_state(value, secret):
+    payload = _encode_state(value)
+    signature = hmac.new(secret.encode("utf-8"), payload.encode("ascii"), hashlib.sha256).hexdigest()
+    return f"{payload}.{signature}"
+
+
+def _decode_signed_state(value, secret):
+    if not secret or "." not in value:
+        return None
+    payload, signature = value.rsplit(".", 1)
+    expected = hmac.new(secret.encode("utf-8"), payload.encode("ascii"), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        return None
+    return _decode_state(payload)
 
 
 def _safe_int(value, fallback=0):
@@ -120,6 +138,29 @@ async def _insert_progress(env, user_id, level, exp):
     ).bind(user_id, level, exp, time.time()).run()
 
 
+async def _delete_progress(env, user_id, record_ids):
+    ids = list(dict.fromkeys(int(record_id) for record_id in record_ids if int(record_id) > 0))
+    if not ids:
+        return 0
+    if len(ids) > 99:
+        raise ValueError("Select no more than 99 records at a time.")
+    placeholders = ", ".join(f"?{index + 2}" for index in range(len(ids)))
+    owned_rows = await _query(
+        env,
+        f"SELECT id FROM tds WHERE user_id = ?1 AND id IN ({placeholders})",
+        user_id,
+        *ids,
+    )
+    owned_ids = [int(row["id"]) for row in owned_rows]
+    if not owned_ids:
+        return 0
+    delete_placeholders = ", ".join(f"?{index + 2}" for index in range(len(owned_ids)))
+    await _database(env).prepare(
+        f"DELETE FROM tds WHERE user_id = ?1 AND id IN ({delete_placeholders})"
+    ).bind(user_id, *owned_ids).run()
+    return len(owned_ids)
+
+
 async def _load_users(env):
     rows = await _query(env, "SELECT DISTINCT user_id FROM tds ORDER BY user_id")
     return [str(row["user_id"]) for row in rows]
@@ -129,12 +170,12 @@ async def _load_progress(env, user_id=None):
     if user_id:
         return await _query(
             env,
-            "SELECT user_id, level, exp, timestamp FROM tds WHERE user_id = ?1 ORDER BY timestamp ASC",
+            "SELECT id, user_id, level, exp, timestamp FROM tds WHERE user_id = ?1 ORDER BY timestamp ASC",
             user_id,
         )
     return await _query(
         env,
-        "SELECT user_id, level, exp, timestamp FROM tds ORDER BY timestamp ASC",
+        "SELECT id, user_id, level, exp, timestamp FROM tds ORDER BY timestamp ASC",
     )
 
 
@@ -196,13 +237,14 @@ def _root_page():
 <body><h1>TDS Stats</h1><p>Tracker, widget updater, and community tower concepts.</p><nav class="links"><a href="/tracker">Tracker</a><a href="/widget">Widget</a><a href="/towers">Towers</a></nav></body></html>"""
 
 
-def _tracker_page(rows, users, selected_user):
+def _tracker_page(rows, users, selected_user, deleted_count=None):
     points = []
     for row in rows:
         level = _safe_int(row.get("level"))
         exp = _safe_float(row.get("exp"))
         timestamp = _safe_float(row.get("timestamp"))
         points.append({
+            "id": _safe_int(row.get("id")),
             "level": level,
             "exp": exp,
             "timestamp": timestamp,
@@ -210,13 +252,26 @@ def _tracker_page(rows, users, selected_user):
             "progress": _cumulative_progress(level, exp),
         })
 
+    user_choices = list(users)
+    if selected_user and selected_user not in user_choices:
+        user_choices.insert(0, selected_user)
     user_options = "".join(
         f'<option value="{_escape(user)}"{" selected" if user == selected_user else ""}>{_escape(user)}</option>'
-        for user in users
+        for user in user_choices
     )
     current_level = points[-1]["level"] if points else 0
     wanted_level = current_level + 1 if points else 1
     points_json = _json_for_script(points)
+    record_rows = "".join(
+        f'<tr><td><input class="record-select" type="checkbox" value="{point["id"]}" aria-label="Select tracker record"></td>'
+        f'<td>{_escape(point["time"])}</td><td>{point["level"]}</td><td>{_escape(point["exp"])}</td></tr>'
+        for point in reversed(points)
+        if point["id"] > 0
+    ) or '<tr><td colspan="4">No records to show.</td></tr>'
+    delete_notice = (
+        f'<p class="note">Deleted {deleted_count} record{"s" if deleted_count != 1 else ""} after Discord authorization.</p>'
+        if deleted_count is not None else ""
+    )
     page = r"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TDS Stats</title>
 <style>
@@ -231,6 +286,7 @@ def _tracker_page(rows, users, selected_user):
 <div class="stat" style="grid-column:1/-1"><strong id="window">No data</strong><span id="span"></span></div></div>
 <div class="row"><label>Zoom start<input id="start" type="range" min="0" max="__MAX__" value="0"><span id="startLabel"></span></label><label>Zoom end<input id="end" type="range" min="0" max="__MAX__" value="__MAX__"><span id="endLabel"></span></label></div>
 <div style="margin-top:16px;overflow:hidden"><svg id="graph" viewBox="0 0 980 480" role="img" aria-label="Progress graph"></svg></div><p class="note">The X axis follows record order; the line shows cumulative progress.</p></section>
+<section class="panel"><h2>Records</h2>__DELETE_NOTICE__<form method="post" action="/tracker/delete/authorize" id="deleteRecords"><input type="hidden" name="ids" id="selectedRecordIds"><div style="max-width:100%;overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th><input type="checkbox" id="selectAllRecords" aria-label="Select all records"></th><th>Time (UTC)</th><th>Level</th><th>EXP</th></tr></thead><tbody>__RECORD_ROWS__</tbody></table></div><p class="note" id="deleteStatus">Select records; Discord authorization is required before they are deleted.</p><button id="deleteButton" type="submit" disabled>Select records to delete</button></form></section>
 <section class="panel"><h2>Add Record</h2><p>Enter a level and EXP value, then authorize with Discord.</p><form method="post" action="/tracker/authorize"><div class="row"><label>Level<input name="level" type="number" min="0" step="1" value="__LEVEL__"></label><label>EXP<input name="exp" type="number" min="0" step="0.1" value="0"></label></div><button>Authorize with Discord</button></form></section>
 <section class="panel"><h2>Level Target</h2><p>Estimate the time to a target using the selected graph window's average EXP/day.</p><div class="row"><label>Current level<input id="from" type="number" min="0" value="__LEVEL__"></label><label>Wanted level<input id="wanted" type="number" min="0" value="__WANTED__"></label></div><div class="stats target"><div class="stat"><strong id="needed">0</strong><span>EXP needed</span></div><div class="stat"><strong id="rate">0</strong><span>average EXP/day</span></div><div class="stat"><strong id="duration">n/a</strong><span>estimated time</span></div><div class="stat"><strong id="apart">0</strong><span>levels apart</span></div></div></section>
 <script>
@@ -239,8 +295,16 @@ function req(n){if(n<=0)return 0;if(n<=10)return 45+n*3.5;if(n<=40)return n*8;re
 function render(){if(!points.length){$('graph').innerHTML='<text x="30" y="40" fill="#aaa">No data available</text>';return}let a=+start.value,b=+end.value;if(a>b)[a,b]=[b,a];let data=points.slice(a,b+1),x0=70,y0=40,w=840,h=400,lo=Math.min(...data.map(p=>p.progress)),hi=Math.max(...data.map(p=>p.progress)),span=Math.max(hi-lo,1);let coords=data.map((p,i)=>`${(x0+i/Math.max(data.length-1,1)*w).toFixed(2)},${(y0+h-(p.progress-lo)/span*h).toFixed(2)}`).join(' ');$('graph').innerHTML='<rect width="980" height="480" rx="12" fill="#141418"/><g stroke="#303036"><line x1="70" y1="40" x2="70" y2="440"/><line x1="70" y1="440" x2="910" y2="440"/><line x1="70" y1="140" x2="910" y2="140"/><line x1="70" y1="240" x2="910" y2="240"/><line x1="70" y1="340" x2="910" y2="340"/></g><polyline fill="none" stroke="#60a5fa" stroke-width="3" points="'+coords+'"/>';let first=data[0],last=data[data.length-1],seconds=Math.max(last.timestamp-first.timestamp,0),exp=last.progress-first.progress,rate=seconds?exp/(seconds/86400):0,hours=Math.floor(seconds/3600),minutes=Math.floor(seconds%3600/60);$('records').textContent=data.length;$('level').textContent=last.level;$('gained').textContent=last.level-first.level;$('total').textContent=fmt(exp);$('average').textContent=fmt(rate);$('next').textContent=fmt(Math.max(req(last.level+1)-last.exp,0));$('window').textContent=first.time+' → '+last.time;$('span').textContent='Time span: '+hours+'h '+minutes+'m';$('startLabel').textContent='Record '+(a+1)+' / '+points.length;$('endLabel').textContent='Record '+(b+1)+' / '+points.length;let from=Math.max(0,+$('from').value||0),wanted=Math.max(0,+$('wanted').value||0),needed=0;for(let l=from+1;l<=wanted;l++)needed+=req(l);$('needed').textContent=fmt(needed);$('rate').textContent=fmt(rate);$('apart').textContent=Math.max(0,wanted-from);$('duration').textContent=rate>0?fmt(needed/rate)+' days':'n/a'}
 start.addEventListener('input',render);end.addEventListener('input',render);$('from').addEventListener('input',render);$('wanted').addEventListener('input',render);render();
 </script></body></html>"""
+    page = page.replace("</body>", """<script>
+const recordChecks=[...document.querySelectorAll('.record-select')],selectAllRecords=document.getElementById('selectAllRecords'),selectedRecordIds=document.getElementById('selectedRecordIds'),deleteButton=document.getElementById('deleteButton'),deleteStatus=document.getElementById('deleteStatus');
+function updateRecordSelection(){const selected=recordChecks.filter(input=>input.checked);selectedRecordIds.value=selected.map(input=>input.value).join(',');deleteButton.disabled=selected.length===0||selected.length>99;deleteButton.textContent=selected.length?`Authorize and delete ${selected.length} selected record${selected.length===1?'':'s'}`:'Select records to delete';deleteStatus.textContent=selected.length>99?'Select 99 or fewer records at a time.':'Discord authorization is required before deletion.';selectAllRecords.checked=recordChecks.length>0&&selected.length===recordChecks.length;selectAllRecords.indeterminate=selected.length>0&&selected.length<recordChecks.length}
+selectAllRecords.addEventListener('change',()=>{recordChecks.forEach((input,index)=>input.checked=selectAllRecords.checked&&index<99);updateRecordSelection()});
+recordChecks.forEach(input=>input.addEventListener('change',updateRecordSelection));
+</script></body>""", 1)
     return (
         page.replace("__USER_OPTIONS__", user_options)
+        .replace("__DELETE_NOTICE__", delete_notice)
+        .replace("__RECORD_ROWS__", record_rows)
         .replace("__MAX__", str(max(len(points) - 1, 0)))
         .replace("__LEVEL__", str(current_level))
         .replace("__WANTED__", str(wanted_level))
@@ -466,7 +530,18 @@ async def handle_web_request(request, env, response_class, fetch_function):
         if query.get("code"):
             try:
                 user_id = await _exchange_code(query["code"][0], redirect_uri, env, fetch_function)
-                state = _decode_state(query.get("state", [""])[0])
+                raw_state = query.get("state", [""])[0]
+                payload = raw_state.rsplit(".", 1)[0] if "." in raw_state else raw_state
+                state = _decode_state(payload)
+                if "delete_ids" in state:
+                    state = _decode_signed_state(raw_state, str(getattr(env, "CLIENT_SECRET", "") or ""))
+                    if not isinstance(state, dict) or not isinstance(state.get("delete_ids"), list):
+                        return _error_page("Invalid delete authorization", "The selected records could not be verified.", response_class, 400)
+                    deleted_count = await _delete_progress(env, user_id, state["delete_ids"])
+                    return response_class.redirect(
+                        f"{_base_url(parts)}/tracker?user={user_id}&deleted={deleted_count}",
+                        303,
+                    )
                 level = _safe_int(state.get("level"))
                 exp = _safe_float(state.get("exp"))
                 await _insert_progress(env, user_id, level, exp)
@@ -479,12 +554,33 @@ async def handle_web_request(request, env, response_class, fetch_function):
         try:
             users = await _load_users(env)
             selected_user = query.get("user", [None])[0]
-            if selected_user not in users:
+            if not selected_user:
                 selected_user = users[0] if users else None
             rows = await _load_progress(env, selected_user)
-            return _html(_tracker_page(rows, users, selected_user), response_class)
+            deleted_count = _safe_int(query["deleted"][0]) if query.get("deleted") else None
+            return _html(_tracker_page(rows, users, selected_user, deleted_count), response_class)
         except Exception as error:
             return _error_page("Tracker unavailable", str(error), response_class, 503)
+
+    if path == "/tracker/delete/authorize" and method == "POST":
+        try:
+            form = await request.form_data()
+            raw_ids = str(form.get("ids", "") or "")
+            record_ids = list(dict.fromkeys(int(value) for value in raw_ids.split(",") if value.strip()))
+            record_ids = [record_id for record_id in record_ids if record_id > 0]
+            if not record_ids:
+                return _error_page("No records selected", "Select at least one record to delete.", response_class)
+            if len(record_ids) > 99:
+                return _error_page("Too many records", "Select no more than 99 records at a time.", response_class)
+            redirect_uri = f"{_base_url(parts)}/tracker"
+            client_secret = str(getattr(env, "CLIENT_SECRET", "") or "").strip()
+            if not client_secret:
+                raise RuntimeError("Missing CLIENT_SECRET Worker secret.")
+            state = _encode_signed_state({"delete_ids": record_ids}, client_secret)
+            location = _authorize_url(redirect_uri, "identify", state)
+            return response_class.redirect(location, 303)
+        except Exception as error:
+            return _error_page("Could not start delete authorization", str(error), response_class, 400)
 
     if path == "/tracker/authorize" and method == "POST":
         try:

@@ -1,6 +1,7 @@
 import math
 import random
 import re
+import time
 from decimal import Decimal, InvalidOperation
 
 from emoji import Emoji
@@ -12,6 +13,25 @@ MAX_CONTENT = 1900
 COMPONENTS_V2 = 1 << 15
 CELL_MAX = 150
 TABLE_GROUP_LIMIT = 15
+TRACKER_URL = "https://tds.lucasliorleyt.workers.dev/tracker"
+TRIAL_INTERVAL_SECONDS = 3 * 60 * 60
+TRIAL_ANCHOR_EPOCH = 1790845200  # 2:00 AM Pacific Daylight Time on 2026-10-01; Inflation ends.
+TRIAL_AFTER_ANCHOR_INDEX = 3
+TRIALS = (
+    ("Flying", Emoji.FlyingTrial),
+    ("Limitation", Emoji.LimitationTrial),
+    ("Inflation", Emoji.InflationTrial),
+    ("Quarantine", Emoji.QuarantineTrial),
+    ("Broke", Emoji.BrokeTrial),
+    ("Fog", Emoji.FogTrial),
+    ("Speedy", Emoji.SpeedyTrial),
+    ("Healthy", Emoji.HealthyTrial),
+    ("Committed", Emoji.CommitedTrial),
+    ("Exploding", Emoji.ExplodingTrial),
+    ("Glass", Emoji.GlassTrial),
+    ("Hidden", Emoji.HiddenTrial),
+    ("Jailed", Emoji.JailedTrial),
+)
 CURRENCY_EMOJIS = {
     "coins": Emoji.Coin,
     "gems": Emoji.Gem,
@@ -163,6 +183,18 @@ COMMANDS = [
     _command("loadout", "Generate a random loadout", [
         _option("remove", "Comma-separated tower names to exclude", 3, autocomplete=True),
     ]),
+    _command("track", "View or update your level and EXP history", [
+        _option("level", "Your current level", 4, min_value=0),
+        _option("exp", "Your current EXP", 10, min_value=0),
+        _option("page", "Records page to view", 4, min_value=1, max_value=1000000),
+    ]),
+    _command("trials", "Show the upcoming trial schedule", [
+        _option("view", "Show upcoming times for a specific trial", 3, choices=[
+            {"name": name, "value": name.lower()}
+            for name, _ in TRIALS
+        ]),
+        _option("count", "Number of upcoming trials or occurrences (1-14)", 4, min_value=1, max_value=14),
+    ]),
 ]
 
 
@@ -196,13 +228,17 @@ def _media_gallery(images):
     }
 
 
-def _select(custom_id, placeholder, options):
-    return {
+def _select(custom_id, placeholder, options, max_values=1):
+    component = {
         "type": 3,
         "custom_id": custom_id,
         "placeholder": placeholder,
         "options": options[:25],
     }
+    if max_values > 1:
+        component["min_values"] = 1
+        component["max_values"] = min(max_values, len(component["options"]))
+    return component
 
 
 def _select_option(label, value, default=False, emoji=None):
@@ -833,15 +869,122 @@ def _handle_loadout(options, towers):
     return _reply(", ".join(towers[slug]["name"] for slug in random.sample(available, 5)))
 
 
-def handle_command(interaction, towers, skills):
+def _track_records_reply(rows, tracker_user_id, page=1, deleted=0):
+    if not tracker_user_id:
+        return _reply("I couldn't identify your Discord account.", ephemeral=True)
+    rows = sorted(rows, key=lambda row: (float(row.get("timestamp", 0)), int(row.get("id", 0))), reverse=True)
+    page_count = max(1, math.ceil(len(rows) / 25))
+    page = max(1, min(int(page), page_count))
+    page_rows = rows[(page - 1) * 25 : page * 25]
+    lines = [f"Your tracker history · {len(rows)} records · page {page}/{page_count}"]
+    if deleted:
+        lines.append(f"Deleted {deleted} record{'s' if deleted != 1 else ''}.")
+    lines.extend(
+        f"<t:{int(float(row.get('timestamp', 0)))}:f> — Level {int(row.get('level', 0))} · {float(row.get('exp', 0)):g} EXP"
+        for row in page_rows
+    )
+    if not rows:
+        lines.append("No records yet. Use `/track level` and `/track exp` to add one.")
+    children = [_section("\n".join(lines))]
+    if page_rows:
+        children.append(_action_row(_select(
+            f"track|records|delete|{page}",
+            "Select records to delete",
+            [
+                _select_option(
+                    f"Level {int(row.get('level', 0))} · {float(row.get('exp', 0)):g} EXP · #{int(row['id'])}",
+                    int(row["id"]),
+                )
+                for row in page_rows
+            ],
+            max_values=len(page_rows),
+        )))
+    if page_count > 1:
+        first_page = max(1, min(page - 12, page_count - 24))
+        last_page = min(page_count, first_page + 24)
+        children.append(_action_row(_select(
+            f"track|records|page|{page}",
+            "Choose a records page",
+            [_select_option(f"Page {number}", number, default=number == page) for number in range(first_page, last_page + 1)],
+        )))
+    children.append(_action_row({
+        "type": 2,
+        "style": 5,
+        "label": "Open level tracker",
+        "url": f"{TRACKER_URL}?user={tracker_user_id}",
+    }))
+    return _reply("", ephemeral=True, children=children)
+
+
+def _handle_track(options, tracker_user_id=None):
+    has_level = options.get("level") is not None
+    has_exp = options.get("exp") is not None
+    if has_level != has_exp:
+        return _reply("Provide both level and EXP to add a record, or omit both to view your history.", ephemeral=True)
+    if not has_level:
+        return _track_records_reply([], tracker_user_id, options.get("page", 1))
+    if not tracker_user_id:
+        return _reply("I couldn't identify your Discord account.", ephemeral=True)
+    level = int(options["level"])
+    exp = float(options["exp"])
+    tracker_url = TRACKER_URL
+    tracker_url += f"?user={tracker_user_id}"
+    return _reply(
+        "",
+        ephemeral=True,
+        children=[
+            _section(f"Saved **Level {level}** with **{exp:g} EXP**."),
+            _action_row({
+                "type": 2,
+                "style": 5,
+                "label": "Open level tracker",
+                "url": tracker_url,
+            }),
+        ],
+    )
+
+
+def _handle_trials(options, towers):
+    count = max(1, min(14, int(options.get("count", 14) or 14)))
+    requested = str(options.get("view", "") or "").lower()
+    trial_count = len(TRIALS)
+    if requested:
+        target_index = next((index for index, (name, _) in enumerate(TRIALS) if name.lower() == requested), None)
+        if target_index is None:
+            return _reply("That trial could not be found.", ephemeral=True)
+        offset = max(0, (int(time.time()) - TRIAL_ANCHOR_EPOCH + TRIAL_INTERVAL_SECONDS - 1) // TRIAL_INTERVAL_SECONDS)
+        while (TRIAL_AFTER_ANCHOR_INDEX + offset) % trial_count != target_index:
+            offset += 1
+        step = trial_count
+    else:
+        now = int(time.time())
+        offset = max(0, (now - TRIAL_ANCHOR_EPOCH + TRIAL_INTERVAL_SECONDS - 1) // TRIAL_INTERVAL_SECONDS)
+        step = 1
+
+    lines = []
+    for _ in range(count):
+        trial_index = (TRIAL_AFTER_ANCHOR_INDEX + offset) % trial_count
+        name, emoji = TRIALS[trial_index]
+        timestamp = TRIAL_ANCHOR_EPOCH + offset * TRIAL_INTERVAL_SECONDS
+        lines.append(f"{emoji.get()} **{name}**: <t:{timestamp}:F>")
+        offset += step
+    return _reply("\n".join(lines))
+
+
+def handle_command(interaction, towers, skills, tracker_user_id=None, tracker_rows=None):
     data = interaction.get("data", {})
     options = _options_map(data.get("options", []))
+    if data.get("name") == "track":
+        if options.get("level") is None and options.get("exp") is None:
+            return _track_records_reply(tracker_rows or [], tracker_user_id, options.get("page", 1))
+        return _handle_track(options, tracker_user_id)
     handlers = {
         "tower": _handle_tower,
         "skill": _handle_skill,
         "plan": _handle_plan,
         "gallery": _handle_gallery,
         "loadout": _handle_loadout,
+        "trials": _handle_trials,
     }
     handler = handlers.get(data.get("name"))
     if handler is None:

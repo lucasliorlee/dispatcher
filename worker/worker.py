@@ -1,11 +1,11 @@
 import json
 from urllib.parse import urlsplit
 
-from commands import handle_autocomplete, handle_command, handle_component
+from commands import _track_records_reply, handle_autocomplete, handle_command, handle_component
 from js import Uint8Array, crypto
 from pyodide.ffi import to_js
 from workers import Response, WorkerEntrypoint, fetch
-from webapp import handle_web_request
+from webapp import _delete_progress, _insert_progress, _load_progress, handle_web_request
 
 DATA_CACHE = None
 AUTOCOMPLETE_CACHE = None
@@ -48,9 +48,62 @@ class Default(WorkerEntrypoint):
         try:
             towers, skills = await _load_data(self.env)
             if interaction["type"] == 3:
-                response = handle_component(interaction, towers)
+                component_data = interaction.get("data", {})
+                custom_id = str(component_data.get("custom_id", ""))
+                if custom_id.startswith("track|records|"):
+                    user = interaction.get("user") or interaction.get("member", {}).get("user", {})
+                    user_id = str(user.get("id", ""))
+                    if not user_id:
+                        raise RuntimeError("Could not identify the Discord user for this tracker action.")
+                    parts = custom_id.split("|")
+                    values = component_data.get("values", [])
+                    if len(parts) != 4 or not values:
+                        raise RuntimeError("This tracker selection is invalid. Run /track again.")
+                    page = int(parts[3])
+                    if parts[2] == "delete":
+                        record_ids = [int(value) for value in values[:25]]
+                        deleted = await _delete_progress(self.env, user_id, record_ids)
+                        rows = await _load_progress(self.env, user_id)
+                        response = _track_records_reply(rows, user_id, page, deleted)
+                    elif parts[2] == "page":
+                        rows = await _load_progress(self.env, user_id)
+                        response = _track_records_reply(rows, user_id, int(values[0]))
+                    else:
+                        raise RuntimeError("This tracker action is not supported.")
+                else:
+                    response = handle_component(interaction, towers)
             else:
-                response = handle_command(interaction, towers, skills)
+                command_data = interaction.get("data", {})
+                if command_data.get("name") == "track":
+                    options = {
+                        option["name"]: option.get("value")
+                        for option in command_data.get("options", [])
+                    }
+                    user = interaction.get("user") or interaction.get("member", {}).get("user", {})
+                    user_id = str(user.get("id", ""))
+                    if not user_id:
+                        raise RuntimeError("Could not identify the Discord user for this tracker record.")
+                    has_level = options.get("level") is not None
+                    has_exp = options.get("exp") is not None
+                    if has_level and has_exp:
+                        await _insert_progress(
+                            self.env,
+                            user_id,
+                            int(options["level"]),
+                            float(options["exp"]),
+                        )
+                        response = handle_command(interaction, towers, skills, tracker_user_id=user_id)
+                    else:
+                        rows = await _load_progress(self.env, user_id)
+                        response = handle_command(
+                            interaction,
+                            towers,
+                            skills,
+                            tracker_user_id=user_id,
+                            tracker_rows=rows,
+                        )
+                else:
+                    response = handle_command(interaction, towers, skills)
             payload = response.get("data", {})
         except Exception as error:
             print(f"Discord interaction failed: {error}")
