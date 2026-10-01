@@ -714,7 +714,7 @@ def _emojify_traits(header, value):
 
 
 def _row_content(tower, tower_slug, table, row, include_changes, skill_tree):
-    """(text, image) for one table row, mirroring bot.py's render_row."""
+    """(text, image) for one table row"""
     headers = table.get("headers", [])
     upgrade = _tower_upgrade(tower, table, row)
     lines = [f"### {clean(_row_heading(headers, row, upgrade))}"]
@@ -1304,7 +1304,7 @@ def _track_records_reply(rows, tracker_user_id, page=1, deleted=0, update=False,
     page = max(1, min(int(page), page_count))
     page_rows = rows[(page - 1) * 25 : page * 25]
     state = _track_state(page, zoom_start, zoom_end)
-    lines = [f"Your tracker history (page {page}/{page_count})"]
+    lines = [f"TDS level tracker (page {page}/{page_count})"]
     if deleted:
         lines.append(f"Deleted {deleted} record{'s' if deleted != 1 else ''}.")
     if stats:
@@ -1342,7 +1342,7 @@ def _track_records_reply(rows, tracker_user_id, page=1, deleted=0, update=False,
     }))
     if update:
         return _component_update(children)
-    return _reply("", ephemeral=False, children=children)
+    return _reply("", children=children)
 
 
 def _walk_components(components):
@@ -1432,7 +1432,6 @@ def _handle_track(options, tracker_user_id=None):
     )
     return _reply(
         "",
-        ephemeral=False,
         children=[
             _section(saved),
             _action_row({
@@ -1449,26 +1448,53 @@ def _handle_trials(options, towers):
     count = max(1, min(14, int(options.get("count", 14) or 14)))
     requested = str(options.get("view", "") or "").lower()
     trial_count = len(TRIALS)
+
     if requested:
-        target_index = next((index for index, (name, _) in enumerate(TRIALS) if name.lower() == requested), None)
+        target_index = next(
+            (index for index, (name, _) in enumerate(TRIALS)
+             if name.lower() == requested),
+            None
+        )
+
         if target_index is None:
             return _reply("That trial could not be found.", ephemeral=True)
-        offset = max(0, (int(time.time()) - TRIAL_ANCHOR_EPOCH + TRIAL_INTERVAL_SECONDS - 1) // TRIAL_INTERVAL_SECONDS)
+
+        offset = max(
+            0,
+            (int(time.time()) - TRIAL_ANCHOR_EPOCH) // TRIAL_INTERVAL_SECONDS
+        )
+
         while (TRIAL_AFTER_ANCHOR_INDEX + offset) % trial_count != target_index:
             offset += 1
+
         step = trial_count
+
     else:
         now = int(time.time())
-        offset = max(0, (now - TRIAL_ANCHOR_EPOCH + TRIAL_INTERVAL_SECONDS - 1) // TRIAL_INTERVAL_SECONDS)
+        offset = max(
+            0,
+            (now - TRIAL_ANCHOR_EPOCH) // TRIAL_INTERVAL_SECONDS
+        )
         step = 1
 
     lines = []
+
     for _ in range(count):
-        trial_index = (TRIAL_AFTER_ANCHOR_INDEX + offset) % trial_count
+        trial_index = (
+            TRIAL_AFTER_ANCHOR_INDEX + offset
+        ) % trial_count
+
         name, emoji = TRIALS[trial_index]
-        timestamp = TRIAL_ANCHOR_EPOCH + offset * TRIAL_INTERVAL_SECONDS
+
+        timestamp = (
+            TRIAL_ANCHOR_EPOCH
+            + offset * TRIAL_INTERVAL_SECONDS
+        )
+
         lines.append(f"{emoji.get()} **{name}**: <t:{timestamp}:F>")
+
         offset += step
+
     return _reply("\n".join(lines))
 
 

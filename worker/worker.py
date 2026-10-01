@@ -238,8 +238,6 @@ class Default(WorkerEntrypoint):
             if interaction["type"] == 3:
                 return _json_response({"type": 6})
             flags = 1 << 15
-            if interaction.get("data", {}).get("name") == "track":
-                flags |= 1 << 6  # ephemeral: only the user sees their tracker
             return _json_response({"type": 5, "data": {"flags": flags}})
 
         return _json_response({
