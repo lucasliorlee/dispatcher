@@ -34,17 +34,22 @@ On startup, the bot syncs its slash commands with Discord. Keep `.env` private; 
 ## Commands
 
 - `/tower` shows tower overviews and stats.
+- `/enemy` shows an enemy overview and stats.
 - `/skill` calculates skill upgrade costs.
 - `/plan` suggests a skill upgrade plan.
 - `/gallery` browses tower images.
 - `/loadout` generates a random tower loadout.
 
+The Worker also serves searchable tower and enemy browsers at `/towers` and `/enemies`.
+
 ## Data
 
-The bot reads `towers.json` and `skills/skills.json` from the repository. These files are included in the project. To refresh tower and skill data from the wiki, run:
+The bot reads `towers.json` and `skills/skills.json` from the repository. These files are included in the project. To refresh tower, skill, and enemy data from the wiki, run:
 
 ```sh
 python scrapper.py
+python enemies.py
+python worker/sync_data.py --source local
 ```
 
-The scraper caches tower pages under `towers/`, galleries under `galleries/`, and skill data under `skills/`.
+The scraper caches tower pages under `towers/`, galleries under `galleries/`, and skill data under `skills/`. Enemy pages are cached under `enemies/` and summarized into `enemies.json` for the Worker.

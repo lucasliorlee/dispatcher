@@ -22,8 +22,13 @@ def load_data(source):
         return (
             (PROJECT_DIR / "towers.json").read_bytes(),
             (PROJECT_DIR / "skills" / "skills.json").read_bytes(),
+            (PROJECT_DIR / "enemies.json").read_bytes(),
         )
-    return download_github_file("towers.json"), download_github_file("skills/skills.json")
+    return (
+        download_github_file("towers.json"),
+        download_github_file("skills/skills.json"),
+        download_github_file("enemies.json"),
+    )
 
 
 def main(argv=None):
@@ -37,14 +42,17 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     ASSET_DIR.mkdir(exist_ok=True)
-    towers_json, skills_json = load_data(args.source)
+    towers_json, skills_json, enemies_json = load_data(args.source)
     towers = json.loads(towers_json)
     skills = json.loads(skills_json).get("skills", [])
+    enemies = json.loads(enemies_json)
     (ASSET_DIR / "towers.json").write_bytes(towers_json)
     (ASSET_DIR / "skills.json").write_bytes(skills_json)
+    (ASSET_DIR / "enemies.json").write_bytes(enemies_json)
     catalog = {
         "towers": [{"slug": slug, "name": tower["name"]} for slug, tower in towers.items()],
         "skills": [skill["name"] for skill in skills],
+        "enemies": [{"slug": slug, "name": enemy["name"]} for slug, enemy in enemies.items()],
         "pages": {
             slug: [page[0] for page in _tower_pages(tower)]
             for slug, tower in towers.items()

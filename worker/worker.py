@@ -36,9 +36,14 @@ async def _load_data(env):
     if DATA_CACHE is None:
         towers_response = await env.ASSETS.fetch("https://worker-assets/towers.json")
         skills_response = await env.ASSETS.fetch("https://worker-assets/skills.json")
-        if towers_response.status != 200 or skills_response.status != 200:
+        enemies_response = await env.ASSETS.fetch("https://worker-assets/enemies.json")
+        if towers_response.status != 200 or skills_response.status != 200 or enemies_response.status != 200:
             raise RuntimeError("Worker data assets could not be loaded.")
-        DATA_CACHE = (await towers_response.json(), (await skills_response.json())["skills"])
+        DATA_CACHE = (
+            await towers_response.json(),
+            (await skills_response.json())["skills"],
+            await enemies_response.json(),
+        )
     return DATA_CACHE
 
 
@@ -55,7 +60,7 @@ async def _load_autocomplete(env):
 class Default(WorkerEntrypoint):
     async def _finish_interaction(self, interaction):
         try:
-            towers, skills = await _load_data(self.env)
+            towers, skills, enemies = await _load_data(self.env)
             if interaction["type"] == 3:
                 component_data = interaction.get("data", {})
                 custom_id = str(component_data.get("custom_id", ""))
@@ -124,18 +129,19 @@ class Default(WorkerEntrypoint):
                                 float(options["exp"]),
                                 timestamp,
                             )
-                        response = handle_command(interaction, towers, skills, tracker_user_id=user_id)
+                        response = handle_command(interaction, towers, skills, enemies, tracker_user_id=user_id)
                     else:
                         rows = await _load_progress(self.env, user_id)
                         response = handle_command(
                             interaction,
                             towers,
                             skills,
+                            enemies,
                             tracker_user_id=user_id,
                             tracker_rows=rows,
                         )
                 else:
-                    response = handle_command(interaction, towers, skills)
+                    response = handle_command(interaction, towers, skills, enemies)
             payload = response.get("data", {})
         except Exception as error:
             print(f"Discord interaction failed: {error}")

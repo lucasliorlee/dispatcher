@@ -2,6 +2,7 @@
 # will eventually be merged with scrapper.py
 
 import re
+import json
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -13,6 +14,7 @@ ENEMIES_URL = f"{BASE_URL}/w/Enemies"
 PROJECT_DIR = Path(__file__).resolve().parent
 ENEMY_CACHE_DIR = PROJECT_DIR / "enemies"
 INDEX_CACHE_FILE = ENEMY_CACHE_DIR / "index.html"
+ENEMY_DATA_FILE = PROJECT_DIR / "enemies.json"
 
 MODES = {
     "Normal": ["Easy_Mode", "Casual_Mode", "Intermediate_Mode", "Molten_Mode", "Fallen_Mode", "Frost_Mode", "Challenge_Trials", "Hardcore_Mode", "Voidcore_Mode"],
@@ -37,6 +39,54 @@ def download(url, path):
         raise requests.HTTPError(f"Cloudflare challenge blocked {url}", response=response)
     response.raise_for_status()
     Path(path).write_text(response.text, encoding="utf-8")
+
+
+def clean_text(element):
+    if element is None:
+        return ""
+    text = element if isinstance(element, str) else element.get_text(" ", strip=True)
+    text = text.replace("\xa0", " ")
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def parse_enemy(path, page):
+    soup = BeautifulSoup(Path(path).read_text(encoding="utf-8"), "lxml")
+    infobox = soup.select_one("aside.portable-infobox")
+    fields = {}
+    if infobox:
+        for item in infobox.select(".pi-data[data-source]"):
+            key = item["data-source"]
+            if key.startswith("legacy_") or key in fields:
+                continue
+            label = clean_text(item.select_one(".pi-data-label"))
+            value = clean_text(item.select_one(".pi-data-value"))
+            if label and value:
+                fields[label] = value
+
+    title = clean_text(infobox.select_one("[data-source='title1']") if infobox else None) or page.replace("_", " ")
+    description = clean_text(soup.select_one("meta[name='description']").get("content")) if soup.select_one("meta[name='description']") else ""
+    image = ""
+    image_tag = soup.select_one("meta[property='og:image']")
+    if image_tag:
+        image = image_tag.get("content", "").split("?", 1)[0]
+    stats = {
+        label: fields[label]
+        for label in (
+            "Base Health", "Health Scaling", "Speed", "Defense", "Cash Given",
+            "Spawned By", "Hidden?", "Flying?", "Ghost?", "Lead?", "Attributes",
+        )
+        if label in fields
+    }
+    return {
+        "slug": slug(page),
+        "name": title,
+        "url": f"{BASE_URL}/w/{page}",
+        "image": image,
+        "description": description,
+        "mode_appearance": fields.get("Mode Appearance", ""),
+        "wave_debut": fields.get("Wave Debut", ""),
+        "stats": stats,
+    }
 
 
 def enemy_links(soup):
@@ -85,7 +135,15 @@ def download_enemies():
                 continue
             raise
 
+    data = {
+        item["slug"]: item
+        for page in links
+        if (html_path := ENEMY_CACHE_DIR / f"{slug(page)}.html").exists()
+        for item in [parse_enemy(html_path, page)]
+    }
+    ENEMY_DATA_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Cached {len(links)} enemy pages in {ENEMY_CACHE_DIR}")
+    print(f"Wrote {ENEMY_DATA_FILE}")
 
 
 if __name__ == "__main__":

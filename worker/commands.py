@@ -175,6 +175,9 @@ COMMANDS = [
         _option("range_buff", "Percent bonus (15 means +15%)", 4, min_value=0, max_value=1000),
         _option("damage_buff", "Percent bonus (15 means +15%)", 4, min_value=0, max_value=1000),
     ]),
+    _command("enemy", "Look up an enemy's stats", [
+        _option("name", "Enemy name", 3, True, autocomplete=True),
+    ]),
     _command("skill", "Calculate the coin cost to level a skill", [
         _option("name", "Skill name", 3, True, autocomplete=True),
         _option("current_level", "Your current skill level", 4, min_value=0),
@@ -1088,6 +1091,26 @@ def _handle_tower(options, towers):
     )
 
 
+def _handle_enemy(options, enemies):
+    name = str(options.get("name", ""))
+    enemy = enemies.get(_tower_slug(name))
+    if enemy is None:
+        enemy = next((item for item in enemies.values() if item.get("name", "").lower() == name.lower()), None)
+    if enemy is None:
+        return _reply(f"Couldn't find an enemy called `{name}`.", ephemeral=True)
+
+    lines = [f"# [{enemy['name']}]({enemy.get('url', '')})"]
+    if enemy.get("description"):
+        lines.append(enemy["description"])
+    for label in ("Mode Appearance", "Wave Debut"):
+        key = "mode_appearance" if label == "Mode Appearance" else "wave_debut"
+        if enemy.get(key):
+            lines.append(f"**{label}:** {enemy[key]}")
+    for label, value in enemy.get("stats", {}).items():
+        lines.append(f"**{label}:** {value}")
+    return _reply("", children=[_section("\n".join(lines), enemy.get("image"))])
+
+
 def _handle_skill(options, skills):
     name = str(options.get("name", ""))
     skill = find_skill(skills, name)
@@ -1498,7 +1521,7 @@ def _handle_trials(options, towers):
     return _reply("\n".join(lines))
 
 
-def handle_command(interaction, towers, skills, tracker_user_id=None, tracker_rows=None):
+def handle_command(interaction, towers, skills, enemies=None, tracker_user_id=None, tracker_rows=None):
     data = interaction.get("data", {})
     options = _options_map(data.get("options", []))
     if data.get("name") == "track":
@@ -1514,6 +1537,7 @@ def handle_command(interaction, towers, skills, tracker_user_id=None, tracker_ro
         return _handle_track(options, tracker_user_id)
     handlers = {
         "tower": _handle_tower,
+        "enemy": _handle_enemy,
         "skill": _handle_skill,
         "plan": _handle_plan,
         "gallery": _handle_gallery,
@@ -1523,6 +1547,8 @@ def handle_command(interaction, towers, skills, tracker_user_id=None, tracker_ro
     handler = handlers.get(data.get("name"))
     if handler is None:
         return _reply("Unknown command.", ephemeral=True)
+    if data["name"] == "enemy":
+        return handler(options, enemies or {})
     return handler(options, skills if data["name"] in {"skill", "plan"} else towers)
 
 
@@ -1609,9 +1635,12 @@ def handle_autocomplete(interaction, catalog):
     choices = []
     towers = catalog.get("towers", [])
     tower_lookup = {tower["slug"]: tower for tower in towers}
+    enemies = catalog.get("enemies", [])
 
     if command in {"tower", "gallery"} and option_name == "name":
         choices = _choices([tower["name"] for tower in towers], query, lambda name: next(tower["slug"] for tower in towers if tower["name"] == name))
+    elif command == "enemy" and option_name == "name":
+        choices = _choices([enemy["name"] for enemy in enemies], query, lambda name: next(enemy["slug"] for enemy in enemies if enemy["name"] == name))
     elif command == "tower" and option_name == "page":
         tower = tower_lookup.get(_tower_slug(str(current.get("name", ""))))
         if tower:

@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 
 CLIENT_ID = "755049463961092178"
 TOWERS_CACHE = None
+ENEMIES_CACHE = None
 
 
 def _html(body, response_class, status=200):
@@ -211,6 +212,16 @@ async def _load_scraped_towers(env):
     return TOWERS_CACHE
 
 
+async def _load_scraped_enemies(env):
+    global ENEMIES_CACHE
+    if ENEMIES_CACHE is None:
+        response = await env.ASSETS.fetch("https://worker-assets/enemies.json")
+        if response.status != 200:
+            raise RuntimeError("Scraped enemy data could not be loaded.")
+        ENEMIES_CACHE = await response.json()
+    return ENEMIES_CACHE
+
+
 def _authorize_url(redirect_uri, scope, state=None):
     params = {
         "client_id": CLIENT_ID,
@@ -227,7 +238,7 @@ def _root_page():
     return """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TDS Stats</title>
 <style>body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:440px;margin:60px auto;padding:24px;text-align:center}h1{color:#fff;font-size:24px}p{color:#a1a1aa;line-height:1.5}.links{display:grid;gap:12px;margin-top:28px}a{display:block;padding:14px;border:1px solid #35353a;border-radius:8px;background:#1c1c1f;color:#fff;text-decoration:none;font-weight:600}a:hover{background:#29292e}</style></head>
-<body><h1>TDS Stats</h1><p>Tracker, widget updater, and tower stats.</p><nav class="links"><a href="/tracker">Tracker</a><a href="/widget">Widget</a><a href="/towers">Towers</a></nav></body></html>"""
+<body><h1>TDS Stats</h1><p>Tracker, widget updater, tower and enemy stats.</p><nav class="links"><a href="/tracker">Tracker</a><a href="/widget">Widget</a><a href="/towers">Towers</a><a href="/enemies">Enemies</a></nav></body></html>"""
 
 
 def _tracker_page(rows, users, selected_user, deleted_count=None):
@@ -311,6 +322,20 @@ def _widget_page():
 <form action="/widget/submit" method="post" id="statsForm">
 <label>Level<input name="level" value="1"></label><label>Coins<input name="coins" value="0"></label><label>Gems<input name="gems" value="0"></label><label>Tower<input name="tower" value="Scout"></label><label>Wins<input name="wins" value="0"></label><label>Losses<input name="losses" value="0"></label><label>Username<input name="username" value=""></label><button>Submit and Authorize</button></form>
 <script>const key='tdsStatsForm',form=document.getElementById('statsForm'),inputs=form.querySelectorAll('input');try{const saved=JSON.parse(localStorage.getItem(key)||'{}');inputs.forEach(i=>{if(saved[i.name]!==undefined)i.value=saved[i.name]})}catch(e){}function save(){const data={};inputs.forEach(i=>data[i.name]=i.value);localStorage.setItem(key,JSON.stringify(data))}inputs.forEach(i=>i.addEventListener('input',save));</script></body></html>"""
+
+
+def _enemies_page(enemies):
+    page = r"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>TDS Enemies</title>
+<style>*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:1100px;margin:32px auto;padding:20px}h1{color:#fff;font-size:24px}p{color:#aaa}.top{display:flex;gap:10px;flex-wrap:wrap}.top input{flex:1;min-width:220px}input{padding:10px;border:1px solid #36363c;border-radius:6px;background:#202024;color:#fff;font-size:16px}.status{color:#aaa;margin:14px 0}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}.card{border:1px solid #303036;border-radius:8px;background:#19191d;overflow:hidden}.card img{display:block;width:100%;height:190px;object-fit:contain;background:#222}.card-body{padding:14px}.card h2{margin:0 0 8px;font-size:18px}.card h2 a{color:#fff;text-decoration:none}.card h2 a:hover{color:#8dc9ff}.card p{font-size:13px;line-height:1.45;min-height:3.8em}.meta{display:flex;gap:8px;color:#9ca3af;font-size:12px}.card details{margin-top:12px;border-top:1px solid #303036;padding-top:10px}.card summary{cursor:pointer;color:#8dc9ff;font-size:13px}.facts{display:grid;gap:7px;margin-top:10px;font-size:13px}.facts strong{color:#fff}.facts span{color:#bbb;overflow-wrap:anywhere}@media(max-width:650px){body{margin:12px auto;padding:14px}.grid{grid-template-columns:1fr}}</style></head>
+<body><h1>TDS Enemies</h1><p><a href="/">&larr; back</a></p><div class="top"><input id="search" type="search" placeholder="Search enemy name, mode, or stat" aria-label="Search enemies"></div><div class="status" id="status"></div><main class="grid" id="grid"></main>
+<script>
+const ENEMIES=__ENEMIES__,grid=document.getElementById('grid'),status=document.getElementById('status'),search=document.getElementById('search');
+function esc(value){return String(value||'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+function render(){const query=search.value.toLowerCase().trim();const items=ENEMIES.filter(enemy=>JSON.stringify(enemy).toLowerCase().includes(query));status.textContent=items.length+' of '+ENEMIES.length+' enemies';grid.innerHTML=items.length?items.map(enemy=>{const stats=Object.entries(enemy.stats||{}).map(([label,value])=>'<div><strong>'+esc(label)+':</strong> <span>'+esc(value)+'</span></div>').join('');return '<article class="card">'+(enemy.image?'<img loading="lazy" src="'+esc(enemy.image)+'" alt="'+esc(enemy.name)+'">':'')+'<div class="card-body"><h2><a href="'+esc(enemy.url)+'" target="_blank" rel="noopener">'+esc(enemy.name)+'</a></h2><div class="meta">'+(enemy.wave_debut?'<span>Wave '+esc(enemy.wave_debut)+'</span>':'')+'</div><p>'+esc(enemy.description||'No description available.')+'</p><details><summary>View details</summary><div class="facts">'+(enemy.mode_appearance?'<div><strong>Modes:</strong> <span>'+esc(enemy.mode_appearance)+'</span></div>':'')+stats+'</div></details></div></article>'}).join(''):'<p>No enemies found.</p>'}
+search.addEventListener('input',render);render();
+</script></body></html>"""
+    return page.replace("__ENEMIES__", _json_for_script(list(enemies.values())))
 
 
 def _towers_page(towers):
@@ -624,6 +649,13 @@ async def handle_web_request(request, env, response_class, fetch_function):
             return _html(_towers_page(towers), response_class)
         except Exception as error:
             return _error_page("Tower list unavailable", str(error), response_class, 503)
+
+    if method == "GET" and path == "/enemies":
+        try:
+            enemies = await _load_scraped_enemies(env)
+            return _html(_enemies_page(enemies), response_class)
+        except Exception as error:
+            return _error_page("Enemy list unavailable", str(error), response_class, 503)
 
     return _html(
         "<!doctype html><html><meta charset=\"utf-8\"><title>Not found</title>"
