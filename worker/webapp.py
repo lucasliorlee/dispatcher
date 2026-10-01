@@ -234,7 +234,7 @@ def _root_page():
     return """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TDS Stats</title>
 <style>body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:440px;margin:60px auto;padding:24px;text-align:center}h1{color:#fff;font-size:24px}p{color:#a1a1aa;line-height:1.5}.links{display:grid;gap:12px;margin-top:28px}a{display:block;padding:14px;border:1px solid #35353a;border-radius:8px;background:#1c1c1f;color:#fff;text-decoration:none;font-weight:600}a:hover{background:#29292e}</style></head>
-<body><h1>TDS Stats</h1><p>Tracker, widget updater, and community tower concepts.</p><nav class="links"><a href="/tracker">Tracker</a><a href="/widget">Widget</a><a href="/towers">Towers</a></nav></body></html>"""
+<body><h1>TDS Stats</h1><p>Tracker, widget updater, and tower stats.</p><nav class="links"><a href="/tracker">Tracker</a><a href="/widget">Widget</a><a href="/towers">Towers</a></nav></body></html>"""
 
 
 def _tracker_page(rows, users, selected_user, deleted_count=None):

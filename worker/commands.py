@@ -175,7 +175,7 @@ COMMANDS = [
             for name, label in PLAN_OPTIONS.items()
         ],
     ]),
-    _command("gallery", "Browse a tower's skins, weapons, and other art", [
+    _command("gallery", "Browse a tower's skins, weapons, and other stuff", [
         _option("name", "Tower name", 3, True, autocomplete=True),
         _option("section", "Gallery section", 3, autocomplete=True),
         _option("entry", "Gallery entry", 3, autocomplete=True),
@@ -188,7 +188,7 @@ COMMANDS = [
         _option("exp", "Your current EXP", 10, min_value=0),
         _option("page", "Records page to view", 4, min_value=1, max_value=1000000),
     ]),
-    _command("trials", "Show the upcoming trial schedule", [
+    _command("trials", "Show the upcoming modifier trials", [
         _option("view", "Show upcoming times for a specific trial", 3, choices=[
             {"name": name, "value": name.lower()}
             for name, _ in TRIALS
