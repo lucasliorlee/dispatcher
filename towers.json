@@ -12,7 +12,8 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "499 Robux"
+    "Skip Cost": "499 Robux",
+    "Description": "The Scout is one of two starter towers obtained upon joining the game for the first time, with the other being the Sniper."
    },
    "regular": {
     "Base Cost": "$125",
@@ -4879,7 +4880,8 @@
    "general": {
     "Unlock Cost": "Free",
     "Role": "Defense",
-    "Placement": "Cliff"
+    "Placement": "Cliff",
+    "Description": "The Sniper is one of the two starter towers obtained upon joining the game for the first time, along with the Scout."
    },
    "regular": {
     "Base Cost": "$450",
@@ -7277,7 +7279,8 @@
    "general": {
     "Unlock Cost": "100 Coins",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Paintballer is a starter splash damage tower but it could also be obtained by a now expired code."
    },
    "regular": {
     "Base Cost": "$100",
@@ -8562,7 +8565,8 @@
    "general": {
     "Unlock Cost": "200 Coins",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Demoman is a starter splash damage tower. While targeting a specific enemy, it will also affect those around the target, dealing splash damage."
    },
    "regular": {
     "Base Cost": "$700",
@@ -10581,7 +10585,8 @@
     "Unlock Cost": "300 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "12"
+    "Placement Limit": "12",
+    "Description": "The Boomerang is a starter tower bought for 300. It attacks enemies by throwing a boomerang at them."
    },
    "regular": {
     "Base Cost": "$550",
@@ -10597,7 +10602,9 @@
     "Placement Footprint": "Average (1.5)"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Boomerang is a starter tower bought for 300. It attacks enemies by throwing a boomerang at them."
+   ]
   },
   "upgrades": [
    {
@@ -10906,7 +10913,8 @@
    "general": {
     "Unlock Cost": "300 Coins",
     "Role": "Support",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Slime Trooper is a starter support tower which fires globs of slime at enemies, slowing them down. It costs 300 to purchase."
    },
    "regular": {
     "Base Cost": "$500",
@@ -10922,7 +10930,9 @@
     "Placement Footprint": "Average (1.5)"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Slime Trooper is a starter support tower which fires globs of slime at enemies, slowing them down. It costs 300 to purchase."
+   ]
   },
   "upgrades": [
    {
@@ -11320,7 +11330,8 @@
    "general": {
     "Unlock Cost": "350 Coins",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Soldier is a starter ground tower that fires in bursts. It can be bought for 350 in the store."
    },
    "regular": {
     "Base Cost": "$400",
@@ -14939,7 +14950,8 @@
    "general": {
     "Unlock Cost": "650 Coins",
     "Role": "Defense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Freezer is a ground tower that fires an ice beam and applies chill and slow down enemies, freezing at later levels."
    },
    "regular": {
     "Base Cost": "$450",
@@ -16913,7 +16925,8 @@
    "general": {
     "Unlock Cost": "800 Coins",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Assassin is an intermediate melee ground tower. The Assassin will slash at enemies within range with its knife, dealing high single-target damage."
    },
    "regular": {
     "Base Cost": "$300",
@@ -17895,7 +17908,8 @@
    "general": {
     "Unlock Cost": "800 Coins",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Militant, formerly known as John, is an intermediate tower that costs 800 to buy from the store, but can also be obtained by purchasing the Starter Bundle."
    },
    "regular": {
     "Base Cost": "$600",
@@ -20689,7 +20703,8 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "499 Robux"
+    "Skip Cost": "499 Robux",
+    "Description": "The Shotgunner, formerly known as the Enforcer, is an intermediate ground tower that wields a powerful pump shotgun to attack enemies with."
    },
    "regular": {
     "Base Cost": "$1,500",
@@ -22819,7 +22834,8 @@
     "Unlock Cost": "1,000 Coins",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "10"
+    "Placement Limit": "10",
+    "Description": "It could have also been obtained from a now expired code. The Hunter has a decently long range and deals a high amount of damage, however has a rather slow firerate."
    },
    "regular": {
     "Base Cost": "$1,625",
@@ -24126,7 +24142,8 @@
    "general": {
     "Unlock Cost": "1,250 Coins",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Pyromancer is an intermediate tower that costs 1,250 to buy from the store. It is capable of dealing burn damage to enemies..."
    },
    "regular": {
     "Base Cost": "$900",
@@ -27597,7 +27614,8 @@
     "Unlock Cost": "1,500 Coins",
     "Role": "Defense",
     "Placement": "Ground (Air-based)",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "Unlike other ground towers, the attacking unit of the Ace Pilot, the plane, is an air unit. The Ace Pilot will circle around the runway."
    },
    "regular": {
     "Base Cost": "$500",
@@ -28839,7 +28857,8 @@
     "Unlock Cost": "2,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "4"
+    "Placement Limit": "4",
+    "Description": "The Medic is an intermediate support tower that provides various buffs to other towers and replenishes base health after it has been lost."
    },
    "regular": {
     "Base Cost": "$400",
@@ -31520,7 +31539,8 @@
     "Unlock Cost": "2,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "10 (Regular) 8 (PVP)"
+    "Placement Limit": "10 (Regular) 8 (PVP)",
+    "Description": "The Farm is an intermediate cash-generating tower. The Farm generates cash for the player at the beginning of each wave, instantly giving the player a cash bonus."
    },
    "regular": {
     "Base Cost": "$300",
@@ -33320,7 +33340,8 @@
     "Unlock Cost": "2,500 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "7"
+    "Placement Limit": "7",
+    "Description": "The Electroshocker is an intermediate tower that has the capability to deal damage through chain reactions."
    },
    "regular": {
     "Base Cost": "$650",
@@ -35678,7 +35699,8 @@
     "Unlock Cost": "2,500 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "The Rocketeer, formerly known as the Rocketer, is an intermediate ground tower that attacks enemies with a rocket launcher. It is purchasable in the store for 2,500."
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -38917,7 +38939,8 @@
     "Unlock Cost": "3,000 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "7"
+    "Placement Limit": "7",
+    "Description": "It places down various traps on the ground, which when they come in contact with an enemy, the traps damage it in various ways or apply debuffs to them."
    },
    "regular": {
     "Base Cost": "$500",
@@ -40752,7 +40775,8 @@
     "Unlock Cost": "3,250 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "7"
+    "Placement Limit": "7",
+    "Description": "The Pulse Trooper is an intermediate tower that fires pulses at enemies in its range. It can also damage Lead enemies from Level 2 onward."
    },
    "regular": {
     "Base Cost": "$2,100",
@@ -40768,7 +40792,9 @@
     "Placement Footprint": "Very Large (2.25)"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Pulse Trooper is an intermediate tower that fires pulses at enemies in its range. It can also damage Lead enemies from Level 2 onward."
+   ]
   },
   "upgrades": [
    {
@@ -41232,7 +41258,8 @@
     "Unlock Cost": "4,000 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "5"
+    "Placement Limit": "5",
+    "Description": "The Military Base is an intermediate tower that spawns various military-themed vehicles, which can be bought in the store for 4,000."
    },
    "regular": {
     "Base Cost": "$400",
@@ -43414,7 +43441,8 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "599 Robux"
+    "Skip Cost": "599 Robux",
+    "Description": "The Crook Boss is an intermediate tower that sends out goons to fight alongside it."
    },
    "regular": {
     "Base Cost": "$2,250",
@@ -48838,7 +48866,8 @@
     "Unlock Cost": "4,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "6"
+    "Placement Limit": "6",
+    "Description": "The Commander is an advanced support tower that decreases the firerate of towers within its range, increasing their damage output."
    },
    "regular": {
     "Base Cost": "$650",
@@ -54812,7 +54841,8 @@
     "Unlock Cost": "Triumph Pizza Party & 4,000 Coins or 337 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "12 15 (PVP)"
+    "Placement Limit": "12 15 (PVP)",
+    "Description": "The Warden is an advanced ground tower with short range after triumphing Pizza Party."
    },
    "regular": {
     "Base Cost": "$1,850",
@@ -56628,7 +56658,8 @@
     "Unlock Cost": "Triumph Badlands II & 4,000 Coins or 340 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "12 (Regular) 10 (PVP)"
+    "Placement Limit": "12 (Regular) 10 (PVP)",
+    "Description": "The Cowboy is an advanced ground tower which generates income every few shots. It can be purchased from the store for 4,000 only after triumphing Badlands II."
    },
    "regular": {
     "Base Cost": "$550",
@@ -60277,7 +60308,8 @@
     "Unlock Cost": "5,000 Coins",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "1"
+    "Placement Limit": "1",
+    "Description": "The DJ Booth is an advanced tower that is primarily a support tower with some economic and offensive capabilities through its Drop the Beat ability unlocked at..."
    },
    "regular": {
     "Base Cost": "$850",
@@ -62806,7 +62838,8 @@
     "Unlock Cost": "6,000 Coins",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "2"
+    "Placement Limit": "2",
+    "Description": "The Tesla is a mid-late game advanced tower which attacks enemies with chain lightning, temporarily immobilizing them."
    },
    "regular": {
     "Base Cost": "$5,750",
@@ -63427,7 +63460,8 @@
     "Unlock Cost": "Triumph Polluted Wasteland II & 7,500 Coins or 449 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "The Saboteur is a poison-based tower bought for 7,500 after triumphing Polluted Wasteland II or bought for 449. It fires in a manner similar to the Shotgunner."
    },
    "regular": {
     "Base Cost": "$775",
@@ -63455,7 +63489,9 @@
     "Immunities": "None",
     "Placement Footprint": "Average (1.5)"
    },
-   "tooltips": []
+   "tooltips": [
+    "The Saboteur is a poison-based tower bought for 7,500 after triumphing Polluted Wasteland II or bought for 449. It fires in a manner similar to the Shotgunner."
+   ]
   },
   "upgrades": [
    {
@@ -64419,7 +64455,8 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "479 Robux"
+    "Skip Cost": "479 Robux",
+    "Description": "The Minigunner is a fast-firing advanced tower. Before the Minigunner starts firing, it needs to rev-up its M61 Vulcan."
    },
    "regular": {
     "Base Cost": "$1,850",
@@ -71385,7 +71422,8 @@
     "Unlock Cost": "12,000 Coins",
     "Role": "Defense",
     "Placement": "Cliff",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "The Ranger, formerly known as the Outlaw, is an advanced cliff tower with long range. The Ranger deals high damage with very long range but has a slow firerate."
    },
    "regular": {
     "Base Cost": "$4,500",
@@ -75655,7 +75693,8 @@
     "Level Requirement": "Level 100",
     "Role": "Offense",
     "Placement": "Ground (Air-based)",
-    "Placement Limit": "6 (Regular) 5 (PVP)"
+    "Placement Limit": "6 (Regular) 5 (PVP)",
+    "Description": "The Pursuit is an advanced tower after reaching Level 100 or bought via a gamepass for 1,500."
    },
    "regular": {
     "Base Cost": "$5,000",
@@ -77756,7 +77795,8 @@
     "Level Requirement": "Level 175",
     "Role": "Offense",
     "Placement": "Ground Cliff",
-    "Placement Limit": "1"
+    "Placement Limit": "1",
+    "Description": "The Gatling Gun is an advanced tower that is able to be placed on both ground and cliffs, which can be controlled by the player using its ability."
    },
    "regular": {
     "Base Cost": "$5,250",
@@ -78709,7 +78749,8 @@
     "Unlock Cost": "Level 50 or 340 Robux",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "3 (Regular) 5 (PVP)"
+    "Placement Limit": "3 (Regular) 5 (PVP)",
+    "Description": "The Turret is an advanced tower with long range and high damage. It cannot be purchased from the store, instead unlocked at Level 50 or via its gamepass..."
    },
    "regular": {
     "Base Cost": "$7,750",
@@ -80026,7 +80067,8 @@
     "Unlock Cost": "Level 75 or 300 Robux",
     "Role": "Defense",
     "Placement": "Cliff",
-    "Placement Limit": "4 5 (PVP)"
+    "Placement Limit": "4 5 (PVP)",
+    "Description": "The Mortar is an advanced cliff tower with a long range capable of damaging enemies with its explosions."
    },
    "regular": {
     "Base Cost": "$1,000",
@@ -82369,7 +82411,8 @@
     "Tower Cost": "Level 150 or 945 Robux",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "3"
+    "Placement Limit": "3",
+    "Description": "The Mercenary Base is an advanced tower unlocked at Level 150. It can also be bought for 945."
    },
    "regular": {
     "Base Cost": "$2,750",
@@ -84073,7 +84116,8 @@
     "Level Requirement": "Level 50",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "10 (Regular) 6 (PVP)"
+    "Placement Limit": "10 (Regular) 6 (PVP)",
+    "Description": "The Brawler is a hardcore melee tower that attacks enemies with its mechanical fists."
    },
    "regular": {
     "Base Cost": "$300",
@@ -85789,7 +85833,8 @@
     "Level Requirement": "Level 50",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "3"
+    "Placement Limit": "3",
+    "Description": "The Necromancer is a hardcore spawner tower that can be unlocked in the store for 2,250 and has a level requirement of Level 50."
    },
    "regular": {
     "Base Cost": "$4,200",
@@ -87368,7 +87413,8 @@
     "Level Requirement": "Level 50",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "5"
+    "Placement Limit": "5",
+    "Description": "The Accelerator is a hardcore tower that attacks in delayed bursts. It has a charge-up that happens before the burst and a cooldown that happens after the burst."
    },
    "regular": {
     "Base Cost": "$7,500",
@@ -90616,7 +90662,8 @@
     "Level Requirement": "Level 50",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "6 (Regular) 5 (PVP)"
+    "Placement Limit": "6 (Regular) 5 (PVP)",
+    "Description": "The Engineer is a hardcore tower that attacks enemies with a rebar launcher and can build various sentries within its range to assist with defense."
    },
    "regular": {
     "Base Cost": "$600",
@@ -93783,7 +93830,8 @@
     "Unlock Cost": "5,500 Gems or 1,574 Robux",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "2"
+    "Placement Limit": "2",
+    "Description": "The Hacker is a hardcore tower that hacks enemies, applying various effects to them. It can be purchased from the store for 5,500 or through a gamepass for 1,574."
    },
    "regular": {
     "Base Cost": "$900",
@@ -95298,7 +95346,8 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "999 Robux"
+    "Skip Cost": "999 Robux",
+    "Description": "The Operator, internally referred to as EvolvedOperator, is the evolved version of the Scout, unlocked by reaching Level 20 on the Scout tower, either by getting..."
    },
    "regular": {
     "Base Cost": "$300",
@@ -95314,7 +95363,9 @@
     "Placement Footprint": "Below Average (1.25)"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Operator, internally referred to as EvolvedOperator, is the evolved version of the Scout, unlocked by reaching Level 20 on the Scout tower, either by getting..."
+   ]
   },
   "upgrades": [
    {
@@ -95931,7 +95982,8 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "999 Robux"
+    "Skip Cost": "999 Robux",
+    "Description": "The Enforcer, internally referred to as EvolvedEnforcer, is the evolved version of the Shotgunner, unlocked by reaching Level 20 on the Shotgunner tower, either..."
    },
    "regular": {
     "Base Cost": "$3,000",
@@ -95947,7 +95999,9 @@
     "Placement Footprint": "Small (1)"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Enforcer, internally referred to as EvolvedEnforcer, is the evolved version of the Shotgunner, unlocked by reaching Level 20 on the Shotgunner tower, either..."
+   ]
   },
   "upgrades": [
    {
@@ -97090,7 +97144,8 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "1,199 Robux"
+    "Skip Cost": "1,199 Robux",
+    "Description": "The Kingpin, internally referred to as EvolvedKingpin, is the evolved version of the Crook Boss, unlocked by reaching Level 20 on the Crook Boss tower, either by..."
    },
    "regular": {
     "Base Cost": "$3,600",
@@ -97106,7 +97161,9 @@
     "Placement Footprint": "Average (1.5)"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Kingpin, internally referred to as EvolvedKingpin, is the evolved version of the Crook Boss, unlocked by reaching Level 20 on the Crook Boss tower, either by..."
+   ]
   },
   "upgrades": [
    {
@@ -98146,7 +98203,8 @@
     "Evolution Levels": "20",
     "Base Exp": "75",
     "Growth Rate": "1.075",
-    "Skip Cost": "1,199 Robux"
+    "Skip Cost": "1,199 Robux",
+    "Description": "The Juggernaut or EvolvedJuggernaut is the evolved version of the Minigunner, unlocked by reaching Level 20 on the Minigunner tower, either by getting the..."
    },
    "regular": {
     "Base Cost": "$10,000",
@@ -99099,7 +99157,8 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "599 Robux"
+    "Skip Cost": "599 Robux",
+    "Description": "The Golden Minigunner is a golden perk for the Minigunner, obtained from the Golden Crate for 50,000 if you own the Minigunner."
    },
    "regular": {
     "Base Cost": "$2,400",
@@ -105892,7 +105951,8 @@
     "Golden Perk Cost": "50,000 Coins (Golden Crate) or 65,000 Coins (Daily Store)",
     "Tower Cost": "1,250 Coins (Pyromancer)",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Golden Pyromancer is a golden perk for the Pyromancer, obtained from the Golden Crate for 50,000, if you own the Pyromancer."
    },
    "regular": {
     "Base Cost": "$850",
@@ -109113,7 +109173,8 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "599 Robux"
+    "Skip Cost": "599 Robux",
+    "Description": "The Golden Crook Boss is an upgraded version of the Crook Boss, obtained from the Golden Crate for 50,000 if the player owns the Crook Boss."
    },
    "regular": {
     "Base Cost": "$2,400",
@@ -114295,7 +114356,8 @@
     "Evolution Levels": "20",
     "Base Exp": "50",
     "Growth Rate": "1.09",
-    "Skip Cost": "499 Robux"
+    "Skip Cost": "499 Robux",
+    "Description": "The Golden Scout is a upgraded version of the Scout, obtained in the Golden Crate for 50,000. It can also appear in the Daily Skin Store for 55,000."
    },
    "regular": {
     "Base Cost": "$250",
@@ -119002,7 +119064,8 @@
     "Tower Cost": "Triumph Badlands II & 4,000 Coins or 340 Robux (Cowboy)",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "12"
+    "Placement Limit": "12",
+    "Description": "The Golden Cowboy is a golden perk for the Cowboy, unlocked from the Golden Crate for 50,000, if you have the Cowboy."
    },
    "regular": {
     "Base Cost": "$600",
@@ -122420,7 +122483,8 @@
     "Golden Perk Cost": "50,000 Coins (Golden Crate & Daily Store)",
     "Tower Cost": "350 Coins (Soldier)",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Golden Soldier is a ground tower that fires in bursts. It is an upgraded version of the Soldier, obtained from the Golden Crate for 50,000..."
    },
    "regular": {
     "Base Cost": "$450",
@@ -125860,7 +125924,8 @@
     "Golden Perk Cost": "50,000 Coins (Golden Crate) or 55,000 Coins (Daily Store)",
     "Tower Cost": "200 Coins",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Golden Demoman is a splash damage tower that is an upgraded version of the Demoman, obtained from the Golden Crate for 50,000, if you own the Demoman."
    },
    "regular": {
     "Base Cost": "$875",
@@ -125876,7 +125941,9 @@
     "Placement Footprint": "Average (1.5)"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Golden Demoman is a splash damage tower that is an upgraded version of the Demoman, obtained from the Golden Crate for 50,000, if you own the Demoman."
+   ]
   },
   "upgrades": [
    {
@@ -127700,7 +127767,8 @@
     "Tower Cost": "Triumph Outpost 32 on Easy difficultly (Snowballer)",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "67"
+    "Placement Limit": "67",
+    "Description": "The Golden Snowballer is an exclusive golden perk first shown off in a Jordan Stayt stream."
    },
    "regular": {
     "Base Cost": "$67",
@@ -128082,7 +128150,8 @@
    "general": {
     "Unlock Cost": "Triumph The Heights",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Gladiator is an exclusive melee ground tower that could have been obtained by triumphing The Heights during the SFOTH Event, or through limited time gamepases."
    },
    "regular": {
     "Base Cost": "$525",
@@ -130493,7 +130562,8 @@
     "Unlock Cost": "Triumph Area 51",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "The Commando is a tower that could have been obtained through triumphing the Area 51 map in Normal+ mode as part of the Area 51 Event."
    },
    "regular": {
     "Base Cost": "$2,150",
@@ -131412,7 +131482,8 @@
     "Unlock Cost": "Triumph Nightmare Carnival",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "The Slasher, formerly known as the Shredder, is a short-range ground tower that could have been unlocked by triumphing Nightmare Carnival as part of the..."
    },
    "regular": {
     "Base Cost": "$2,400",
@@ -132623,7 +132694,8 @@
     "Unlock Cost": "Triumph Village of Despair",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "12"
+    "Placement Limit": "12",
+    "Description": "The Frost Blaster is a tower that pierces through and freezes any enemy hit by its projectile."
    },
    "regular": {
     "Base Cost": "$850",
@@ -133254,7 +133326,8 @@
     "Unlock Cost": "Gift of Sharpness",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "15"
+    "Placement Limit": "15",
+    "Description": "The Archer, formerly known as the Holiday Archer, is a tower that attacks enemies with a bow."
    },
    "regular": {
     "Base Cost": "$600",
@@ -134725,7 +134798,8 @@
    "general": {
     "Unlock Cost": "Triumph Eggy Island (Hard Difficulty)",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Swarmer is an event damage over time tower that could have been obtained by triumphing Eggy Island's Hard difficulty as part of the Spring 2020 Event."
    },
    "regular": {
     "Base Cost": "$900",
@@ -135367,7 +135441,8 @@
    "general": {
     "Unlock Cost": "Triumph Trick or Threat Town",
     "Role": "Offense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Toxic Gunner is a ground tower that fires toxic bullets in bursts, applying poison on enemies."
    },
    "regular": {
     "Base Cost": "$525",
@@ -136064,7 +136139,8 @@
     "Unlock Cost": "Triumph Outpost 32",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "6"
+    "Placement Limit": "6",
+    "Description": "The Sledger is a melee ground tower that attacks enemies with a sledgehammer which has a freeze effect on later levels."
    },
    "regular": {
     "Base Cost": "$950",
@@ -137177,7 +137253,8 @@
     "Unlock Cost": "Triumph Totality Tower",
     "Role": "Offensive",
     "Placement": "Ground",
-    "Placement Limit": "9"
+    "Placement Limit": "9",
+    "Description": "The Executioner is a ranged ground tower that was unlocked by triumphing Totality Tower."
    },
    "regular": {
     "Base Cost": "$1,800",
@@ -138140,7 +138217,8 @@
     "Unlock Cost": "Triumph Cold Ambush",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "4"
+    "Placement Limit": "4",
+    "Description": "The Elf Camp is a unit spawning tower that could have been unlocked by triumphing Cold Ambush during the Violent Night Event."
    },
    "regular": {
     "Base Cost": "$300",
@@ -139153,7 +139231,8 @@
     "Unlock Cost": "Triumph The Great Finale",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "The Jester is an exclusive splash damage tower previously obtainable by triumphing the third act of the Lunar Overture Event."
    },
    "regular": {
     "Base Cost": "$650",
@@ -140013,7 +140092,8 @@
    "general": {
     "Unlock Cost": "Triumph Krampus Frosthold",
     "Role": "Defense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Cryomancer is an exclusive support tower which attacks enemies with a frost beam. It could have been obtained by triumphing Krampus Frosthold."
    },
    "regular": {
     "Base Cost": "$250",
@@ -140541,7 +140621,8 @@
     "Unlock Cost": "Triumph Failed Gateway, The Nightmare Realm & Containment on Easy difficulty",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "10"
+    "Placement Limit": "10",
+    "Description": "The Hallow Punk is an exclusive ground tower that deals Splash Damage, which knocks back all enemies hit."
    },
    "regular": {
     "Base Cost": "$500",
@@ -140893,7 +140974,8 @@
     "Unlock Cost": "Triumph Failed Gateway, The Nightmare Realm & Containment on Hard difficulty",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "5"
+    "Placement Limit": "5",
+    "Description": "The Harvester is a tower which fires projectiles at enemies. It could have been obtained by triumphing all Hexscape Event maps on the Hard difficulty."
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -141512,7 +141594,8 @@
    "general": {
     "Unlock Cost": "Triumph Outpost 32 on Easy difficulty",
     "Role": "Defense",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Snowballer is an exclusive offensive support tower that could have been obtained by triumphing Outpost 32 on the Easy difficulty."
    },
    "regular": {
     "Base Cost": "$300",
@@ -141884,7 +141967,8 @@
     "Unlock Cost": "Triumph Outpost 32 on Hard difficulty",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "5"
+    "Placement Limit": "5",
+    "Description": "The Elementalist is an exclusive tower that could have been obtained by triumphing Outpost 32 from the Operation I.C.E Event on the Hard difficulty."
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -142566,7 +142650,8 @@
     "Unlock Cost": "Mission Quests",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "1"
+    "Placement Limit": "1",
+    "Description": "The Firework Technician is a support based tower that can only be obtained from completing a specific Mission Quest."
    },
    "regular": {
     "Base Cost": "$1,500",
@@ -143094,7 +143179,8 @@
     "Unlock Cost": "Triumph Bathroom Approach in Hard difficulty",
     "Role": "Support",
     "Placement": "Ground",
-    "Placement Limit": "8"
+    "Placement Limit": "8",
+    "Description": "The Biologist is an exclusive tower that creates plants around itself. It could have been obtained from beating Bathroom Approach in the Hard difficulty."
    },
    "regular": {
     "Base Cost": "$750",
@@ -143790,7 +143876,8 @@
     "Unlock Cost": "Triumph Outpost 16, Banlands and Blind Faith on Hard difficulty",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "4"
+    "Placement Limit": "4",
+    "Description": "The Warlock is a melee and ranged hybrid ground tower that could have been unlocked by triumphing Outpost 16, Banlands and Blind Faith on the Hard difficulty of..."
    },
    "regular": {
     "Base Cost": "$4,200",
@@ -144654,7 +144741,8 @@
     "Unlock Cost": "Triumph The Narratorium on Hard Difficulty",
     "Role": "Support",
     "Placement": "Cliff",
-    "Placement Limit": "1"
+    "Placement Limit": "1",
+    "Description": "The Spotlight Tech is a cliff tower which uses a spotlight beam to burn and confuse enemies, while also revealing Hidden enemies."
    },
    "regular": {
     "Base Cost": "$3,225",
@@ -145079,7 +145167,8 @@
     "Unlock Cost": "Exclusive",
     "Role": "Offense",
     "Placement": "Ground",
-    "Placement Limit": "5"
+    "Placement Limit": "5",
+    "Description": "The War Machine is currently a tower exclusive to anyone who is a moderator or a higher special role in the Tower Defense Simulator Discord server."
    },
    "regular": {
     "Base Cost": "$6,750",
@@ -145704,7 +145793,8 @@
     "Unlock Cost": "Exclusive",
     "Role": "Defense",
     "Placement": "Ground",
-    "Placement Limit": "3"
+    "Placement Limit": "3",
+    "Description": "The Mecha Base is currently a tower exclusive to anyone who is an administrator or higher in the Tower Defense Simulator Discord server, though on rare occasions..."
    },
    "regular": {
     "Base Cost": "$6,000",
@@ -146377,7 +146467,8 @@
   "image": "https://tds.wiki/images/b/bd/MineTower.png",
   "info": {
    "general": {
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Mine was an unreleased tower that was only shown in a poll. As it was never added to the game, its statistics are not known and likely were never made."
    },
    "regular": {
     "Base Cost": "Unknown",
@@ -146391,7 +146482,9 @@
     "Placement Footprint": "Unknown"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Mine was an unreleased tower that was only shown in a poll. As it was never added to the game, its statistics are not known and likely were never made."
+   ]
   },
   "upgrades": [
    {
@@ -146418,7 +146511,8 @@
   "info": {
    "general": {
     "Unlock Cost": "3,650 Coins",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Sentry was a tower with a unique spool-up mechanic. It could have been purchased for 3,650 from the store prior to the 24th of December 2019."
    },
    "regular": {
     "Base Cost": "$750",
@@ -146432,7 +146526,9 @@
     "Placement Footprint": "Average"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Sentry was a tower with a unique spool-up mechanic. It could have been purchased for 3,650 from the store prior to the 24th of December 2019."
+   ]
   },
   "upgrades": [
    {
@@ -146818,7 +146914,8 @@
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Moderator was an unreleased tower that was in the game before the Overhaul Update. Not all information is available about the Moderator."
    },
    "regular": {
     "Base Cost": "$300",
@@ -146831,7 +146928,9 @@
     "Placement Footprint": "Average"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Moderator was an unreleased tower that was in the game before the Overhaul Update. Not all information is available about the Moderator."
+   ]
   },
   "upgrades": [
    {
@@ -146925,7 +147024,8 @@
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Cliff (Presumably)"
+    "Placement": "Cliff (Presumably)",
+    "Description": "The Railgunner was an unreleased tower that was in the game before the Overhaul Update. Not all information is available about the Railgunner."
    },
    "regular": {
     "Base Cost": "Unknown",
@@ -146939,7 +147039,9 @@
     "Placement Footprint": "Unknown"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Railgunner was an unreleased tower that was in the game before the Overhaul Update. Not all information is available about the Railgunner."
+   ]
   },
   "upgrades": [
    {
@@ -147118,7 +147220,8 @@
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Twitgunner was an unreleased tower added in the Overhaul Update. The Twitgunner functioned mostly like a generic tower..."
    },
    "regular": {
     "Base Cost": "$350",
@@ -147134,7 +147237,9 @@
     "Placement Footprint": "Average"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Twitgunner was an unreleased tower added in the Overhaul Update. The Twitgunner functioned mostly like a generic tower..."
+   ]
   },
   "upgrades": [
    {
@@ -147433,7 +147538,8 @@
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Void Miner was an exclusive tower mostly gotten by developers of the game and, at the time, testers of the game. The Void Miner worked similarly to the Farm."
    },
    "regular": {
     "Base Cost": "$800",
@@ -147448,7 +147554,9 @@
     "Placement Footprint": "Average"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Void Miner was an exclusive tower mostly gotten by developers of the game and, at the time, testers of the game. The Void Miner worked similarly to the Farm."
+   ]
   },
   "upgrades": [
    {
@@ -147711,7 +147819,8 @@
   "info": {
    "general": {
     "Unlock Cost": "Exclusive",
-    "Placement": "Ground"
+    "Placement": "Ground",
+    "Description": "The Combatant or Brawler was an unused tower from 2021 that was originally meant to be a starter tower and the replacement for the Paintballer."
    },
    "regular": {
     "Base Cost": "$300 (Brawler) $100 (Combatant)",
@@ -147727,7 +147836,9 @@
     "Placement Footprint": "Unknown"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Combatant or Brawler was an unused tower from 2021 that was originally meant to be a starter tower and the replacement for the Paintballer."
+   ]
   },
   "upgrades": [
    {
@@ -148202,7 +148313,8 @@
   "info": {
    "general": {
     "Placement": "Ground",
-    "Placement Limit": "4"
+    "Placement Limit": "4",
+    "Description": "The Crystallizer was an unreleased tower that was developed in 2022 that would be the Polluted Wasteland II reward tower."
    },
    "regular": {
     "Base Cost": "$2,000",
@@ -148217,7 +148329,9 @@
     "Placement Footprint": "Unknown"
    },
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Crystallizer was an unreleased tower that was developed in 2022 that would be the Polluted Wasteland II reward tower."
+   ]
   },
   "upgrades": [
    {
@@ -148441,10 +148555,14 @@
   "url": "https://tds.wiki/w/Time_Dilator",
   "image": "https://tds.wiki/images/c/c7/PlaceC.png",
   "info": {
-   "general": {},
+   "general": {
+    "Description": "The Time Dilator is an upcoming tower planned to release in the fourth quarter of 2026."
+   },
    "regular": {},
    "pvp": {},
-   "tooltips": []
+   "tooltips": [
+    "The Time Dilator is an upcoming tower planned to release in the fourth quarter of 2026."
+   ]
   },
   "upgrades": [
    {

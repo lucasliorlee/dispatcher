@@ -77,6 +77,39 @@ def cell_text(el):
     return norm(el.get_text(" ", strip=True))
 
 
+def article_description(soup):
+    """Best-effort summary from the page metadata, used when the infobox has no tooltip description."""
+    candidates = []
+    for selector in ("meta[name='description']", "meta[property='og:description']"):
+        for tag in soup.select(selector):
+            value = norm(tag.get("content", ""))
+            if value:
+                candidates.append(value)
+    if not candidates:
+        for script in soup.select("script[type='application/ld+json']"):
+            raw = script.string or script.get_text(strip=True)
+            if not raw:
+                continue
+            try:
+                payload = json.loads(raw)
+            except (TypeError, ValueError):
+                continue
+            stack = [payload]
+            while stack:
+                item = stack.pop()
+                if isinstance(item, dict):
+                    if "description" in item and isinstance(item["description"], str):
+                        value = norm(item["description"])
+                        if value:
+                            candidates.append(value)
+                    stack.extend(reversed(list(item.values())))
+                elif isinstance(item, list):
+                    stack.extend(reversed(item))
+    for value in candidates:
+        return value
+    return ""
+
+
 def panel_names(el):
     """Names of the tab panels (outermost first) that contain `el`, e.g. ['Regular', 'Top Path']."""
     names = []
@@ -122,6 +155,10 @@ def parse_infobox(soup):
     info = {"general": {}, "regular": {}, "pvp": {}, "tooltips": []}
     box = soup.select_one("aside.portable-infobox")
     if box is None:
+        description = article_description(soup)
+        if description:
+            info["general"]["Description"] = description
+            info["tooltips"].append(description)
         return info
     for item in box.select("[data-source]"):
         key = item["data-source"]
@@ -143,6 +180,11 @@ def parse_infobox(soup):
             info["regular"][label] = value
         else:
             info["general"][label] = value
+    description = article_description(soup)
+    if description and "Description" not in info["general"]:
+        info["general"]["Description"] = description
+    if description and not info["tooltips"]:
+        info["tooltips"].append(description)
     return info
 
 
