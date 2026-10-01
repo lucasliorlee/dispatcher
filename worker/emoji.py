@@ -1,0 +1,36 @@
+from enum import Enum
+
+
+class Emoji(Enum):
+    Level = 1486288588906954762
+    PlacementLimit = 1486154116605411469
+    LeadDetection = 1486150008838426654
+    FlyingDetection = 1486149969936384082
+    HiddenDetection = 1486149900390629567
+    Exp = 1486143403782570166
+    Gem = 1486143371591549149
+    Coin = 1486143306831495208
+    Cash = 1486143009891422228
+    Range = 1486143008410828890
+    Firerate = 1486143007089623048
+    Damage = 1486143005676142674
+    RangeBuff = 1486142201695309964
+    DamageBuff = 1486142094492962836
+    FirerateBuff = 1486141637204644053
+    noFreeze = 1486471418609799268
+    noStun = 1486471301110693888
+    Sword = 1486469918680678501
+    Defense = 1486382726734151882
+    Ability = 1486382215272333484
+    Freeze = 1486382140366000178
+    Robux = 1554755808288575539
+    ImprovedGunpowderSkill = 1554981064697716797
+    FightDirtySkill = 1554981063393148928
+    PrecisionSkill = 1554981062105501716
+    AcceleratorSkill = 1554981055667118222
+    ExpandedBarracksSkill = 1554981053268107264
+    BeefedUpMinionsSkill = 1554981043881377802
+    EnhancedOpticsSkill = 1554981007214641254
+
+    def get(self):
+        return f"<:{self.name}:{self.value}>"

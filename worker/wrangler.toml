@@ -1,0 +1,14 @@
+name = "tds"
+main = "worker.py"
+compatibility_date = "2026-09-30"
+compatibility_flags = ["python_workers"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tds-stats"
+database_id = "2e1a2dd3-9198-426b-a51f-57794f95ced2"
+migrations_dir = "migrations"
+
+[assets]
+directory = "./assets"
+binding = "ASSETS"
