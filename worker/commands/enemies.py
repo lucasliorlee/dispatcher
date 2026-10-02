@@ -125,7 +125,7 @@ def _enemy_pages(enemy):
 
 
 def _enemy_page_emoji(title, kind):
-    if title == "Overview":
+    if title == "Description":
         return Emoji.Logbook
     if title == "Appearance":
         return Emoji.Abnormal
@@ -207,8 +207,13 @@ def _enemy_debuts_text(enemy):
 
 def _enemy_section_text(enemy, title, section_lines):
     newest = title == "Update History"
-    body, left_out = _fit_groups(section_lines, ENEMY_TEXT_LIMIT - 300, from_end=newest)
-    lines = [_enemy_title(enemy, title), body]
+    if newest and section_lines:
+        update_heading = str(section_lines[0]).replace("**", "").lstrip("- ").strip()
+        body, left_out = _fit_groups(section_lines[1:], ENEMY_TEXT_LIMIT - 300, from_end=False)
+        lines = [_enemy_title(enemy), f"## {update_heading}", body]
+    else:
+        body, left_out = _fit_groups(section_lines, ENEMY_TEXT_LIMIT - 300, from_end=newest)
+        lines = [_enemy_title(enemy, title), body]
     if left_out:
         lines.append(f"-# {left_out} {'older ' if newest else 'more '}entr{'ies' if left_out != 1 else 'y'} on the wiki page")
     return "\n".join(lines)

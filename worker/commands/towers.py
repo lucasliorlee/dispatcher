@@ -299,10 +299,10 @@ def _tower_pages(tower):
 
 
 def _tower_page_emoji(title, kind, payload):
-    if title == "Overview":
+    if title == "Description":
         return Emoji.Logbook
     if kind == "table":
-        return Emoji.DamageBuff
+        return Emoji.Sword if title == "PvP (Stats)" else Emoji.DamageBuff
     return {
         "Strategy": "🏹",
         "Trivia": Emoji.TDSWikiLogo,
@@ -380,8 +380,12 @@ def _format_tower_content(tower, page, include_changes, group=0, include_descrip
     title, kind, payload = page
     if kind == "section":
         tower_name = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
-        heading = "Tips & Strategy" if title == "Strategy" else title
-        lines = [f"# {tower_name}", f"## {heading}", "", *payload]
+        if title == "Update History" and payload:
+            update_heading = str(payload[0]).replace("**", "").lstrip("- ").strip()
+            lines = [f"# {tower_name}", f"## {update_heading}", "", *payload[1:]]
+        else:
+            heading = "Tips & Strategy" if title == "Strategy" else title
+            lines = [f"# {tower_name}", f"## {heading}", "", *payload]
         return _clip("\n".join(lines), TEXT_BUDGET - 100)
     if kind == "overview":
         tower_title = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
