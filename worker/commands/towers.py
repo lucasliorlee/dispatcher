@@ -298,6 +298,19 @@ def _tower_pages(tower):
     return pages[:25]
 
 
+def _tower_page_emoji(title, kind, payload):
+    if title == "Overview":
+        return Emoji.Logbook
+    if kind == "table":
+        return Emoji.DamageBuff
+    return {
+        "Strategy": "🏹",
+        "Trivia": Emoji.TDSWikiLogo,
+        "Update History": Emoji.ScholarSkill,
+        "Notes": "📋",
+    }.get(title)
+
+
 def _tower_upgrade(tower, table, row):
     if not table.get("linked") or not row or not str(row[0]).isdigit():
         return None
@@ -568,12 +581,7 @@ def _tower_children(
                     name,
                     index,
                     default=(index == page_index),
-                    emoji=(
-                        Emoji.Ability if kind == "abilities"
-                        else Emoji.DamageBuff if kind == "table" and payload.get("mode") == "Regular"
-                        else Emoji.Sword if kind == "table" and payload.get("mode") == "PvP"
-                        else None
-                    ),
+                    emoji=_tower_page_emoji(name, kind, payload),
                 )
                 for index, (name, kind, payload) in enumerate(pages)
             ],

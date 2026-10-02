@@ -78,6 +78,10 @@ class Emoji(Enum):
     NoTarget = 1555395776761438208
     Blessed = 1555395914472890468
     Neutralized = 1555395916704251974
+    TDSWikiLogo = 1555719137018519573
+    Logbook = 1555719580825948200
+    Abnormal = 1555719868806860910
+    NarratorTalk = 1555720185766346853
 
     def get(self):
         return f"<:{self.name}:{self.value}>"

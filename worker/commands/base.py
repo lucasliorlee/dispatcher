@@ -262,7 +262,11 @@ def _select(custom_id, placeholder, options, max_values=1):
 def _select_option(label, value, default=False, emoji=None):
     option = {"label": str(label)[:100], "value": str(value)[:100], "default": default}
     if emoji:
-        option["emoji"] = {"id": str(emoji.value), "name": emoji.name}
+        option["emoji"] = (
+            {"name": emoji}
+            if isinstance(emoji, str)
+            else {"id": str(emoji.value), "name": emoji.name}
+        )
     return option
 
 
@@ -377,5 +381,4 @@ def build_skill_plan(skills, current_levels):
     for name, target in SKILL_PLAN_TARGETS:
         reach_level(name, target)
     return {"actions": actions, "levels": levels, "total_cost": sum(action["cost"] for action in actions)}
-
 

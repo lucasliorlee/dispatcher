@@ -124,6 +124,23 @@ def _enemy_pages(enemy):
     return pages[:25]
 
 
+def _enemy_page_emoji(title, kind):
+    if title == "Overview":
+        return Emoji.Logbook
+    if title == "Appearance":
+        return Emoji.Abnormal
+    if title == "Debuts":
+        return Emoji.NarratorTalk
+    if kind == "stats":
+        return Emoji.DamageBuff
+    return {
+        "Strategy": "🏹",
+        "Trivia": Emoji.TDSWikiLogo,
+        "Update History": Emoji.ScholarSkill,
+        "Notes": "📋",
+    }.get(title)
+
+
 def _enemy_context(enemy):
     slug = enemy.get("slug", "")
     base_slug = _tower_slug(enemy.get("name", ""))
@@ -241,7 +258,15 @@ def _enemy_children(enemy, pages, page_index, variant_index=0, history_index=0, 
         children.append(_action_row(_select(
             f"enemy|{slug}|page|{state}",
             "Choose a page",
-            [_select_option(name, index, default=(index == page_index)) for index, (name, _, _) in enumerate(pages)],
+            [
+                _select_option(
+                    name,
+                    index,
+                    default=(index == page_index),
+                    emoji=_enemy_page_emoji(name, kind),
+                )
+                for index, (name, kind, _) in enumerate(pages)
+            ],
         )))
     return children
 
