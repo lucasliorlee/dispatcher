@@ -8,7 +8,6 @@ from .towers import (
     _tower_slug,
     _update_entries,
     _update_label,
-    clean,
 )
 ENEMY_TEXT_LIMIT = 3300  # Components V2 allows 4000 characters of text per message; TEXT_BUDGET is 3700
 ENEMY_SECTION_ORDER = ("Appearance", "Strategy", "Trivia", "Update History")
@@ -143,21 +142,10 @@ def _enemy_title(enemy, subtitle=None):
 
 def _enemy_overview_text(enemy):
     lines = [_enemy_title(enemy)]
-    notice = enemy.get("notice") or {}
-    if notice.get("type"):
-        lines.append(f"-# {notice['type']}" + (f": {clean(notice['text'], 200)}" if notice.get("text") else ""))
     description = "\n".join(enemy.get("sections", {}).get("Description", [])) or enemy.get("description", "")
     if description:
-        lines.extend(["", _clip(description, 1000)])
-    fields = [
-        ("Mode Appearance", enemy.get("mode_appearance")),
-        ("Wave Debut", enemy.get("wave_debut")),
-        *enemy.get("extra", {}).items(),
-    ]
-    fields = [_enemy_field(label, value) for label, value in fields if value]
-    if fields:
-        lines.extend(["", *fields])
-    return _clip("\n".join(lines), ENEMY_TEXT_LIMIT)
+        lines.extend(["", description])
+    return "\n".join(lines)
 
 
 def _enemy_stats_text(enemy, variant, show_variant):
@@ -183,6 +171,10 @@ def _enemy_stats_text(enemy, variant, show_variant):
 
 def _enemy_debuts_text(enemy):
     lines = [_enemy_title(enemy, "Debuts")]
+    for label in ("mode_appearance", "wave_debut"):
+        if enemy.get(label):
+            display_label = "Mode Appearance" if label == "mode_appearance" else "Wave Debut"
+            lines.append(_enemy_field(display_label, enemy[label]))
     for debut in enemy.get("debuts", []):
         lines.append(f"### {debut['title']}" + (f"\n-# {debut['dates']}" if debut.get("dates") else ""))
         steps = []
@@ -234,10 +226,10 @@ def _enemy_children(enemy, pages, page_index, variant_index=0, history_index=0, 
             history_index = max(0, min(history_index, len(chunk) - 1)) if chunk else 0
             selected_payload = chunk[history_index] if chunk else payload
             children = [_section(_enemy_section_text(enemy, title, selected_payload), enemy.get("image"))]
-            if chunk and len(chunk) > 1:
+            if entries:
                 children.append(_action_row(_select(
                     f"enemy|{slug}|history|{state}",
-                    f"Update page {history_group + 1}/{len(chunks)}",
+                    "Choose an update",
                     _paged_options(entries, history_group, _update_label),
                 )))
         else:

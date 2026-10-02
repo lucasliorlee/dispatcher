@@ -1,3 +1,8 @@
+import re
+
+from emoji import Emoji
+
+
 APP_CONTEXTS = [0, 1, 2]
 APP_INSTALLS = [0, 1]
 MAX_CONTENT = 1900
@@ -372,6 +377,5 @@ def build_skill_plan(skills, current_levels):
     for name, target in SKILL_PLAN_TARGETS:
         reach_level(name, target)
     return {"actions": actions, "levels": levels, "total_cost": sum(action["cost"] for action in actions)}
-
 
 

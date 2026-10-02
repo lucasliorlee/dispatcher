@@ -1,6 +1,19 @@
-from . import base as _base, skills as _skills
-for _module in (_base, _skills):
-    globals().update({k: v for k, v in vars(_module).items() if not k.startswith('__')})
+import math
+import re
+from decimal import Decimal, InvalidOperation
+
+from .base import *
+from .base import _action_row, _media_gallery, _reply, _section, _select, _select_option, _separator, _text_display
+from .skills import *
+from .skills import _pack_state, _skill_tree
+
+
+def _clip(text, limit):
+    text = str(text)
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit("\n", 1)[0] if "\n" in text[:limit] else text[: limit - 1]
+    return cut.rstrip() + "\nâ€¦"
 def _dps_multiplier(header, skill_tree, tower_slug, unit_row=False, row_stats=None):
     multiplier = Decimal(1) + Decimal(skill_tree.get("damage_buff", 0)) / 100
     multiplier *= Decimal(1) + Decimal(skill_tree.get("firerate_buff", 0)) / 100
@@ -267,11 +280,6 @@ def _tower_slug(value):
 
 def _tower_pages(tower):
     pages = [("Overview", "overview", None)]
-    if any(upgrade.get("ability") for upgrade in tower.get("upgrades", [])):
-        pages.append(("Abilities", "abilities", None))
-    for name, lines in tower.get("sections", {}).items():
-        if name != "Description" and lines:
-            pages.append((name, "section", lines))
     tables = tower.get("tables", [])
     has_pvp = any(table.get("mode") == "PvP" for table in tables)
     for table in tables:
@@ -282,6 +290,11 @@ def _tower_pages(tower):
         if has_pvp and mode in ("Regular", "PvP") and not title.lower().startswith(mode.lower()):
             title = f"{mode} ({title})"
         pages.append((title, "table", table))
+    if any(upgrade.get("ability") for upgrade in tower.get("upgrades", [])):
+        pages.append(("Abilities", "abilities", None))
+    for name, lines in tower.get("sections", {}).items():
+        if name not in {"Description", "Skins"} and lines:
+            pages.append((name, "section", lines))
     return pages[:25]
 
 
@@ -540,10 +553,10 @@ def _tower_children(
             image,
         )]
         if page[1] == "section" and page[0] == "Update History":
-            if chunk and len(chunk) > 1:
+            if entries:
                 children.append(_action_row(_select(
                     f"tower|{tower_slug}|history|{state}",
-                    f"Update page {history_group + 1}/{len(chunks)}",
+                    "Choose an update",
                     _paged_options(entries, history_group, _update_label),
                 )))
     if len(pages) > 1:
@@ -593,7 +606,7 @@ def _gallery_children(tower, sections, section_index, entry_index, entry_page=0)
     if len(entries) > 1:
         children.append(_action_row(_select(
             f"gallery|{_tower_slug(tower['name'])}|entry|{section_index},{entry_page}",
-            f"Choose from {section_name.lower()} (page {entry_page + 1}/{math.ceil(len(entries) / 23)})",
+            f"Choose a {section_name.lower()} entry",
             _paged_options(entries, entry_page, lambda item: item["label"]),
         )))
     if len(sections) > 1:
@@ -688,6 +701,3 @@ def _handle_tower(options, towers):
             _skill_tree(options),
         ),
     )
-
-
-

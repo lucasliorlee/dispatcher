@@ -1,6 +1,9 @@
 from . import base as _base, skills as _skills, towers as _towers, enemies as _enemies
 for _module in (_base, _skills, _towers, _enemies):
     globals().update({k: v for k, v in vars(_module).items() if not k.startswith('__')})
+import random
+import re
+
 def _handle_skill(options, skills):
     name = str(options.get("name", ""))
     skill = find_skill(skills, name)
@@ -79,7 +82,7 @@ def _handle_gallery(options, towers):
     if len(entries) > 1:
         children.append(_action_row(_select(
             f"gallery|{_tower_slug(tower['name'])}|entry|{section_index},{entry_index // 23}",
-            f"Choose from {section_name.lower()} (page {entry_index // 23 + 1}/{math.ceil(len(entries) / 23)})",
+            f"Choose a {section_name.lower()} entry",
             _paged_options(entries, entry_index // 23, lambda item: item["label"]),
         )))
     if len(sections) > 1:
@@ -101,6 +104,3 @@ def _handle_loadout(options, towers):
     if len(available) < 5:
         return _reply("Not enough towers available to generate a loadout. Remove fewer towers.", ephemeral=True)
     return _reply(", ".join(towers[slug]["name"] for slug in random.sample(available, 5)))
-
-
-
