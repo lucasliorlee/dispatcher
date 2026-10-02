@@ -1,8 +1,8 @@
 # scrap enemy data
 # will eventually be merged with scrapper.py
 
-import re
 import json
+import re
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -46,46 +46,57 @@ def clean_text(element):
         return ""
     text = element if isinstance(element, str) else element.get_text(" ", strip=True)
     text = text.replace("\xa0", " ")
-    return re.sub(r"\s+", " ", text).strip()
+    text = re.sub(r"\s+", " ", text).strip()
+    return re.sub(r"\s+([?!,:;])", r"\1", text)
 
 
 def parse_enemy(path, page):
     soup = BeautifulSoup(Path(path).read_text(encoding="utf-8"), "lxml")
     infobox = soup.select_one("aside.portable-infobox")
-    fields = {}
+    versions = {}
+    images = {}
     if infobox:
-        for item in infobox.select(".pi-data[data-source]"):
+        for item in infobox.select("[data-source]"):
             key = item["data-source"]
-            if key.startswith("legacy_") or key in fields:
+            if key == "title1":
+                continue
+            source = key
+            version = "Modern"
+            for prefix, name in (("legacy_", "Legacy"), ("versus_", "PvP")):
+                if source.startswith(prefix):
+                    source = source.removeprefix(prefix)
+                    version = name
+                    break
+            if key.endswith("_image") or key in {"image1", "image-static", "image-dynamic"}:
+                image = item.select_one("a.mw-file-source[href^='/images/']")
+                if image:
+                    images.setdefault(version, []).append({
+                        "label": source.replace("_", " ").title(),
+                        "url": BASE_URL + image["href"].split("?", 1)[0],
+                    })
                 continue
             label = clean_text(item.select_one(".pi-data-label"))
             value = clean_text(item.select_one(".pi-data-value"))
             if label and value:
-                fields[label] = value
+                versions.setdefault(version, {})[label] = value
 
     title = clean_text(infobox.select_one("[data-source='title1']") if infobox else None) or page.replace("_", " ")
     description = clean_text(soup.select_one("meta[name='description']").get("content")) if soup.select_one("meta[name='description']") else ""
-    image = ""
     image_tag = soup.select_one("meta[property='og:image']")
-    if image_tag:
-        image = image_tag.get("content", "").split("?", 1)[0]
-    stats = {
-        label: fields[label]
-        for label in (
-            "Base Health", "Health Scaling", "Speed", "Defense", "Cash Given",
-            "Spawned By", "Hidden?", "Flying?", "Ghost?", "Lead?", "Attributes",
-        )
-        if label in fields
-    }
+    image = image_tag.get("content", "").split("?", 1)[0] if image_tag else ""
+    if image:
+        images.setdefault("Modern", []).insert(0, {"label": "Main", "url": image})
+    modern = versions.get("Modern", {})
     return {
         "slug": slug(page),
         "name": title,
         "url": f"{BASE_URL}/w/{page}",
         "image": image,
         "description": description,
-        "mode_appearance": fields.get("Mode Appearance", ""),
-        "wave_debut": fields.get("Wave Debut", ""),
-        "stats": stats,
+        "mode_appearance": modern.get("Mode Appearance", ""),
+        "wave_debut": modern.get("Wave Debut", ""),
+        "versions": versions,
+        "images": images,
     }
 
 
