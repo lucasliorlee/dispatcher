@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from urllib.request import urlopen
 
-from commands import _gallery_sections, _tower_pages
+from commands import _enemy_context, _gallery_sections, _tower_pages
 
 
 WORKER_DIR = Path(__file__).resolve().parent
@@ -52,7 +52,15 @@ def main(argv=None):
     catalog = {
         "towers": [{"slug": slug, "name": tower["name"]} for slug, tower in towers.items()],
         "skills": [skill["name"] for skill in skills],
-        "enemies": [{"slug": slug, "name": enemy["name"]} for slug, enemy in enemies.items()],
+        "enemies": [
+            {
+                "slug": slug,
+                "name": enemy["name"] + (
+                    f" ({_enemy_context(enemy)})" if _enemy_context(enemy) else ""
+                ),
+            }
+            for slug, enemy in enemies.items()
+        ],
         "pages": {
             slug: [page[0] for page in _tower_pages(tower)]
             for slug, tower in towers.items()

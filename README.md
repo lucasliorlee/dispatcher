@@ -48,8 +48,5 @@ The bot reads `towers.json` and `skills/skills.json` from the repository. These 
 
 ```sh
 python scrapper.py
-python enemies.py
 python worker/sync_data.py --source local
 ```
-
-The scraper caches tower pages under `towers/`, galleries under `galleries/`, and skill data under `skills/`. Enemy pages are cached under `enemies/` and summarized into `enemies.json` for the Worker.

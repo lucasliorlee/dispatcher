@@ -760,6 +760,9 @@ def _tower_pages(tower):
         if has_pvp and mode in ("Regular", "PvP") and not title.lower().startswith(mode.lower()):
             title = f"{mode} ({title})"
         pages.append((title, "table", table))
+    for name, lines in tower.get("sections", {}).items():
+        if name != "Description" and lines:
+            pages.append((name, "section", lines))
     return pages[:25]
 
 
@@ -830,6 +833,10 @@ def _format_overview_value(key, value):
 
 def _format_tower_content(tower, page, include_changes, group=0, include_description=False, skill_tree=None):
     title, kind, payload = page
+    if kind == "section":
+        tower_name = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
+        lines = [f"# {tower_name}", f"## {title}", "", *payload]
+        return "\n".join(lines)
     if kind == "overview":
         tower_title = f"[{tower['name']}]({tower['url']})" if tower.get("url") else tower["name"]
         lines = [f"# {tower_title}", f"## {title}"]
@@ -838,7 +845,10 @@ def _format_tower_content(tower, page, include_changes, group=0, include_descrip
     if kind == "overview":
         info = tower.get("info", {})
         general = info.get("general", {})
-        descriptions = [str(text) for text in info.get("tooltips", [])]
+        descriptions = tower.get("sections", {}).get("Description") or [tower.get("description", "")]
+        descriptions = [str(text) for text in descriptions if text]
+        if not descriptions:
+            descriptions = [str(text) for text in info.get("tooltips", [])]
         if include_description and descriptions:
             lines.extend(["", *descriptions])
         for key in ("Role", "Placement"):
@@ -943,7 +953,7 @@ def _tower_children(tower, pages, page_index, row_index, include_changes, includ
         else:
             children.append(_section("No rows in this table."))
     else:
-        image = tower.get("image") if page[1] == "overview" else None
+        image = tower.get("image")
         children = [_section(
             _format_tower_content(tower, page, include_changes, 0, include_description, skill_tree),
             image,
@@ -1100,6 +1110,30 @@ ENEMY_TRAITS = (
     ("Ghost?", "Ghost", None),
 )
 ENEMY_TRAIT_LABELS = {label for label, _, _ in ENEMY_TRAITS}
+ENEMY_ATTRIBUTE_EMOJIS = (
+    ("Splash Damage Immune", Emoji.noSplash),
+    ("Boss Immunities", Emoji.Boss),
+    ("Health Regen", Emoji.HealthRegen),
+    ("Neutralized", Emoji.Neutralized),
+    ("No Target", Emoji.NoTarget),
+    ("Stun Immune", Emoji.noStun),
+    ("Stun Immunity", Emoji.noStun),
+    ("Freeze Immune", Emoji.noFreeze),
+    ("Freeze Immunity", Emoji.noFreeze),
+    ("Burn Immune", Emoji.noBurn),
+    ("Burn Immunity", Emoji.noBurn),
+    ("Hidden", Emoji.HiddenDetection),
+    ("Flying", Emoji.FlyingDetection),
+    ("Lead", Emoji.LeadDetection),
+    ("Ghost", Emoji.Ghost),
+    ("Bloated", Emoji.Bloated),
+    ("Nimble", Emoji.Nimble),
+    ("Slime", Emoji.Slime),
+    ("Tank", Emoji.Tank),
+    ("Aggro", Emoji.Aggro),
+    ("Corpse", Emoji.Corpse),
+    ("Blessed", Emoji.Blessed),
+)
 
 
 def _clip(text, limit):
@@ -1114,6 +1148,34 @@ def _enemy_field(label, value):
     """Single-line values stay inline; bullet lists go under the label."""
     value = str(value)
     return f"**{label}:**\n{value}" if "\n" in value else f"**{label}:** {value}"
+
+
+def _enemy_attribute_field(label, value):
+    value = str(value)
+    if label != "Attributes" or value.strip().lower() == "none":
+        return _enemy_field(label, value)
+    lines = []
+    skip_boss_immunity_details = False
+    for line in value.splitlines():
+        indentation = line[:len(line) - len(line.lstrip())]
+        content = line.lstrip()
+        if skip_boss_immunity_details:
+            if indentation:
+                continue
+            skip_boss_immunity_details = False
+        if content.removeprefix("- ").startswith("Boss Immunities"):
+            content = "- Boss Immunities" if content.startswith("- ") else "Boss Immunities"
+            skip_boss_immunity_details = True
+        bullet = "- " if content.startswith("- ") else ""
+        content = content[2:] if bullet else content
+        emoji = next(
+            (emoji for name, emoji in ENEMY_ATTRIBUTE_EMOJIS if content.startswith(name)),
+            None,
+        )
+        if emoji:
+            content = f"{emoji.get()} {content}"
+        lines.append(f"{indentation}{bullet}{content}")
+    return f"**{label}:**\n" + "\n".join(lines)
 
 
 def _fit_groups(lines, limit, from_end=False):
@@ -1154,14 +1216,24 @@ def _enemy_pages(enemy):
     return pages[:25]
 
 
+def _enemy_context(enemy):
+    slug = enemy.get("slug", "")
+    base_slug = _tower_slug(enemy.get("name", ""))
+    if slug.startswith(base_slug + "_"):
+        return slug[len(base_slug) + 1:].replace("_", " ").title()
+    return ""
+
+
 def _enemy_title(enemy, subtitle=None):
-    title = f"# {enemy['name']}"
+    context = _enemy_context(enemy)
+    display_name = enemy["name"] + (f" ({context})" if context else "")
+    title_name = f"[{display_name}]({enemy['url']})" if enemy.get("url") else display_name
+    title = f"# {title_name}"
     return f"{title}\n## {subtitle}" if subtitle else title
 
 
 def _enemy_overview_text(enemy):
-    name = f"[{enemy['name']}]({enemy['url']})" if enemy.get("url") else enemy["name"]
-    lines = [f"# {name}"]
+    lines = [_enemy_title(enemy)]
     notice = enemy.get("notice") or {}
     if notice.get("type"):
         lines.append(f"-# {notice['type']}" + (f": {clean(notice['text'], 200)}" if notice.get("text") else ""))
@@ -1193,7 +1265,7 @@ def _enemy_stats_text(enemy, variant, show_variant):
                 ]
                 lines.append(f"**Traits:** {' '.join(shown) or 'None'}")
             continue
-        lines.append(_enemy_field(label, value))
+        lines.append(_enemy_attribute_field(label, value))
     if variant.get("abilities"):
         lines.extend(["", "### Abilities"])
         lines.extend(ability["text"] for ability in variant["abilities"])
@@ -1235,7 +1307,7 @@ def _enemy_children(enemy, pages, page_index, variant_index=0):
 
     if kind == "stats":
         variant = variants[variant_index]
-        children = [_section(_enemy_stats_text(enemy, variant, len(variants) > 1))]
+        children = [_section(_enemy_stats_text(enemy, variant, len(variants) > 1), enemy.get("image"))]
         if len(variants) > 1:
             children.append(_action_row(_select(
                 f"enemy|{slug}|variant|{state}",
@@ -1243,9 +1315,9 @@ def _enemy_children(enemy, pages, page_index, variant_index=0):
                 [_select_option(item["name"], index, default=(index == variant_index)) for index, item in enumerate(variants)],
             )))
     elif kind == "debuts":
-        children = [_section(_enemy_debuts_text(enemy))]
+        children = [_section(_enemy_debuts_text(enemy), enemy.get("image"))]
     elif kind == "section":
-        children = [_section(_enemy_section_text(enemy, title, payload))]
+        children = [_section(_enemy_section_text(enemy, title, payload), enemy.get("image"))]
     else:
         children = [_section(_enemy_overview_text(enemy), enemy.get("image"))]
 
@@ -1822,7 +1894,19 @@ def handle_autocomplete(interaction, catalog):
     if command in {"tower", "gallery"} and option_name == "name":
         choices = _choices([tower["name"] for tower in towers], query, lambda name: next(tower["slug"] for tower in towers if tower["name"] == name))
     elif command == "enemy" and option_name == "name":
-        choices = _choices([enemy["name"] for enemy in enemies], query, lambda name: next(enemy["slug"] for enemy in enemies if enemy["name"] == name))
+        enemy_labels = [
+            enemy["name"] + (f" ({_enemy_context(enemy)})" if _enemy_context(enemy) else "")
+            for enemy in enemies
+        ]
+        choices = _choices(
+            enemy_labels,
+            query,
+            lambda label: next(
+                enemy["slug"]
+                for enemy in enemies
+                if enemy["name"] + (f" ({_enemy_context(enemy)})" if _enemy_context(enemy) else "") == label
+            ),
+        )
     elif command == "tower" and option_name == "page":
         tower = tower_lookup.get(_tower_slug(str(current.get("name", ""))))
         if tower:

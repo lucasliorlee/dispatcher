@@ -1,6 +1,3 @@
-# scrap enemy data
-# will eventually be merged with scrapper.py
-
 import argparse
 import json
 import re
@@ -12,7 +9,7 @@ from bs4 import BeautifulSoup, Comment, NavigableString, Tag
 
 BASE_URL = "https://tds.wiki"
 ENEMIES_URL = f"{BASE_URL}/w/Enemies"
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 ENEMY_CACHE_DIR = PROJECT_DIR / "enemies"
 INDEX_CACHE_FILE = ENEMY_CACHE_DIR / "index.html"
 ENEMY_DATA_FILE = PROJECT_DIR / "enemies.json"
