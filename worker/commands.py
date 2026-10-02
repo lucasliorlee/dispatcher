@@ -56,6 +56,90 @@ IMMUNITY_EMOJIS = {
     "Freeze": Emoji.noFreeze,
     "Debuff": Emoji.Defense,
 }
+ENEMY_STAT_EMOJIS = {
+    "Base Health": Emoji.Heart,
+    "Health Scaling": Emoji.Heart,
+    "Mega Health": Emoji.Heart,
+    "Base Shield": Emoji.ShieldHeart,
+    "Defense": Emoji.Defense,
+    "Cash Given": Emoji.Cash,
+    "Starting Cash": Emoji.Cash,
+}
+# (wiki text, emoji). Longest names first so "Splash Damage Immune" beats "Damage".
+ENEMY_ATTRIBUTES = (
+    ("Splash Damage Immune", Emoji.noSplash),
+    ("Basic Freeze Immune", Emoji.noFreeze),
+    ("Freeze Immune", Emoji.noFreeze),
+    ("Stun Immune", Emoji.noStun),
+    ("Burn Immune", Emoji.noBurn),
+    ("Energy Immune", Emoji.noDamage),
+    ("Health Regen", Emoji.HealthRegen),
+    ("Neutralized", Emoji.Neutralized),
+    ("No Target", Emoji.NoTarget),
+    ("Bloated", Emoji.Bloated),
+    ("Blessed", Emoji.Blessed),
+    ("Corpse", Emoji.Corpse),
+    ("Nimble", Emoji.Nimble),
+    ("Aggro", Emoji.Aggro),
+    ("Slime", Emoji.Slime),
+    ("Tank", Emoji.Tank),
+    ("Boss", Emoji.Boss),
+    ("Ghost", Emoji.Ghost),
+)
+# Immunities listed after "Boss ... Immunities:" (also run together in the scraped text).
+BOSS_IMMUNITIES = (
+    ("Freeze Immunity", Emoji.noFreeze),
+    ("Stun Immunity", Emoji.noStun),
+    ("Burn Immunity", Emoji.noBurn),
+    ("Energy Immunity", Emoji.noDamage),
+    ("Poison Slowdown", None),
+    ("Confusion", None),
+    ("Thorn Slowdown", None),
+    ("Nuke Fallout Damage", None),
+    ("DJ Booth Slowdown", None),
+    ("Defense Dropping", None),
+    ("Hacker Conversion", None),
+    ("Hacker Slowdown", None),
+    ("Slowed Immunity", None),
+)
+ENEMY_FLAGS = (
+    ("Hidden?", "Hidden", Emoji.HiddenDetection),
+    ("Flying?", "Flying", Emoji.FlyingDetection),
+    ("Ghost?", "Ghost", Emoji.Ghost),
+    ("Lead?", "Lead", Emoji.LeadDetection),
+)
+# Stats the scraper glued into "5 (Easy) 6 (Casual) Story Missions 4 ( Boot Camp ) ..."
+ENEMY_ENTRY_KEYS = {
+    "Base Health", "Health Scaling", "Cash Given", "Wave Debut",
+    "Starting Cash", "Waves", "Base Shield", "Mega Health",
+}
+ENEMY_CORE_KEYS = ("Base Health", "Health Scaling", "Mega Health", "Base Shield", "Defense", "Speed", "Cash Given")
+ENEMY_HEADER_RE = re.compile(r"\b(Story Missions|Challenges|Events|Ori?gi?nally:)\s*")
+ENEMY_ENTRY_RE = re.compile(
+    r"(?P<pre>(?:[A-Za-z]+ )?)(?P<val>\$?\d[\d,.]*(?: (?:on|upon) death| every \d+% health)?)(?:\s*\(\s*(?P<lab>[^)]*?)\s*\))?"
+)
+ENEMY_MODE_RE = re.compile(
+    "|".join([
+        r"The Classic Mission \d", r"Halloween \d{4}(?: Live(?: Event)?)?", r"Pls Donate",
+        r"The Takeover", r"β ?- ?[A-Za-z]+", r"Molten PVP Test", r"PVP Test", r"Oops! All slimes!",
+        *(re.escape(name) for name in sorted((
+            "Easy", "Casual", "Intermediate", "Hard", "Molten", "Fallen", "Hardcore", "Sandbox",
+            "Tutorial", "Voidcore", "Challenge Trials", "Legacy Molten", "Polluted Wasteland",
+            "Badlands", "Pizza Party", "Basic Arena", "Molten Arena", "Fallen Arena", "Boot Camp",
+            "Live Fire", "Breach Protocol", "Brute Force", "Ghost Town", "Radio Silence",
+            "Off The Rails", "Burning Bridges", "Derailed", "Rock Bottom", "Surface Tension",
+            "Lights Out", "Juggernaut", "Jailed Towers", "Back to Basics", "Legion", "Vanguard",
+            "Boss Rush", "SFOTH", "Metaverse Champions",
+        ), key=len, reverse=True)),
+    ])
+)
+ENEMY_MODE_FIELDS = ("Base Health", "Health Scaling", "Mega Health", "Base Shield", "Cash Given", "Starting Cash", "Waves", "Wave Debut")
+ENEMY_LABEL_SPLIT_RE = re.compile(r"\s*(?:,|&|\band\b)\s*")
+ENEMY_GENERIC_LABEL_RE = re.compile(r"^(most\b|default\b|other\b|all\b|everything\b)", re.IGNORECASE)
+ENEMY_ABILITY_KEY_RE = re.compile(r"^(Ability(?:\s+\d+)?)(?:\s+Cooldown:\s*(.*))?$")
+ENEMY_COOLDOWN_RE = re.compile(
+    r"^(?P<cd>[\d.\-]+)(?:\s+Starting CD:\s*(?P<start>[\d.]+))?(?:\s+Attack CD:\s*(?P<attack>[\d.]+))?$"
+)
 SKILL_LABELS = (
     ("enhanced_optics", Emoji.EnhancedOpticsSkill),
     ("improved_gunpowder", Emoji.ImprovedGunpowderSkill),
@@ -1099,16 +1183,449 @@ def _handle_enemy(options, enemies):
     if enemy is None:
         return _reply(f"Couldn't find an enemy called `{name}`.", ephemeral=True)
 
-    lines = [f"# [{enemy['name']}]({enemy.get('url', '')})"]
-    if enemy.get("description"):
-        lines.append(enemy["description"])
-    for label in ("Mode Appearance", "Wave Debut"):
-        key = "mode_appearance" if label == "Mode Appearance" else "wave_debut"
-        if enemy.get(key):
-            lines.append(f"**{label}:** {enemy[key]}")
-    for label, value in enemy.get("stats", {}).items():
-        lines.append(f"**{label}:** {value}")
-    return _reply("", children=[_section("\n".join(lines), enemy.get("image"))])
+    pages = _enemy_pages(enemy)
+    return _reply("", children=_enemy_children(enemy, pages, 0, enemies))
+
+
+def _tidy(text):
+    """The wiki text keeps link spacing ("( Live Fire )", "Breaker .") - close it up."""
+    text = re.sub(r"\(\s+", "(", str(text))
+    text = re.sub(r"\s+([)\].,;:!?])", r"\1", text)
+    return re.sub(r"\s{2,}", " ", text).strip()
+
+
+def _enemy_ability_fields(fields):
+    """[(label, cooldown text, ability text)] from keys like 'Ability 1 Cooldown: 20 Attack CD: 5'."""
+    abilities = []
+    for key, value in fields.items():
+        match = ENEMY_ABILITY_KEY_RE.match(key)
+        if not match or not str(value).strip():
+            continue
+        cooldown = ""
+        if match.group(2):
+            parsed = ENEMY_COOLDOWN_RE.match(match.group(2).strip())
+            if parsed:
+                parts = [f"Cooldown {parsed.group('cd')}s"]
+                if parsed.group("start"):
+                    parts.append(f"Starts at {parsed.group('start')}s")
+                if parsed.group("attack"):
+                    parts.append(f"Attack CD {parsed.group('attack')}s")
+                cooldown = "\n".join(parts)
+            else:
+                cooldown = f"Cooldown {match.group(2).strip()}"
+        abilities.append((match.group(1), cooldown, str(value)))
+    return abilities
+
+
+def _enemy_pages(enemy):
+    pages = [("Overview", "overview", None)]
+    versions = [(version, fields) for version, fields in enemy.get("versions", {}).items() if fields]
+    for version, fields in versions:
+        pages.append((version, "stats", fields))
+        abilities = _enemy_ability_fields(fields)
+        # Enemies with lots of abilities are split over several pages so nothing gets cut off.
+        chunks = [abilities[index : index + 6] for index in range(0, len(abilities), 6)]
+        for number, chunk in enumerate(chunks, 1):
+            name = f"{version} Abilities" if len(versions) > 1 else "Abilities"
+            pages.append((f"{name} {number}" if len(chunks) > 1 else name, "abilities", chunk))
+    return pages[:25]
+
+
+def _parse_entries(text):
+    """Split "5 (Easy) 6 (Casual) Story Missions 4 ( Boot Camp )" into [(header, [(prefix, value, label)])].
+    Returns None when the text isn't in that shape, so the caller can show it as-is."""
+    parts = ENEMY_HEADER_RE.split(str(text))
+    groups = []
+    for index in range(0, len(parts), 2):
+        header = _header_name(parts[index - 1]) if index else None
+        segment = parts[index].strip()
+        if not segment:
+            continue
+        matches = list(ENEMY_ENTRY_RE.finditer(segment))
+        if not matches or ENEMY_ENTRY_RE.sub("", segment).strip():
+            return None
+        items = [(m.group("pre").strip(), m.group("val").strip(), (m.group("lab") or "").strip()) for m in matches]
+        groups.append((header, items))
+    return groups or None
+
+
+def _inline_entry(prefix, value, detail, bold=False):
+    value = f"**{value}**" if bold else value
+    text = f"{prefix + ' ' if prefix else ''}{value}"
+    return text + (f" ({_tidy(detail)})" if detail else "")
+
+
+def _entry_lines(label, text, emoji=None):
+    """Header line, then one value per line: '**Wave Debut:**' / '8 (Easy)' / '9 (Casual)'."""
+    prefix = f"{emoji.get()} " if emoji else ""
+    groups = _parse_entries(text)
+    if groups is None:
+        return [f"{prefix}**{label}:** {clean(_tidy(text), 500)}"]
+    if len(groups) == 1 and len(groups[0][1]) == 1:
+        return [f"{prefix}**{label}:** {_inline_entry(*groups[0][1][0])}"]
+    lines = [f"{prefix}**{label}:**"]
+    for header, items in groups:
+        if header:
+            lines.append(f"*{header}:*")
+        lines.extend(_inline_entry(*item) for item in items)
+    return lines
+
+
+def _mode_key(header, name):
+    return ((header or "").lower(), name.strip().lower())
+
+
+def _enemy_mode_table(fields):
+    """({mode key: display name}, {field: {mode key: [items]}}, {field: {header: [generic items]}}).
+
+    Health/cash/wave text lists values per mode, e.g. "5 (Intermediate & Casual) Story Missions 4 ( Boot Camp )".
+    Splitting the labels lets one dropdown pick a mode and show every value for it."""
+    names, table, generic = {}, {}, {}
+    for field in ENEMY_MODE_FIELDS:
+        groups = _parse_entries(fields.get(field, "")) if fields.get(field) else None
+        if not groups:
+            continue
+        for header, items in groups:
+            if header == "Originally":
+                continue
+            for item in items:
+                label = item[2]
+                labels = [part for part in ENEMY_LABEL_SPLIT_RE.split(label) if part] if label else []
+                if not labels or all(ENEMY_GENERIC_LABEL_RE.match(part) for part in labels):
+                    generic.setdefault(field, {}).setdefault((header or "").lower(), []).append(item)
+                    continue
+                for name in labels:
+                    if ENEMY_GENERIC_LABEL_RE.match(name):
+                        continue
+                    key = _mode_key(header, name)
+                    names.setdefault(key, f"{header}: {name}" if header else name)
+                    table.setdefault(field, {}).setdefault(key, []).append(item)
+    return names, table, generic
+
+
+def _enemy_mode_options(fields):
+    names, _, _ = _enemy_mode_table(fields)
+    return list(names.values())[:25]
+
+
+def _enemy_mode_lines(fields, mode_index):
+    names, table, generic = _enemy_mode_table(fields)
+    keys = list(names)[:25]
+    if not keys:
+        return []
+    key = keys[max(0, min(mode_index, len(keys) - 1))]
+    lines = [f"### {names[key]}"]
+    for field in ENEMY_MODE_FIELDS:
+        items = table.get(field, {}).get(key)
+        if not items:
+            items = generic.get(field, {}).get(key[0]) or generic.get(field, {}).get("")
+            items = items[:1] if items else None
+        if not items:
+            continue
+        emoji = ENEMY_STAT_EMOJIS.get(field)
+        prefix = f"{emoji.get()} " if emoji else ""
+        values = [_inline_entry(p, v, "") for p, v, _ in items]
+        if len(values) == 1:
+            lines.append(f"{prefix}**{field}:** {values[0]}")
+        else:
+            lines.extend([f"{prefix}**{field}:**", *values])
+    return lines
+
+
+def _header_name(raw):
+    name = raw.strip().rstrip(":")
+    return "Originally" if re.fullmatch(r"Ori?gi?nally", name) else name
+
+
+def _split_repeats(text):
+    """'Solar Eclipse Night III Solar Eclipse Night IV' -> two names (the opening words repeat)."""
+    words = text.split()
+    for index in range(2, len(words) - 1):
+        if words[index : index + 2] == words[:2]:
+            return [" ".join(words[:index]), *_split_repeats(" ".join(words[index:]))]
+    return [text]
+
+
+def _mode_names(segment):
+    """Mode names run together in the scrape; split on the ones we know, keep unknown text as-is.
+    Parenthesised bits like "Operation I.C.E (Easy)" stay attached to the name before them."""
+    held = []
+
+    def hold(match):
+        held.append(_tidy(match.group(1)))
+        return f"\ue000{len(held) - 1}\ue001"
+
+    segment = re.sub(r"\[\s*\d+\s*\]", "", segment)
+    segment = re.sub(r"\(\s*([^)]*?)\s*\)", hold, segment)
+    names, last = [], 0
+    for match in ENEMY_MODE_RE.finditer(segment):
+        gap = _tidy(segment[last : match.start()])
+        if gap:
+            names.append(gap)
+        names.append(_tidy(match.group()))
+        last = match.end()
+    gap = _tidy(segment[last:])
+    if gap:
+        names.append(gap)
+
+    pieces = []
+    for name in names:
+        for piece in re.split(r"(?<=\ue001)\s+", name):
+            piece = piece.strip()
+            if not piece:
+                continue
+            if re.fullmatch(r"(?:\ue000\d+\ue001\s*)+", piece) and pieces:
+                pieces[-1] += " " + piece
+            else:
+                pieces.extend(_split_repeats(piece))
+    return [
+        re.sub(r"\ue000(\d+)\ue001", lambda m: f"({held[int(m.group(1))]})", piece).strip()
+        for piece in pieces
+    ]
+
+
+def _mode_lines(label, text):
+    parts = ENEMY_HEADER_RE.split(str(text))
+    lines = []
+    for index in range(0, len(parts), 2):
+        names = _mode_names(parts[index])
+        if not names:
+            continue
+        heading = _header_name(parts[index - 1]) if index else label
+        lines.extend([f"**{heading}:**", *names])
+    return lines
+
+
+def _short_qualifier(text):
+    """'(Variable)' -> '(v)'; other qualifiers keep their wording, always in parentheses."""
+    text = _tidy(text).strip()
+    if not text:
+        return ""
+    if not text.startswith("("):
+        text = f"({text})"
+    return re.sub(r"\bVariable\b", "v", text)
+
+
+def _compact_list(label, items):
+    """'**Attributes** (v = variable)' then every item on one comma-separated line."""
+    legend = " (v = variable)" if any(re.search(r"\(v[,)]", item) for item in items) else ""
+    return [f"**{label}**{legend}", ", ".join(items)]
+
+
+def _attribute_items(text):
+    """(attributes, immunities) as display strings for the wiki's 'Attributes' blob."""
+    text = re.sub(r"\[\s*\d+\s*\]", "", str(text)).strip()
+    if not text or text.lower() == "none":
+        return [], []
+    head, _, tail = text.partition("Immunities:")
+    attribute_re = re.compile(
+        "(?P<name>" + "|".join(re.escape(name) for name, _ in ENEMY_ATTRIBUTES) + r")(?![A-Za-z])(?:\s*(?P<q>\([^)]*\)))?"
+    )
+    emojis = dict(ENEMY_ATTRIBUTES)
+
+    def parse(chunk):
+        items, last = [], 0
+        for match in attribute_re.finditer(chunk):
+            gap = _tidy(chunk[last : match.start()])
+            if gap:
+                items.append(gap)
+            qualifier = _short_qualifier(match.group("q") or "")
+            if match.group("name") == "Basic Freeze Immune":
+                qualifier = f"(Basic{', ' + qualifier[1:-1] if qualifier else ''})"
+            items.append(emojis[match.group("name")].get() + (f" {qualifier}" if qualifier else ""))
+            last = match.end()
+        gap = _tidy(chunk[last:])
+        if gap:
+            items.append(gap)
+        return items
+
+    attributes = parse(head)
+    immunities = []
+    tail = tail.strip()
+    if tail:
+        immunity_re = re.compile("|".join(re.escape(name) for name, _ in BOSS_IMMUNITIES))
+        immunity_emojis = dict(BOSS_IMMUNITIES)
+        position = 0
+        while True:
+            match = immunity_re.match(tail, position)
+            if not match:
+                break
+            emoji = immunity_emojis[match.group()]
+            immunities.append(f"{match.group()}{' ' + emoji.get() if emoji else ''}")
+            position = match.end()
+            while position < len(tail) and tail[position] == " ":
+                position += 1
+        attributes.extend(parse(tail[position:]))
+    return attributes, immunities
+
+
+def _flag_lines(fields):
+    if not any(key in fields for key, _, _ in ENEMY_FLAGS):
+        return []
+    shown = []
+    for key, label, emoji in ENEMY_FLAGS:
+        value = _tidy(fields.get(key, ""))
+        if not value or value.lower() == "no":
+            continue
+        if value.lower() == "yes":
+            detail = ""
+        elif re.match(r"^no\s+yes\b", value, re.IGNORECASE):
+            detail = re.sub(r"^no\s+yes\s*", "", value, flags=re.IGNORECASE)
+        else:
+            detail = re.sub(r"^yes\s*", "", value, flags=re.IGNORECASE)
+        shown.append(emoji.get() + (f" {_short_qualifier(detail)}" if detail else ""))
+    return _compact_list("Traits", shown or ["None"])
+
+
+def _split_named(text, known):
+    """'Grave Digger (Default summon) Legacy Necromancer Mystery (Legacy Molten only)' -> items.
+    Names run together in the scrape, so known enemy names are peeled off the end of each chunk."""
+    # Consecutive bare words form one chunk that ends at its qualifier (or the end).
+    chunks, words = [], []
+    for token in re.findall(r"\([^)]*\)|[^\s()]+", str(text)):
+        if token.startswith("("):
+            chunks.append((words, _tidy(token)))
+            words = []
+        else:
+            words.append(token)
+    if words:
+        chunks.append((words, ""))
+    result = []
+    for words, qualifier in chunks:
+        pieces = []
+        while words:
+            best = 0
+            for size in range(len(words), 0, -1):
+                if " ".join(words[-size:]).lower() in known:
+                    best = size
+                    break
+            remainder = words[:-best] if best else []
+            lone_word = len(remainder) == 1 and remainder[0].lower() not in known
+            if best and not lone_word:
+                pieces.append(" ".join(words[-best:]))
+                words = remainder
+            else:
+                pieces.append(" ".join(words))
+                words = []
+        pieces.reverse()
+        for index, piece in enumerate(pieces):
+            result.append((piece, qualifier if index == len(pieces) - 1 else ""))
+    return result
+
+
+def _enemy_stat_lines(enemy, fields, known, mode_index=0):
+    lines = []
+    names, _, _ = _enemy_mode_table(fields)
+    has_modes = bool(names)
+    # Fields shown per mode (via the dropdown) are skipped here unless they couldn't be split.
+    unsplit = {key for key in ENEMY_MODE_FIELDS if fields.get(key) and not has_modes}
+    if fields.get("Speed"):
+        lines.append(f"**Speed:** {_tidy(fields['Speed'])}")
+    if fields.get("Defense"):
+        lines.append(f"{ENEMY_STAT_EMOJIS['Defense'].get()} **Defense:** {_tidy(fields['Defense'])}")
+    lines.extend(_flag_lines(fields))
+    if fields.get("Attributes"):
+        attributes, immunities = _attribute_items(fields["Attributes"])
+        if attributes or not immunities:
+            lines.extend(_compact_list("Attributes", attributes or ["None"]))
+        if immunities:
+            lines.extend(["**Boss immunities:**", *immunities])
+    if fields.get("Spawned By"):
+        spawners = _split_named(fields["Spawned By"], known)
+        spawned = [name + (f" ({qualifier.strip('()')})" if qualifier else "") for name, qualifier in spawners]
+        lines.extend([f"**Spawned By:** {spawned[0]}"] if len(spawned) == 1 else ["**Spawned By:**", *spawned])
+    handled = {"Speed", "Defense", "Attributes", "Spawned By", "Mode Appearance"}
+    handled |= {key for key, _, _ in ENEMY_FLAGS} | set(ENEMY_MODE_FIELDS)
+    for key, value in fields.items():
+        if key in handled or ENEMY_ABILITY_KEY_RE.match(key) or not str(value).strip():
+            continue
+        lines.append(f"**{clean(key, 60)}:** {clean(_tidy(value), 500)}")
+    for key in unsplit:
+        emoji = ENEMY_STAT_EMOJIS.get(key)
+        lines.extend(_entry_lines(key, fields[key], emoji))
+    if fields.get("Mode Appearance") and fields["Mode Appearance"] != enemy.get("mode_appearance"):
+        lines.extend(_mode_lines("Mode Appearance", fields["Mode Appearance"]))
+    if has_modes:
+        lines.extend(["", *_enemy_mode_lines(fields, mode_index)])
+    return lines
+
+
+def _enemy_content(enemy, page, known=None, mode_index=0):
+    title, kind, fields = page
+    known = known or set()
+    heading = f"[{enemy['name']}]({enemy['url']})" if enemy.get("url") else enemy["name"]
+    lines = [f"# {heading}", f"## {title}"]
+    if kind == "overview":
+        if enemy.get("description"):
+            lines.append(_tidy(enemy["description"]))
+        first = next((version for version in enemy.get("versions", {}).values() if version), {})
+        glance = []
+        glance.extend(_flag_lines(first))
+        if first.get("Attributes"):
+            attributes, immunities = _attribute_items(first["Attributes"])
+            if attributes:
+                glance.extend(_compact_list("Attributes", attributes))
+            if immunities:
+                glance.extend(["**Boss immunities:**", *immunities])
+        if glance:
+            lines.extend(["", *glance])
+        extra = []
+        if enemy.get("wave_debut"):
+            extra.extend(_entry_lines("Wave Debut", enemy["wave_debut"]))
+        if enemy.get("mode_appearance"):
+            extra.extend(_mode_lines("Mode Appearance", enemy["mode_appearance"]))
+        if extra:
+            lines.extend(["", *extra])
+    elif kind == "abilities":
+        limit = max(200, min(700, (TEXT_BUDGET - 300) // max(1, len(fields)) - 160))
+        for label, cooldown, text in fields:
+            text = _tidy(text)
+            named = re.match(r"^(.{1,60}?)\s+-\s+(.*)$", text, re.DOTALL)
+            name, body = (named.group(1), named.group(2)) if named else (label, text)
+            lines.append("")
+            lines.append(f"### {Emoji.Ability.get()} {name}")
+            lines.extend(f"-# {part}" for part in (label, *cooldown.split("\n")) if part and part != name)
+            lines.append(clean(body, limit))
+    else:
+        lines.append("")
+        lines.extend(_enemy_stat_lines(enemy, fields, known, mode_index))
+    return clean("\n".join(lines).replace("-# \n", ""), TEXT_BUDGET)
+
+
+def _enemy_image(enemy):
+    images = enemy.get("images", {}).get("Modern", [])
+    return (images[0].get("url") if images else None) or enemy.get("image")
+
+
+def _enemy_children(enemy, pages, page_index, enemies=None, mode_index=0):
+    page_index = max(0, min(page_index, len(pages) - 1))
+    page = pages[page_index]
+    known = {item.get("name", "").lower() for item in (enemies or {}).values() if item.get("name")}
+    modes = _enemy_mode_options(page[2]) if page[1] == "stats" else []
+    mode_index = max(0, min(mode_index, len(modes) - 1)) if modes else 0
+    # Every page gets the enemy's picture; the heading is a hyperlink to its wiki page.
+    children = [_section(_enemy_content(enemy, page, known, mode_index), _enemy_image(enemy))]
+    if len(modes) > 1:
+        children.append(_action_row(_select(
+            f"enemy|{enemy['slug']}|mode|{page_index},{mode_index}",
+            "Choose a mode",
+            [_select_option(name, index, default=index == mode_index) for index, name in enumerate(modes)],
+        )))
+    if len(pages) > 1:
+        children.append(_action_row(_select(
+            f"enemy|{enemy['slug']}|page|{page_index}",
+            "Choose an enemy page",
+            [
+                _select_option(
+                    name,
+                    index,
+                    default=index == page_index,
+                    emoji=Emoji.Ability if kind == "abilities" else Emoji.Heart if kind == "stats" else None,
+                )
+                for index, (name, kind, _) in enumerate(pages)
+            ],
+        )))
+    return children
 
 
 def _handle_skill(options, skills):
@@ -1552,7 +2069,7 @@ def handle_command(interaction, towers, skills, enemies=None, tracker_user_id=No
     return handler(options, skills if data["name"] in {"skill", "plan"} else towers)
 
 
-def handle_component(interaction, towers):
+def handle_component(interaction, towers, enemies=None):
     data = interaction.get("data", {})
     custom_id = str(data.get("custom_id", ""))
 
@@ -1573,15 +2090,29 @@ def handle_component(interaction, towers):
     if not values:
         return _reply("This menu selection is empty.", ephemeral=True)
 
-    tower = towers.get(slug)
-    if tower is None:
-        return _reply("This tower could not be found. Run the command again.", ephemeral=True)
-
     try:
         selected = int(values[0])
         state = [int(value) for value in state.split(",")]
     except ValueError:
         return _reply("This menu selection is invalid. Run the command again.", ephemeral=True)
+
+    if kind == "enemy":
+        enemy = (enemies or {}).get(slug)
+        if enemy is None:
+            return _reply("This enemy could not be found. Run the command again.", ephemeral=True)
+        pages = _enemy_pages(enemy)
+        if action == "mode":
+            page_index = state[0]
+            if page_index >= len(pages) or selected >= len(_enemy_mode_options(pages[page_index][2] or {})):
+                return _reply("This mode could not be found. Run the command again.", ephemeral=True)
+            return _component_update(_enemy_children(enemy, pages, page_index, enemies, selected))
+        if action != "page" or selected >= len(pages):
+            return _reply("This enemy page could not be found. Run the command again.", ephemeral=True)
+        return _component_update(_enemy_children(enemy, pages, selected, enemies))
+
+    tower = towers.get(slug)
+    if tower is None:
+        return _reply("This tower could not be found. Run the command again.", ephemeral=True)
 
     if kind == "tower" and action == "page":
         pages = _tower_pages(tower)

@@ -102,7 +102,7 @@ class Default(WorkerEntrypoint):
                     else:
                         raise RuntimeError("This tracker action is not supported.")
                 else:
-                    response = handle_component(interaction, towers)
+                    response = handle_component(interaction, towers, enemies)
             else:
                 command_data = interaction.get("data", {})
                 if command_data.get("name") == "track":

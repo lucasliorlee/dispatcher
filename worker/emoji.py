@@ -63,6 +63,21 @@ class Emoji(Enum):
     ExtremeConditioningSkill = 1554981046112616448
     BeefedUpMinionsSkill = 1554981043881377802
     EnhancedOpticsSkill = 1554981007214641254
+    Ghost = 1555388252783902891
+    Boss = 1555388275118706718
+    noBurn = 1555389591601811497
+    noSplash = 1555389595774877826
+    noDamage = 1555390272207192165
+    Bloated = 1555390273520140328
+    Nimble = 1555395369536323644
+    Slime = 1555395500247744532
+    HealthRegen = 1555395501476806666
+    Tank = 1555395636793184346
+    Aggro = 1555395638449934438
+    Corpse = 1555395775255814235
+    NoTarget = 1555395776761438208
+    Blessed = 1555395914472890468
+    Neutralized = 1555395916704251974
 
     def get(self):
         return f"<:{self.name}:{self.value}>"
