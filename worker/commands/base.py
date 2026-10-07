@@ -173,6 +173,13 @@ COMMANDS = [
     _command("enemy", "Look up an enemy's stats", [
         _option("name", "Enemy name", 3, True, autocomplete=True),
     ]),
+    _command("mode", "Browse game mode information", [
+        _option("mode", "Game mode", 3, True, autocomplete=True),
+    ]),
+    _command("wave", "Look up a wave's enemies and commander dialogue", [
+        _option("mode", "Game mode", 3, True, autocomplete=True),
+        _option("wave", "Wave number", 4, min_value=1, autocomplete=True),
+    ]),
     _command("skill", "Calculate the coin cost to level a skill", [
         _option("name", "Skill name", 3, True, autocomplete=True),
         _option("current_level", "Your current skill level", 4, min_value=0),
@@ -381,4 +388,3 @@ def build_skill_plan(skills, current_levels):
     for name, target in SKILL_PLAN_TARGETS:
         reach_level(name, target)
     return {"actions": actions, "levels": levels, "total_cost": sum(action["cost"] for action in actions)}
-

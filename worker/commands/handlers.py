@@ -1,5 +1,5 @@
-from . import base as _base, skills as _skills, towers as _towers, enemies as _enemies
-for _module in (_base, _skills, _towers, _enemies):
+from . import base as _base, skills as _skills, towers as _towers, enemies as _enemies, modes as _modes
+for _module in (_base, _skills, _towers, _enemies, _modes):
     globals().update({k: v for k, v in vars(_module).items() if not k.startswith('__')})
 import random
 import re

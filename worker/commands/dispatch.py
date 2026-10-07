@@ -1,5 +1,5 @@
-from . import base as _base, skills as _skills, towers as _towers, enemies as _enemies, handlers as _handlers, tracker as _tracker
-for _module in (_base, _skills, _towers, _enemies, _handlers, _tracker):
+from . import base as _base, skills as _skills, towers as _towers, enemies as _enemies, modes as _modes, waves as _waves, handlers as _handlers, tracker as _tracker
+for _module in (_base, _skills, _towers, _enemies, _modes, _waves, _handlers, _tracker):
     globals().update({k: v for k, v in vars(_module).items() if not k.startswith('__')})
 def _handle_trials(options, towers):
     count = max(1, min(14, int(options.get("count", 14) or 14)))
@@ -55,7 +55,7 @@ def _handle_trials(options, towers):
     return _reply("\n".join(lines))
 
 
-def handle_command(interaction, towers, skills, enemies=None, tracker_user_id=None, tracker_rows=None):
+def handle_command(interaction, towers, skills, enemies=None, tracker_user_id=None, tracker_rows=None, modes=None, waves=None):
     data = interaction.get("data", {})
     options = _options_map(data.get("options", []))
     if data.get("name") == "track":
@@ -77,16 +77,22 @@ def handle_command(interaction, towers, skills, enemies=None, tracker_user_id=No
         "gallery": _handle_gallery,
         "loadout": _handle_loadout,
         "trials": _handle_trials,
+        "mode": _handle_mode,
+        "wave": _handle_wave,
     }
     handler = handlers.get(data.get("name"))
     if handler is None:
         return _reply("Unknown command.", ephemeral=True)
     if data["name"] == "enemy":
         return handler(options, enemies or {})
+    if data["name"] == "mode":
+        return handler(options, modes or {})
+    if data["name"] == "wave":
+        return handler(options, waves or {}, enemies or {})
     return handler(options, skills if data["name"] in {"skill", "plan"} else towers)
 
 
-def handle_component(interaction, towers, enemies=None):
+def handle_component(interaction, towers, enemies=None, modes=None, waves=None):
     data = interaction.get("data", {})
     custom_id = str(data.get("custom_id", ""))
 
@@ -106,6 +112,14 @@ def handle_component(interaction, towers, enemies=None):
     values = data.get("values", [])
     if not values:
         return _reply("This menu selection is empty.", ephemeral=True)
+
+    if kind == "mode":
+        return _handle_mode_component(slug, action, state, modes or {}, str(values[0]))
+
+    if kind == "wave":
+        return _handle_wave_component(
+            slug, action, state, waves or {}, str(values[0]), enemies or {}
+        )
 
     if kind == "enemy":
         selected_value = str(values[0])
@@ -217,6 +231,8 @@ def handle_autocomplete(interaction, catalog):
     towers = catalog.get("towers", [])
     tower_lookup = {tower["slug"]: tower for tower in towers}
     enemies = catalog.get("enemies", [])
+    modes = catalog.get("modes", [])
+    waves = catalog.get("waves", [])
 
     if command in {"tower", "gallery"} and option_name == "name":
         choices = _choices([tower["name"] for tower in towers], query, lambda name: next(tower["slug"] for tower in towers if tower["name"] == name))
@@ -240,6 +256,28 @@ def handle_autocomplete(interaction, catalog):
             choices = _choices(catalog.get("pages", {}).get(tower["slug"], []), query)
     elif command == "skill" and option_name == "name":
         choices = _choices(catalog.get("skills", []), query)
+    elif command == "mode" and option_name == "mode":
+        choices = _choices(
+            [mode["name"] for mode in modes],
+            query,
+            lambda name: next(mode["slug"] for mode in modes if mode["name"] == name),
+        )
+    elif command == "wave" and option_name == "mode":
+        choices = _choices(
+            [mode["name"] for mode in waves],
+            query,
+            lambda name: next(mode["slug"] for mode in waves if mode["name"] == name),
+        )
+    elif command == "wave" and option_name == "wave":
+        selected_mode = next(
+            (mode for mode in waves if mode["slug"] == current.get("mode")),
+            None,
+        )
+        if selected_mode:
+            choices = _choices(
+                [str(item) for item in range(1, selected_mode["count"] + 1)],
+                query,
+            )
     elif command == "gallery" and option_name == "section":
         tower = tower_lookup.get(_tower_slug(str(current.get("name", ""))))
         if tower:
@@ -267,4 +305,3 @@ def handle_autocomplete(interaction, catalog):
             for name in matches
         ]
     return {"type": 8, "data": {"choices": choices}}
-

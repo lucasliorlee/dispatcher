@@ -23,11 +23,15 @@ def load_data(source):
             (PROJECT_DIR / "towers.json").read_bytes(),
             (PROJECT_DIR / "skills" / "skills.json").read_bytes(),
             (PROJECT_DIR / "enemies.json").read_bytes(),
+            (PROJECT_DIR / "modes.json").read_bytes(),
+            (PROJECT_DIR / "waves.json").read_bytes(),
         )
     return (
         download_github_file("towers.json"),
         download_github_file("skills/skills.json"),
         download_github_file("enemies.json"),
+        download_github_file("modes.json"),
+        download_github_file("waves.json"),
     )
 
 
@@ -42,13 +46,17 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     ASSET_DIR.mkdir(exist_ok=True)
-    towers_json, skills_json, enemies_json = load_data(args.source)
+    towers_json, skills_json, enemies_json, modes_json, waves_json = load_data(args.source)
     towers = json.loads(towers_json)
     skills = json.loads(skills_json).get("skills", [])
     enemies = json.loads(enemies_json)
+    modes = json.loads(modes_json)
+    waves = json.loads(waves_json)
     (ASSET_DIR / "towers.json").write_bytes(towers_json)
     (ASSET_DIR / "skills.json").write_bytes(skills_json)
     (ASSET_DIR / "enemies.json").write_bytes(enemies_json)
+    (ASSET_DIR / "modes.json").write_bytes(modes_json)
+    (ASSET_DIR / "waves.json").write_bytes(waves_json)
     catalog = {
         "towers": [{"slug": slug, "name": tower["name"]} for slug, tower in towers.items()],
         "skills": [skill["name"] for skill in skills],
@@ -72,6 +80,18 @@ def main(argv=None):
             ]
             for slug, tower in towers.items()
         },
+        "modes": [{"slug": slug, "name": mode["name"]} for slug, mode in modes.items()],
+        "waves": [
+            {
+                "slug": slug,
+                "name": mode["name"],
+                "count": max(
+                    (len(version.get("waves", [])) for version in mode.get("versions", [])),
+                    default=0,
+                ),
+            }
+            for slug, mode in waves.items()
+        ],
     }
     (ASSET_DIR / "autocomplete.json").write_text(
         json.dumps(catalog, ensure_ascii=False, separators=(",", ":")),

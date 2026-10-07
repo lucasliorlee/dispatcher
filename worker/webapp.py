@@ -11,6 +11,8 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 CLIENT_ID = "755049463961092178"
 TOWERS_CACHE = None
 ENEMIES_CACHE = None
+MODES_CACHE = None
+WAVES_CACHE = None
 
 
 def _html(body, response_class, status=200):
@@ -222,6 +224,26 @@ async def _load_scraped_enemies(env):
     return ENEMIES_CACHE
 
 
+async def _load_scraped_modes(env):
+    global MODES_CACHE
+    if MODES_CACHE is None:
+        response = await env.ASSETS.fetch("https://worker-assets/modes.json")
+        if response.status != 200:
+            raise RuntimeError("Scraped mode data could not be loaded.")
+        MODES_CACHE = await response.json()
+    return MODES_CACHE
+
+
+async def _load_scraped_waves(env):
+    global WAVES_CACHE
+    if WAVES_CACHE is None:
+        response = await env.ASSETS.fetch("https://worker-assets/waves.json")
+        if response.status != 200:
+            raise RuntimeError("Scraped wave data could not be loaded.")
+        WAVES_CACHE = await response.json()
+    return WAVES_CACHE
+
+
 def _authorize_url(redirect_uri, scope, state=None):
     params = {
         "client_id": CLIENT_ID,
@@ -238,7 +260,95 @@ def _root_page():
     return """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TDS Stats</title>
 <style>body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:440px;margin:60px auto;padding:24px;text-align:center}h1{color:#fff;font-size:24px}p{color:#a1a1aa;line-height:1.5}.links{display:grid;gap:12px;margin-top:28px}a{display:block;padding:14px;border:1px solid #35353a;border-radius:8px;background:#1c1c1f;color:#fff;text-decoration:none;font-weight:600}a:hover{background:#29292e}</style></head>
-<body><h1>TDS Stats</h1><p>Tracker, widget updater, tower and enemy stats.</p><nav class="links"><a href="/tracker">Tracker</a><a href="/widget">Widget</a><a href="/towers">Towers</a><a href="/enemies">Enemies</a></nav></body></html>"""
+<body><h1>TDS Stats</h1><p>Tracker, widget updater, tower, enemy, game mode, and wave information.</p><nav class="links"><a href="/tracker">Tracker</a><a href="/widget">Widget</a><a href="/towers">Towers</a><a href="/enemies">Enemies</a><a href="/modes">Modes</a><a href="/waves">Waves</a></nav></body></html>"""
+
+
+def _mode_block_html(block):
+    if isinstance(block, str):
+        return f"<p>{_escape(block)}</p>"
+    if block.get("type") == "list":
+        items = "".join(f"<li>{_escape(item)}</li>" for item in block.get("items", []))
+        return f"<ul>{items}</ul>"
+    if block.get("type") == "table":
+        headers = "".join(f"<th>{_escape(value)}</th>" for value in block.get("headers", []))
+        rows = "".join(
+            "<tr>" + "".join(f"<td>{_escape(value)}</td>" for value in row) + "</tr>"
+            for row in block.get("rows", [])
+        )
+        return f"<div class=\"table-wrap\"><table><thead><tr>{headers}</tr></thead><tbody>{rows}</tbody></table></div>"
+    return ""
+
+
+def _modes_page(modes, selected_slug=None):
+    if not modes:
+        return "<!doctype html><html><body><h1>No mode data available</h1></body></html>"
+    selected_slug = selected_slug if selected_slug in modes else next(iter(modes))
+    mode = modes[selected_slug]
+    choices = "".join(
+        f'<option value="{_escape(slug)}"{" selected" if slug == selected_slug else ""}>{_escape(item["name"])}</option>'
+        for slug, item in modes.items()
+    )
+    sections = []
+    for title, blocks in mode.get("sections", {}).items():
+        if title == "Description":
+            continue
+        content = "".join(_mode_block_html(block) for block in blocks)
+        if content:
+            sections.append(f"<section class=\"card\"><h2>{_escape(title)}</h2>{content}</section>")
+    facts = "".join(
+        f"<div><strong>{_escape(key)}</strong><span>{_escape(value)}</span></div>"
+        for key, value in mode.get("infobox", {}).items()
+    )
+    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{_escape(mode["name"])} - TDS Stats</title>
+<style>*{{box-sizing:border-box}}body{{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:1000px;margin:28px auto;padding:20px}}h1,h2{{color:#fff}}a{{color:#aaa}}.top{{display:flex;gap:18px;align-items:center}}.top img{{width:72px;height:72px;object-fit:cover;border-radius:12px}}select{{width:100%;padding:11px;margin:16px 0;background:#202024;color:#fff;border:1px solid #36363c;border-radius:7px;font-size:16px}}.card{{margin:16px 0;padding:18px;border:1px solid #303036;border-radius:10px;background:#18181b;line-height:1.55}}.facts{{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}}.facts div{{padding:10px;border:1px solid #303036;border-radius:7px;background:#202024}}.facts strong,.facts span{{display:block}}.facts span{{color:#bbb;margin-top:4px}}.table-wrap{{overflow:auto}}table{{border-collapse:collapse;width:100%}}th,td{{border:1px solid #3a3a40;padding:8px;text-align:left;vertical-align:top}}th{{color:#fff;background:#25252a}}li{{margin:5px 0}}.description{{white-space:pre-wrap}}@media(max-width:650px){{body{{margin:10px;padding:12px}}}}</style></head><body>
+<p><a href="/">&larr; back</a></p><div class="top"><img src="{_escape(mode.get("image", ""))}" alt=""><div><h1>{_escape(mode["name"])}</h1><a href="{_escape(mode["url"])}">Wiki page</a></div></div>
+<form method="get"><label for="mode">Game mode</label><select id="mode" name="mode" onchange="this.form.submit()">{choices}</select></form>
+<section class="card"><h2>Overview</h2><p class="description">{_escape(mode.get("description", ""))}</p><div class="facts">{facts}</div></section>{''.join(sections)}</body></html>"""
+
+
+def _waves_page(waves, enemies, selected_slug=None, selected_wave=None):
+    if not waves:
+        return "<!doctype html><html><body><h1>No wave data available</h1></body></html>"
+    selected_slug = selected_slug if selected_slug in waves else next(iter(waves))
+    selected_wave = _safe_int(selected_wave, 1)
+    page = r"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TDS Waves</title>
+<style>
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#121214;color:#e4e4e7;max-width:1000px;margin:28px auto;padding:20px}a{color:#aaa}h1,h2,h3{color:#fff}h1{font-size:24px}.hero{margin:22px 0}.intro,.version-note,.source{color:#aaa;line-height:1.5}.eyebrow{color:#aaa;font-size:13px}.hero-mark{display:none}.controls,.panel{border:1px solid #303036;border-radius:10px;background:#18181b}.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px;margin:16px 0}.field label{display:block;color:#aaa;font-size:14px}.field select{width:100%;padding:10px;margin-top:6px;border:1px solid #36363c;border-radius:6px;background:#202024;color:#fff;font-size:16px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.metric{padding:12px;border:1px solid #303036;border-radius:7px;background:#202024}.metric strong,.metric span{display:block}.metric strong{color:#fff;font-size:18px}.metric span{color:#aaa;font-size:13px;margin-top:4px}.wave-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px}.wave-list{padding:14px;max-height:640px;overflow:auto}.wave-list h2{font-size:18px;margin-top:0}.wave-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wave-button{border:1px solid #3a3a40;border-radius:6px;background:#202024;color:#ddd;padding:9px 5px;cursor:pointer;font:inherit;font-size:13px}.wave-button:hover,.wave-button.active{border-color:#777;background:#303036;color:#fff}.detail{padding:18px;min-height:420px}.detail-head{display:flex;justify-content:space-between;gap:14px;align-items:start;border-bottom:1px solid #35353b;padding-bottom:14px;margin-bottom:16px}.detail-head h2{font-size:22px;margin:4px 0}.badge{white-space:nowrap;color:#bbb;background:#25252a;border:1px solid #444;padding:5px 8px;border-radius:5px;font-size:12px}.section-title{font-size:15px;color:#fff;font-weight:600;margin:18px 0 10px}.enemy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:9px}.enemy{padding:11px 12px;border:1px solid #303036;border-radius:7px;background:#202024;color:#ddd;text-align:left;font:inherit;width:100%;cursor:pointer}.enemy:hover,.enemy:focus-visible{border-color:#777}.enemy-count{font-weight:600;color:#fff}.enemy-modifier{display:block;color:#aaa;font-size:12px;margin-top:3px}.dialog{width:min(900px,calc(100% - 28px));max-height:min(88vh,900px);padding:0;border:1px solid #45454d;border-radius:8px;background:#17171b;color:#e4e4e7}.dialog::backdrop{background:#000b}.dialog-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:18px;border-bottom:1px solid #35353b}.dialog-header h2{margin:0 0 6px;color:#fff;font-size:22px}.dialog-close{padding:7px 10px;border:1px solid #444;background:#25252a;color:#eee;border-radius:5px;cursor:pointer}.dialog-content{padding:18px}.detail-description{line-height:1.55;color:#d4d4d8;white-space:pre-line}.detail-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:20px 0}.detail-facts h3,.stats-section h3{margin:0 0 10px;color:#fff;font-size:15px}.fact-list{display:grid;grid-template-columns:minmax(110px,1fr) 1.2fr;gap:6px 12px;margin:0;font-size:13px}.fact-list dt{color:#a1a1aa}.fact-list dd{margin:0;overflow-wrap:anywhere;white-space:pre-line}.stats-section{border-top:1px solid #35353b;padding-top:16px;margin-top:16px}.source{font-size:12px;margin-top:18px}@media(max-width:760px){body{margin:12px auto;padding:14px}.controls,.wave-layout{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,1fr)}.wave-list{max-height:260px}.wave-buttons{grid-template-columns:repeat(5,1fr)}}@media(max-width:650px){.dialog{width:100%;max-height:100dvh;border-radius:0}.dialog-header,.dialog-content{padding:14px}.fact-list{grid-template-columns:1fr 1.2fr}}@media(max-width:420px){.wave-buttons{grid-template-columns:repeat(4,1fr)}}
+</style></head><body>
+<p><a href="/">&larr; back</a></p>
+<header class="hero"><div><h1>Waves</h1><p class="intro">TDS wave data doesn't include events yet</p></div></header>
+<section class="controls"><div class="field"><label for="mode">GAME MODE</label><select id="mode"></select></div><div class="field"><label for="version">WAVE VERSION</label><select id="version"></select></div></section>
+<div class="summary"><div class="metric"><strong id="waveCount">—</strong><span>waves in version</span></div><div class="metric"><strong id="versionCount">—</strong><span>available versions</span></div><div class="metric"><strong id="enemyCount">—</strong><span>enemies in wave</span></div><div class="metric"><strong id="dialogCount">—</strong><span>dialogue entries</span></div></div>
+<p class="version-note" id="versionNote"></p>
+<main class="wave-layout"><aside class="panel wave-list"><h2>Choose a wave</h2><div class="wave-buttons" id="waveButtons"></div></aside><article class="panel detail" id="detail"></article></main>
+<dialog class="dialog" id="enemyDialog" aria-labelledby="enemyDetailName"><header class="dialog-header"><h2 id="enemyDetailName"></h2><button class="dialog-close" id="closeEnemyDialog" type="button">Close</button></header><div class="dialog-content"><p class="detail-description" id="enemyDescription"></p><div class="detail-facts" id="enemyFacts"></div><div id="enemyStats"></div><p id="enemyLinks"></p></div></dialog>
+<p class="source"><a href="https://tds.wiki/w/Waves">Click here to go to the Official TDS Wiki</a>.</p>
+<script>
+const data=__WAVES__,enemyData=__ENEMIES__,initialMode=__MODE__,initialWave=__WAVE__;
+const $=id=>document.getElementById(id),modeSelect=$('mode'),versionSelect=$('version'),buttons=$('waveButtons');
+let modeKey=initialMode,waveNumber=initialWave;
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function current(){const mode=data[modeKey]||Object.values(data)[0];const versions=mode.versions||[];const version=versions[0]||{waves:[]};const index=Math.max(0,Math.min(Number(versionSelect.value)||0,versions.length-1));return {mode,versions,version:versions[index]||version,index};}
+function enemyHtml(value){const text=String(value),match=text.match(/^(\d[\d,]*)x\s+(.+?)\s*(\([^)]*\))?$/);if(!match)return `<div class="enemy">${esc(text)}</div>`;const name=match[2].trim(),enemy=findEnemy(name);return `<button class="enemy" type="button" data-enemy="${enemy?esc(enemy.slug):''}"><span class="enemy-count">${esc(match[1])}x ${esc(name)}</span>${match[3]?`<span class="enemy-modifier">${esc(match[3])}</span>`:''}</button>`}
+function findEnemy(name){const key=String(name).toLowerCase().replace(/[^a-z0-9]/g,'');return enemyData.find(enemy=>[enemy.name,enemy.slug].some(value=>String(value||'').toLowerCase().replace(/[^a-z0-9]/g,'')===key))}
+function formatLines(value){return String(value||'').split(/\r?\n/).map(line=>line.trim().replace(/^-\s*/,'')).filter(Boolean).join(', ')}
+function markdown(value){return esc(value).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>')}
+function openEnemy(slug){const enemy=enemyData.find(item=>item.slug===slug);if(!enemy)return;enemyDetailName.textContent=enemy.name;enemyDescription.innerHTML=markdown(enemy.description||'No description available.');const facts=[['Modes',formatLines(enemy.mode_appearance)],['Wave debut',formatLines(enemy.wave_debut)]].filter(([,value])=>value);enemyFacts.innerHTML=facts.length?'<section><h3>Details</h3><dl class="fact-list">'+facts.map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl></section>':'';enemyStats.innerHTML=(enemy.variants||[]).map(variant=>'<section class="stats-section"><h3>'+esc(variant.name)+' stats</h3><dl class="fact-list">'+Object.entries(variant.stats||{}).map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl>'+(variant.abilities&&variant.abilities.length?'<h3>Abilities</h3>'+variant.abilities.map(ability=>'<p>'+esc(ability.text||ability.name||ability)+'</p>').join(''):'')+'</section>').join('');enemyLinks.innerHTML=enemy.url?'<a href="'+esc(enemy.url)+'" target="_blank" rel="noopener">View wiki page</a>':'';enemyDialog.showModal()}
+function renderModes(){modeSelect.innerHTML=Object.entries(data).map(([key,item])=>`<option value="${esc(key)}">${esc(item.name)}</option>`).join('');modeSelect.value=modeKey in data?modeKey:Object.keys(data)[0];modeKey=modeSelect.value;renderVersions()}
+function renderVersions(){const item=data[modeKey],versions=item.versions||[];versionSelect.innerHTML=versions.map((version,index)=>`<option value="${index}">${esc(version.name||`Version ${index+1}`)}</option>`).join('');versionSelect.value='0';waveNumber=Number(new URLSearchParams(location.search).get('wave'))||waveNumber;renderWaves()}
+function renderWaves(){const {mode,versions,version}=current(),entries=version.waves||[];if(!entries.length){$('detail').innerHTML='<p class="empty">No waves are available for this version.</p>';return}if(!entries.some(item=>item.wave===waveNumber))waveNumber=entries[0].wave;$('waveCount').textContent=entries.length;$('versionCount').textContent=versions.length;$('versionNote').textContent=`${mode.name} (${version.name||'Current version'})`;buttons.innerHTML=entries.map(item=>`<button class="wave-button${item.wave===waveNumber?' active':''}" data-wave="${item.wave}">Wave ${item.wave}</button>`).join('');buttons.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{waveNumber=Number(button.dataset.wave);renderDetail()}));renderDetail()}
+function renderDetail(){const {mode,version}=current(),entry=(version.waves||[]).find(item=>item.wave===waveNumber)||version.waves[0],enemies=entry.enemies||[],dialogue=entry.dialogue||[];$('enemyCount').textContent=enemies.reduce((sum,item)=>{const match=String(item).match(/^(\d[\d,]*)x/);return sum+(match?Number(match[1].replace(/,/g,'')):1)},0);$('dialogCount').textContent=dialogue.length;$('detail').innerHTML=`<div class="detail-head"><div><div class="eyebrow">${esc(mode.name)}</div><h2>Wave ${entry.wave}</h2><span class="version-note">${esc(version.name||'Current version')}</span></div><span class="badge">${enemies.length} enemy types</span></div><div class="section-title">Enemies</div>${enemies.length?`<div class="enemy-grid">${enemies.map(enemyHtml).join('')}</div>`:'<p class="empty">No enemy data listed.</p>'}${dialogue.length?`<div class="section-title">Narrator dialogue</div>${dialogue.map(line=>`<div class="dialog">${esc(line)}</div>`).join('')}`:''}`;buttons.querySelectorAll('button').forEach(button=>button.classList.toggle('active',Number(button.dataset.wave)===entry.wave));detail.querySelectorAll('[data-enemy]').forEach(button=>button.addEventListener('click',()=>openEnemy(button.dataset.enemy)));history.replaceState(null,'',`/waves?mode=${encodeURIComponent(modeKey)}&wave=${entry.wave}`)}
+document.getElementById('closeEnemyDialog').addEventListener('click',()=>enemyDialog.close());enemyDialog.addEventListener('click',event=>{if(event.target===enemyDialog)enemyDialog.close()});
+modeSelect.addEventListener('change',()=>{modeKey=modeSelect.value;renderVersions()});versionSelect.addEventListener('change',renderWaves);renderModes();
+</script></body></html>"""
+    return (
+        page.replace("__WAVES__", _json_for_script(waves))
+        .replace("__ENEMIES__", _json_for_script(list(enemies.values())))
+        .replace("__MODE__", json.dumps(selected_slug))
+        .replace("__WAVE__", str(selected_wave))
+    )
 
 
 def _tracker_page(rows, users, selected_user, deleted_count=None):
@@ -337,7 +447,8 @@ function formatModes(value){return String(value||'').split(/\r?\n/).map(line=>li
 function formatWave(value){return formatModes(value)}
 function displayName(enemy){const base=enemy.name.replaceAll('_',' '),suffix=enemy.slug.startsWith(base.toLowerCase().replaceAll(' ','_')+'_')?enemy.slug.slice(base.length+1).replaceAll('_',' '):'';return base+(suffix?' ('+suffix.replace(/\b\w/g,char=>char.toUpperCase())+')':'')}
 function render(){const query=search.value.toLowerCase().trim();const items=ENEMIES.filter(enemy=>JSON.stringify(enemy).toLowerCase().includes(query));status.textContent=items.length+' of '+ENEMIES.length+' enemies';grid.innerHTML=items.length?items.map(enemy=>'<article class="card">'+(enemy.image?'<button class="card-media" type="button" data-slug="'+esc(enemy.slug)+'" aria-label="View '+esc(displayName(enemy))+' details"><img loading="lazy" src="'+esc(enemy.image)+'" alt=""></button>':'')+'<div class="card-body"><h2><button class="card-title" type="button" data-slug="'+esc(enemy.slug)+'">'+esc(displayName(enemy))+'</button></h2><div class="meta">'+(enemy.wave_debut?'<span>Wave '+esc(formatWave(enemy.wave_debut))+'</span>':'')+'</div><p>'+esc(enemy.description||'No description available.')+'</p><div class="foot"><button type="button" data-slug="'+esc(enemy.slug)+'">View details</button>'+(enemy.url?'<a href="'+esc(enemy.url)+'" target="_blank" rel="noopener">Wiki page</a>':'')+'</div></div></article>').join(''):'<p>No enemies found.</p>'}
-function openEnemy(slug){const enemy=ENEMIES.find(item=>item.slug===slug);if(!enemy)return;const modes=formatModes(enemy.mode_appearance),wave=formatWave(enemy.wave_debut);detailName.textContent=displayName(enemy);detailMeta.innerHTML='';detailDescription.textContent=enemy.description||'No description available.';const facts=[['Modes',modes],['Wave debut',wave]].filter(([,value])=>value);detailFacts.innerHTML=facts.length?'<section><h3>Details</h3><dl class="fact-list">'+facts.map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl></section>':'';detailStats.innerHTML=(enemy.variants||[]).map(variant=>'<section class="stats-section"><h3>'+esc(variant.name)+' stats</h3><dl class="fact-list">'+Object.entries(variant.stats||{}).map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl>'+(variant.abilities&&variant.abilities.length?'<h3>Abilities</h3><div>'+variant.abilities.map(ability=>'<p>'+esc(ability.text||ability.name||ability)+'</p>').join('')+'</div>':'')+'</section>').join('');detailLinks.innerHTML=enemy.url?'<a href="'+esc(enemy.url)+'" target="_blank" rel="noopener">View wiki page</a>':'';enemyDialog.showModal()}
+function markdown(value){return esc(value).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>')}
+function openEnemy(slug){const enemy=ENEMIES.find(item=>item.slug===slug);if(!enemy)return;const modes=formatModes(enemy.mode_appearance),wave=formatWave(enemy.wave_debut);detailName.textContent=displayName(enemy);detailMeta.innerHTML='';detailDescription.innerHTML=markdown(enemy.description||'No description available.');const facts=[['Modes',modes],['Wave debut',wave]].filter(([,value])=>value);detailFacts.innerHTML=facts.length?'<section><h3>Details</h3><dl class="fact-list">'+facts.map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl></section>':'';detailStats.innerHTML=(enemy.variants||[]).map(variant=>'<section class="stats-section"><h3>'+esc(variant.name)+' stats</h3><dl class="fact-list">'+Object.entries(variant.stats||{}).map(([key,value])=>'<dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd>').join('')+'</dl>'+(variant.abilities&&variant.abilities.length?'<h3>Abilities</h3><div>'+variant.abilities.map(ability=>'<p>'+esc(ability.text||ability.name||ability)+'</p>').join('')+'</div>':'')+'</section>').join('');detailLinks.innerHTML=enemy.url?'<a href="'+esc(enemy.url)+'" target="_blank" rel="noopener">View wiki page</a>':'';enemyDialog.showModal()}
 grid.addEventListener('click',event=>{const button=event.target.closest('[data-slug]');if(button)openEnemy(button.dataset.slug)});
 document.getElementById('closeDialog').addEventListener('click',()=>enemyDialog.close());
 enemyDialog.addEventListener('click',event=>{if(event.target===enemyDialog)enemyDialog.close()});
@@ -669,6 +780,24 @@ async def handle_web_request(request, env, response_class, fetch_function):
             return _html(_enemies_page(enemies), response_class)
         except Exception as error:
             return _error_page("Enemy list unavailable", str(error), response_class, 503)
+
+    if method == "GET" and path == "/modes":
+        try:
+            modes = await _load_scraped_modes(env)
+            selected = query.get("mode", [None])[0]
+            return _html(_modes_page(modes, selected), response_class)
+        except Exception as error:
+            return _error_page("Mode list unavailable", str(error), response_class, 503)
+
+    if method == "GET" and path == "/waves":
+        try:
+            waves = await _load_scraped_waves(env)
+            enemies = await _load_scraped_enemies(env)
+            selected = query.get("mode", [None])[0]
+            selected_wave = query.get("wave", [None])[0]
+            return _html(_waves_page(waves, enemies, selected, selected_wave), response_class)
+        except Exception as error:
+            return _error_page("Wave list unavailable", str(error), response_class, 503)
 
     return _html(
         "<!doctype html><html><meta charset=\"utf-8\"><title>Not found</title>"

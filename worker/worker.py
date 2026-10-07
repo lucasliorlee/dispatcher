@@ -37,12 +37,22 @@ async def _load_data(env):
         towers_response = await env.ASSETS.fetch("https://worker-assets/towers.json")
         skills_response = await env.ASSETS.fetch("https://worker-assets/skills.json")
         enemies_response = await env.ASSETS.fetch("https://worker-assets/enemies.json")
-        if towers_response.status != 200 or skills_response.status != 200 or enemies_response.status != 200:
+        modes_response = await env.ASSETS.fetch("https://worker-assets/modes.json")
+        waves_response = await env.ASSETS.fetch("https://worker-assets/waves.json")
+        if (
+            towers_response.status != 200
+            or skills_response.status != 200
+            or enemies_response.status != 200
+            or modes_response.status != 200
+            or waves_response.status != 200
+        ):
             raise RuntimeError("Worker data assets could not be loaded.")
         DATA_CACHE = (
             await towers_response.json(),
             (await skills_response.json())["skills"],
             await enemies_response.json(),
+            await modes_response.json(),
+            await waves_response.json(),
         )
     return DATA_CACHE
 
@@ -60,7 +70,7 @@ async def _load_autocomplete(env):
 class Default(WorkerEntrypoint):
     async def _finish_interaction(self, interaction):
         try:
-            towers, skills, enemies = await _load_data(self.env)
+            towers, skills, enemies, modes, waves = await _load_data(self.env)
             if interaction["type"] == 3:
                 component_data = interaction.get("data", {})
                 custom_id = str(component_data.get("custom_id", ""))
@@ -102,7 +112,7 @@ class Default(WorkerEntrypoint):
                     else:
                         raise RuntimeError("This tracker action is not supported.")
                 else:
-                    response = handle_component(interaction, towers, enemies)
+                    response = handle_component(interaction, towers, enemies, modes, waves)
             else:
                 command_data = interaction.get("data", {})
                 if command_data.get("name") == "track":
@@ -129,7 +139,7 @@ class Default(WorkerEntrypoint):
                                 float(options["exp"]),
                                 timestamp,
                             )
-                        response = handle_command(interaction, towers, skills, enemies, tracker_user_id=user_id)
+                        response = handle_command(interaction, towers, skills, enemies, tracker_user_id=user_id, modes=modes, waves=waves)
                     else:
                         rows = await _load_progress(self.env, user_id)
                         response = handle_command(
@@ -139,9 +149,11 @@ class Default(WorkerEntrypoint):
                             enemies,
                             tracker_user_id=user_id,
                             tracker_rows=rows,
+                            modes=modes,
+                            waves=waves,
                         )
                 else:
-                    response = handle_command(interaction, towers, skills, enemies)
+                    response = handle_command(interaction, towers, skills, enemies, modes=modes, waves=waves)
             payload = response.get("data", {})
         except Exception as error:
             print(f"Discord interaction failed: {error}")
